@@ -1,16 +1,33 @@
-# leorio
+# Leorio
 
-A new Flutter project.
+This repository holds two separate projects.
 
-## Getting Started
+## leorio
 
-This project is a starting point for a Flutter application.
+A Flutter app for ordering food. It has screens for browsing vendors, viewing a
+menu, managing a cart and checking out.
 
-A few resources to get you started if this is your first Flutter project:
+The Flutter project lives at the top level of the repository. The source is in
+`lib/`.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## beat-studio
+
+A music workstation that runs in a web browser. It has a drum kit, a piano and a
+guitar, a step sequencer, recording, and export to WAV, MP3 and MIDI. All the
+sound is made in the browser.
+
+The project is in `beat-studio/` and is written in TypeScript. See
+`beat-studio/README.md` for the full description.
+
+```bash
+cd beat-studio
+npm install
+npm run dev
+```
+
+The two projects do not share any code and neither depends on the other.
