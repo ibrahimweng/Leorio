@@ -1,0 +1,22 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",    "x": 0,    "y": 0, "w": 393, "h": 852, "title": "Home" },
+    { "file": "Ask.dc.html",     "x": 523,  "y": 0, "w": 393, "h": 852, "title": "Asking" },
+    { "file": "Answer.dc.html",  "x": 1046, "y": 0, "w": 393, "h": 852, "title": "Answer" },
+    { "file": "Pay.dc.html",     "x": 1569, "y": 0, "w": 393, "h": 852, "title": "Payment draft" },
+    { "file": "Account.dc.html", "x": 2092, "y": 0, "w": 393, "h": 852, "title": "Normal screen" },
+    { "file": "Rules.dc.html",   "x": 2615, "y": 0, "w": 393, "h": 852, "title": "Rules" }
+  ],
+  "annotations": [
+    { "id": "note-type", "x": -480, "y": 0, "w": 400, "text": "Two type styles, and only two.\n\nNumbers that come from the bank are set in Archivo, tight and evenly spaced.\n\nAnything the AI wrote is set in Newsreader, a serif.\n\nSo you can always tell at a glance which part of the screen is a fact and which part is the AI talking." },
+    { "id": "note-colour", "x": -480, "y": 300, "w": 400, "text": "One accent colour, used only for the AI.\n\nMoney keeps neutral colours, apart from green for money coming in. Try the other accents on the row of chips above any screen." },
+    { "id": "note-placeholder", "x": -480, "y": 540, "w": 400, "text": "The name, the amounts and the currency are placeholders. Tell me what they should be and I will change them.\n\nMerchant tiles are grey squares on purpose. Real logos would come from your own data." },
+    { "id": "note-home", "x": 0, "y": -250, "w": 393, "text": "1. Home\n\nHome is what the AI wrote for you this morning, not an empty box waiting for a question. People do not know what to ask, so do not ask them to.\n\nThe balance stays at the top so it still reads as a bank." },
+    { "id": "note-ask", "x": 523, "y": -250, "w": 393, "text": "2. Asking\n\nSpeak to ask, read to answer. Talking is faster than typing on a phone, and reading is faster than listening, so there is no spoken reply.\n\nThe light along the top edge only moves while the AI is working. Nothing else in the app glows." },
+    { "id": "note-answer", "x": 1046, "y": -250, "w": 393, "text": "3. Answer\n\nThe answer is a card, not a paragraph.\n\nThe three chips under the chart are the question itself. Tap Last month to change the range instead of typing the whole question again.\n\nThe grey line at the bottom of the card opens the 24 payments it added up, so the number can be checked." },
+    { "id": "note-pay", "x": 1569, "y": -250, "w": 393, "text": "4. Payment draft\n\nThe AI fills the form and you sign it. This is the pattern I recommend for the whole app.\n\nEvery field it guessed is tinted and says where it got the value. Tap any tinted field to correct it.\n\nNothing moves until you slide, and Face ID runs after." },
+    { "id": "note-account", "x": 2092, "y": -250, "w": 393, "text": "5. A normal banking screen\n\nThis is the other half of your question. The same input bar sits on the ordinary screens, and the AI can also drop a single line into the list.\n\nHere is the cost of that. The input bar and the tab bar both want the bottom of the screen. On the home screen the bar can take that space on its own." },
+    { "id": "note-rules", "x": 2615, "y": -250, "w": 393, "text": "6. Standing instructions\n\nThe one place the AI acts on its own, and only for rules the person switched on themselves.\n\nOne rule per card, each with a switch and a record of what it has done. The list underneath says what it will never do without asking." }
+  ],
+  "launch": { "view": "canvas" }
+}
