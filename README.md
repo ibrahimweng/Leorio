@@ -15,3 +15,9 @@ flutter run
 Beat Studio used to live in this repository under `beat-studio/`. It is now its
 own project at https://github.com/ibrahimweng/beat-studio, where it is deployed
 from. Its history came with it, so the commits are not lost.
+
+## Typeforge has moved
+
+Typeforge used to live in this repository under `typeforge/`. It is now its own
+project at https://github.com/ibrahimweng/typeforge, where it is deployed from.
+Its history came with it, so the commits are not lost.
