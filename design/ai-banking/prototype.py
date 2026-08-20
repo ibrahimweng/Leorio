@@ -10,7 +10,7 @@ ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
 ORDER = ["Main", "Ask", "Services", "Airtime", "PowerPay", "Power", "Bills",
          "Loan", "Card", "Answer", "Pay", "Rules", "Goal", "Done",
-         "Settings", "Activity"]
+         "Settings", "History"]
 
 def acc(html):
     return html.replace("{{accent}}", "var(--acc)")
@@ -282,9 +282,9 @@ function countBalance(){
         var whole = Math.floor(o.v), dec = Math.round((o.v - whole) * 100);
         el.innerHTML =
           '<div style="display:flex;align-items:baseline;gap:0px">' +
-          '<span class="num" style="font-size:60px;font-weight:800;letter-spacing:-.04em;line-height:1.05;color:var(--ink)">' +
+          '<span class="num" style="font-size:36px;font-weight:800;letter-spacing:-.04em;line-height:1.05;color:var(--ink)">' +
           ng(whole) + '</span>' +
-          '<span class="num" style="font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--ink4)">.' +
+          '<span class="num" style="font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--ink4)">.' +
           (dec < 10 ? '0' : '') + dec + '</span></div>';
       } });
 }

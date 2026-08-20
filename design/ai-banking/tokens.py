@@ -108,17 +108,21 @@ FONT_ITAL  = "PlusJakartaItalic-subset.woff2"
 FONT_NAME  = "Plus Jakarta Sans"
 FONT_WGHT  = "400 800"
 
-# Eight steps, and nothing between them. 13 is the floor, which also keeps
-# every money figure above the size where the Naira sign loses its crossbars.
-#   13 a caption          19 a row title        40 a balance on its own page
-#   15 a second line      22 a section heading  60 the balance on the home screen
-#   17 body and a card title
-#   28 a page title
-TYPE = [13, 15, 17, 19, 22, 28, 40, 60]
+# Six steps, and nothing between them. Taken down a step from the reference
+# after a pass over the home screen, so the whole product reads quieter.
+#   12 a second line, a caption, a chip
+#   14 body, a card title, and everything the model says
+#   16 a row title, a button, a value
+#   22 a heading over a group
+#   26 a page title
+#   36 a balance
+TYPE = [12, 14, 16, 22, 26, 36]
+# The Naira sign loses its crossbars below about twelve and a half pixels, so
+# the smallest step is not available to money. snap() lifts any figure off it.
+MONEY_MIN_PX = 14
 # Three weights, which is all the reference uses. Regular for anything grey,
 # bold for anything named, heavy for money.
 WEIGHT = {400: 400, 500: 400, 600: 700, 700: 700, 800: 800}
-MONEY_MIN_PX = 13
 
 # ---------------------------------------------------------------- shape
 # A 4px rhythm, with 2 and 6 kept for the gap between an icon and its label.

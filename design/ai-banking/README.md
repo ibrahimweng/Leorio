@@ -44,7 +44,7 @@ with nothing drawn behind them. This product replaces the tabs with the model.
 - On every other screen: back, then the ask bar, then the black circle.
 
 So back lives at the bottom left on every screen, which is where the reference
-puts it. The black circle opens send, receive, activity and pay a bill over a
+puts it. The black circle opens send, receive, history and pay a bill over a
 blurred page. That is the only place those four live, so no screen has to carry
 them, and the grid stays free for services.
 
@@ -58,7 +58,7 @@ Home and what opens on top of it:
 
 - `Main.dc.html` is the home screen
 - `Actions.dc.html` is the black circle open
-- `Receive.dc.html` is the add money sheet
+- `Receive.dc.html` is the receive sheet
 - `Ask.dc.html` is asking by voice
 
 The model at work:
@@ -81,15 +81,15 @@ The service stack:
 
 The rest:
 
-- `Activity.dc.html` is every movement, newest first
+- `History.dc.html` is every movement, newest first
 - `Settings.dc.html` is the account
 
 ## The three ways to reach a service
 
 A bank with forty services cannot put forty tiles on a screen.
 
-1. **The grid** is for browsing. Four dashed tiles on home, the full catalogue
-   on Services.
+1. **The grid** is for browsing. One flat row of four on home, the full
+   catalogue on Services.
 2. **The sentence** is for speed. Say what you want and the model prepares it.
    The ask bar is on every screen, so this is always the shortest route.
 3. **The card** is for confirming. Recurring things are offered before you go
@@ -100,8 +100,10 @@ A bank with forty services cannot put forty tiles on a screen.
 Enforced when the files are generated. `snap()` in `build.py` pulls every size,
 weight, gap, padding and radius onto the nearest step, so nothing can drift.
 
-- **Type**: 13, 15, 17, 19, 22, 28, 40, 60. Thirteen is the floor, which is
-  also the size below which the Naira sign loses its crossbars.
+- **Type**: 12, 14, 16, 22, 26, 36. The whole ramp came down a step after a
+  pass over the home screen, so the product reads quieter than the reference.
+  Money never uses 12, because below about twelve and a half pixels the Naira
+  sign loses its crossbars, so `snap()` lifts any figure to 14.
 - **Weight**: 400 for anything grey, 700 for anything named, 800 for money.
 - **Space**: 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, plus 56 and 72 which are
   structural rather than rhythm. A page starts 72 from the top.
@@ -111,10 +113,11 @@ weight, gap, padding and radius onto the nearest step, so nothing can drift.
 
 The reference greys are lighter than the accessibility standard allows for
 small text. Matching them exactly was a deliberate decision, taken knowing the
-cost. Measured across all eighteen screens, 569 pieces of text:
+cost. The type ramp then came down a step, which compounds it: light grey and
+small text together. Measured across all eighteen screens, 553 pieces of text:
 
-- 360 pass.
-- 209 do not, and every one of them is one of the three greys or the pale
+- 367 pass.
+- 186 do not, and every one of them is one of the three greys or the pale
   decimal half of a money figure.
 
 Nothing that carries meaning on its own fails. Titles, figures, amounts, row
@@ -169,8 +172,8 @@ it.
 The glyph needs help. Its crossbars run to the edges of the letterform and read
 as a strikethrough against a digit, so every Naira sign is wrapped in a span
 with a small margin on both sides. Below about twelve and a half pixels the
-crossbars stop rendering at all, which is why thirteen is the type floor and
-every money figure clears it.
+crossbars stop rendering at all. The type ramp starts below that at twelve, so
+`snap()` lifts any figure carrying the sign to fourteen instead.
 
 Files and licence are in `fonts/`.
 

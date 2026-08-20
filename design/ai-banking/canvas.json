@@ -57,12 +57,12 @@
       "title": "Done"
     },
     {
-      "file": "Activity.dc.html",
+      "file": "History.dc.html",
       "x": 3661,
       "y": 0,
       "w": 393,
       "h": 852,
-      "title": "Activity"
+      "title": "History"
     },
     {
       "file": "Settings.dc.html",
@@ -158,14 +158,14 @@
       "x": 1046,
       "y": -1020,
       "w": 1100,
-      "text": "THE SCALES\n\nEight type sizes and nothing between them. 13, 15, 17, 19, 22, 28, 40 and 60. Thirteen is the floor, which is also where the Naira sign keeps its crossbars.\n\nThree weights. Regular for anything grey, bold for anything named, heavy for money.\n\nA four point spacing rhythm, plus 56 and 72 which are structural. Seven corner radii and one pill.\n\nAll three are enforced when the files are generated. A size that is not on a scale is pulled onto the nearest one, so nothing can drift."
+      "text": "THE SCALES\n\nSix type sizes and nothing between them. 12, 14, 16, 22, 26 and 36. The whole ramp came down a step after a pass over the home screen, so the product reads quieter than the reference does.\n\nMoney never uses 12. Below about twelve and a half pixels the Naira sign loses its crossbars, so any figure is lifted to 14.\n\nThree weights. Regular for anything grey, bold for anything named, heavy for money.\n\nA four point spacing rhythm plus 56 and 72, which are structural. A page starts 72 from the top, which clears the status bar. Seven corner radii and one pill.\n\nAll of it is enforced when the files are generated, so nothing can drift."
     },
     {
       "id": "note-contrast",
       "x": 2092,
       "y": -1020,
       "w": 1100,
-      "text": "CONTRAST, AND WHAT IT COST\n\nThe reference greys are lighter than the accessibility standard allows for small text, and matching them exactly was a deliberate decision.\n\nMeasured across all eighteen screens, 569 pieces of text: 360 pass, 209 do not. Every failure is one of the three greys or the pale decimal.\n\nNothing that carries meaning on its own fails. Titles, figures and amounts are black. What fails is the second line under a title, which repeats what the icon and the title already say.\n\nGreen and red text and the small blue captions were darkened, because the reference has no green or red text to copy."
+      "text": "CONTRAST, AND WHAT IT COST\n\nTwo decisions compound here. The reference greys were matched exactly, and then the whole type ramp came down a step. Light grey and small text together.\n\nMeasured across all eighteen screens, 553 pieces of text: 367 pass, 186 do not. Every failure is one of the three greys or the pale kobo.\n\nNothing that carries meaning on its own fails. Titles, figures, amounts, row names and buttons are black on white. What fails is the second line under a title, which repeats what the icon and the title already say.\n\nGreen and red text and the small blue captions were darkened, because the reference has no green or red text to copy."
     },
     {
       "id": "note-bottom",
@@ -179,7 +179,7 @@
       "x": 0,
       "y": -300,
       "w": 393,
-      "text": "1. Home\n\nThe reference order, applied to a bank account. A title, the balance, one button, then a grid.\n\nThe balance is the biggest thing on the screen at sixty pixels, with the kobo pale behind it. One button under it and nothing competing.\n\nThen the model's most useful card, because on a screen this size the first thing you read decides what the app is. Then four dashed tiles for the services."
+      "text": "1. Home\n\nThe whole top block is deliberately small. A kicker, the balance, one button. The balance at sixty pixels was eating the fold and pushing the model's first card off the screen, so it came down to thirty six with the kobo at twenty two.\n\nThe four services are one flat row rather than a grid of tiles, which saves about a hundred and ninety pixels. Colour still does the finding.\n\nEverything under Activities is the feed. The model's most useful card leads it, because on a screen this size the first thing you read decides what the app is."
     },
     {
       "id": "note-actions",
@@ -222,13 +222,6 @@
       "y": -300,
       "w": 393,
       "text": "7. Done\n\nA green tick, the amount, the receipt, then one offer to make it automatic.\n\nThe offer only appears after something worked. That is the moment it is worth asking.\n\nTaking a loan ends here too, and it gets no tick and no cheer."
-    },
-    {
-      "id": "note-activity",
-      "x": 3661,
-      "y": -300,
-      "w": 393,
-      "text": "8. Activity\n\nThe reference list style, with amounts. No dividers, no card, just height and colour doing the separating.\n\nMoney coming in is green with a plus, money going out is black with a minus. All, In and Out at the top really switch."
     },
     {
       "id": "note-settings",
@@ -299,6 +292,13 @@
       "y": 940,
       "w": 393,
       "text": "18. Standing instructions\n\nWhat the model may do without asking. Three switches, each with a log of what it has already done.\n\nUnder them, in plain words, the three things it will always ask about first. That list is what makes the switches above it safe to turn on."
+    },
+    {
+      "id": "note-history",
+      "x": 3661,
+      "y": -300,
+      "w": 393,
+      "text": "8. History\n\nThe reference list style, with amounts. No dividers, no card, just height and colour doing the separating.\n\nMoney coming in is green with a plus, money going out is black with a minus. All, In and Out at the top really switch.\n\nIt is called History and not Activity because the home screen already has a heading called Activities, and those are two different things."
     }
   ],
   "launch": {
