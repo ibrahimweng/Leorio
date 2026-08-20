@@ -1,122 +1,101 @@
 """Every design decision in one place.
 
-Taken from the reference screens: a saturated warm wash at the top of a
-screen fading into white, white cards separated by soft shadow rather than
-hairlines, big soft corners, pastel badges behind every service icon, and a
-black pill for the one action you are meant to take.
+Monochrome structure with one warm accent, spent only where the model speaks.
+Taken from the reference screens: a near white page, white cards separated by
+soft shadow rather than hairlines, circular icon badges, a black circle for a
+primary action, and sentence case section headings instead of shouty labels.
 
-The screens never write a colour, a typeface or a corner radius directly.
-They ask for a role, so changing the look means changing this file.
+Three scales are enforced at build time, so nothing can drift off them:
+a type ramp, a spacing rhythm and a small set of corner radii. See snap()
+in build.py.
 """
 
 # ---------------------------------------------------------------- colour
-# Surfaces. The page is white and cards lift off it with shadow, not borders.
-BG        = "#FFFFFF"   # the page
+# Every text pair below clears WCAG AA at the size it is used.
+BG        = "#F5F5F6"   # the page
 SURF      = "#FFFFFF"   # a card
-FILL      = "#F6F3F0"   # a quiet panel inside a card
-FILL2     = "#E7E1D9"   # a firmer quiet block, e.g. a chart bar
-LINE      = "#EFEBE6"   # a hairline, used sparingly
-LINE2     = "#E4DFD9"   # a firmer warm grey, for a drag handle or a dashed edge
+FILL      = "#F1F1F3"   # a quiet panel, and the circle behind a row icon
+FILL2     = "#DEDEE3"   # a firmer quiet block, e.g. a chart bar
+LINE      = "#EAEAEC"   # a hairline, used sparingly
+LINE2     = "#DDDDE1"   # a drag handle or a dashed edge
 
-# Text. Warm, so it sits with the orange rather than fighting it.
-INK       = "#17130F"
-INK2      = "#6B635B"
-INK3      = "#9E958C"
+INK       = "#111113"   # 18.9 on white
+INK2      = "#52525B"   #  7.7 on white
+INK3      = "#6A6A73"   #  5.3 on white, 4.7 on FILL. Nothing lighter carries text.
 
-# The one action you are meant to take on a screen.
-BTN       = "#14110D"
+BTN       = "#111113"   # the one action you are meant to take
 BTN_INK   = "#FFFFFF"
 
-# Meaning, never decoration.
-IN        = "#12855C"   # money coming in, and anything free
-WARN      = "#D8452F"   # a bill nobody is covering
+IN        = "#0F7A55"   # money coming in, and anything free
+WARN      = "#C2361F"   # a bill nobody is covering
 
-# The model. It marks what the model wrote, what it filled in and the badge
-# it speaks from. It is also the brand, so it carries the wash.
-# It stays a template hole so the canvas can offer it as a tweak.
+# The model, and the only colour in the app that is not a grey. It marks the
+# badge the model speaks from and the panel its words sit in. Nothing else.
 ACC       = "{{accent}}"
-ACC_HEX   = "#FF7A1A"
-# Written as a mix of the accent so they follow it when it is changed.
-ACC_SOFT  = "color-mix(in srgb, " + ACC + " 11%, #FFFFFF)"   # the panel the model speaks from
-ACC_EDGE  = "color-mix(in srgb, " + ACC + " 28%, transparent)"
-ACC_INK   = "color-mix(in srgb, " + ACC + " 72%, #17130F)"   # the model's small print
+ACC_HEX   = "#E86A00"                                        # badge fill, white glyph on it
+ACC_TEXT  = "color-mix(in srgb, " + ACC + " 62%, #111113)"   # the model's links and small print
+ACC_SOFT  = "color-mix(in srgb, " + ACC + " 5%, #FFFFFF)"    # the panel the model speaks from
+ACC_EDGE  = "color-mix(in srgb, " + ACC + " 24%, transparent)"
+ACC_INK   = ACC_TEXT                                         # the name the screens already use
 
-# The wash. Top of the home screen, and the two screens that celebrate.
-WASH = ("linear-gradient(180deg, #FFA309 0%, #FF7C2B 22%, #FF9A5E 42%, "
-        "#FFC9A6 60%, #FFE8D8 74%, #FFFFFF 92%)")
-CARD_FACE = "linear-gradient(150deg, #FFA309 0%, #FF6A16 52%, #EF4E0C 100%)"
-ON_WASH   = "#FFFFFF"
-ON_WASH_2 = "rgba(255,255,255,0.72)"
-ON_WASH_3 = "rgba(255,255,255,0.55)"
+CARD_FACE = "linear-gradient(150deg, #2A2A2E 0%, #17171A 55%, #0E0E11 100%)"
+ON_DARK   = "#FFFFFF"
+ON_DARK_2 = "rgba(255,255,255,0.66)"
+ON_DARK_3 = "rgba(255,255,255,0.44)"
 
-# Pastel badges behind service and merchant icons, straight from the
-# reference. Each is a soft background with a stronger glyph.
-TONES = {
-    "brand":   ("#FFF2E8", "#EE6A0C"),
-    "cool":    ("#EAF1FE", "#2F6BE0"),
-    "green":   ("#E6F4EE", "#12855C"),
-    "violet":  ("#F2ECFC", "#6B4BC4"),
-    "rose":    ("#FDECEA", "#D8452F"),
-    "amber":   ("#FEF3E0", "#B3720A"),
-    "neutral": ("#F3F0EC", "#6B635B"),
-}
-def tone(name):
-    return TONES.get(name, TONES["neutral"])
-
-# Which badge colour each icon wears, so a row of services reads as a row of
-# different things rather than a row of the same grey square.
-ICON_TONE = {
-    "airtime": "cool",   "data": "violet", "power": "amber",   "send": "green",
-    "more": "neutral",   "tv": "rose",     "bet": "violet",    "loan": "green",
-    "card": "cool",      "pot": "green",   "school": "amber",  "water": "cool",
-    "globe": "cool",     "waste": "neutral", "clock": "neutral", "request": "rose",
-    "shield": "green",   "freeze": "cool", "plus": "green",    "search": "violet",
-    "list": "amber",     "mic": "neutral", "copy": "neutral",  "check": "green",
-    "lock": "neutral",   "receipt": "neutral", "minus": "neutral",
-}
-def itone(ic):
-    return ICON_TONE.get(ic, "neutral")
+# Icon badges are all one neutral circle now. The function stays so the
+# screens keep calling it, but there is one tone.
+def tone(name=None):
+    return (FILL, INK)
+def itone(ic=None):
+    return "neutral"
+TONES = {"neutral": (FILL, INK)}
 
 # ---------------------------------------------------------------- type
-# One family. The reference uses a single geometric sans throughout, so the
-# model is told apart by the panel it speaks from rather than by a serif.
 FONT_UI = "'Plus Jakarta Sans', -apple-system, 'Helvetica Neue', Arial, sans-serif"
 FONT_AI = FONT_UI
-SERIF   = "font-family: " + FONT_AI     # kept as the name the screens call it
+SERIF   = "font-family: " + FONT_AI
 
 FONT_FILE  = "PlusJakarta-subset.woff2"
 FONT_ITAL  = "PlusJakartaItalic-subset.woff2"
 FONT_NAME  = "Plus Jakarta Sans"
 FONT_WGHT  = "400 800"
 
-# No money is set below this. Under about 12.5px the Naira sign loses its
-# two crossbars and turns into a plain N.
-MONEY_MIN_PX = 12.5
+# Nine steps, and nothing between them. 13 is the floor, which also keeps
+# every money figure above the size where the Naira sign loses its crossbars.
+TYPE = [13, 14, 15, 17, 20, 24, 30, 36, 44]
+# Three weights. Regular for body, medium for anything named, bold for money.
+WEIGHT = {400: 500, 500: 500, 600: 600, 700: 700, 800: 700}
+MONEY_MIN_PX = 13
 
 # ---------------------------------------------------------------- shape
-R_CARD   = "24px"   # a card the model wrote, or a draft it prepared
-R_CARDLG = "26px"   # the payment card object
-R_CARDXL = "26px"   # the answer card
-R_PANEL  = "22px"   # a list of rows
-R_INNER  = "18px"   # a panel inside a card, including the model's own
-R_TILE   = "20px"   # the badge behind a service icon
-R_ACT    = "18px"   # a square action button
-R_BUNDLE = "18px"   # a bundle or amount chip
-R_FIELD  = "18px"   # a field the model filled in, and grouped plain rows
-R_CHIP   = "999px"  # a chip that edits the question, fully round
-R_ICON   = "14px"   # the badge behind a merchant or row icon
-R_TAG    = "999px"  # a status tag, fully round
-R_SHEET  = "32px"   # the top corners of the voice sheet
-R_BAR    = "6px"    # a bar in a chart
-R_TRACK  = "4px"    # a progress track
+# A 4px rhythm, with 2 and 6 kept for the gap between an icon and its label.
+SPACE = [2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 54]
+# Five radii. Anything round is written as PILL and never snapped.
+RADII = [8, 12, 16, 20, 28]
+PILL  = "999px"
 
-def pill(h):
-    """A control that is fully round on its ends. Pass the height."""
-    return str(round(h / 2, 1)).rstrip("0").rstrip(".") + "px"
+R_CARD   = "20px"   # a card the model wrote, or a draft it prepared
+R_CARDLG = "20px"   # the payment card object
+R_CARDXL = "20px"   # the answer card
+R_PANEL  = "20px"   # a list of rows
+R_INNER  = "16px"   # a panel inside a card, including the model's own
+R_TILE   = PILL     # the circle behind a service icon
+R_ACT    = PILL     # a round action button
+R_BUNDLE = "16px"   # a bundle or amount chip
+R_FIELD  = "16px"   # a field the model filled in, and grouped plain rows
+R_CHIP   = PILL     # a chip that edits the question
+R_ICON   = PILL     # the circle behind a merchant or row icon
+R_TAG    = PILL     # a status tag
+R_SHEET  = "28px"   # the top corners of the voice sheet
+R_BAR    = "6px"    # a bar in a chart, too small to snap
+R_TRACK  = "4px"    # a progress track, too small to snap
+
+def pill(h=None):
+    return PILL
 
 # ---------------------------------------------------------------- depth
-# Separation comes from shadow, so there is almost no border anywhere.
-SHADOW   = "box-shadow: 0 2px 10px rgba(23,19,15,0.055), 0 1px 2px rgba(23,19,15,0.04)"
-SH_RAISE = "box-shadow: 0 10px 30px rgba(23,19,15,0.12), 0 2px 6px rgba(23,19,15,0.05)"
-SH_BTN   = "box-shadow: 0 6px 18px rgba(20,17,13,0.22)"
-SH_SHEET = "box-shadow: 0 -12px 40px rgba(23,19,15,0.14)"
+SHADOW   = "box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 4px 16px rgba(17,17,19,0.045)"
+SH_RAISE = "box-shadow: 0 2px 4px rgba(17,17,19,0.05), 0 12px 32px rgba(17,17,19,0.09)"
+SH_BTN   = "box-shadow: 0 4px 14px rgba(17,17,19,0.20)"
+SH_SHEET = "box-shadow: 0 -12px 40px rgba(17,17,19,0.13)"

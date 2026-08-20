@@ -209,28 +209,35 @@
       "x": -500,
       "y": 600,
       "w": 420,
-      "text": "How you tell the model apart\n\nThe reference uses one typeface everywhere, so the serif that used to mark the model's voice is gone.\n\nIn its place, the model always speaks from a soft peach panel with its badge beside it, and nothing from your bank ever sits in one. It is the same idea as before, done the way the reference does it.\n\nThe typeface is Plus Jakarta Sans throughout."
+      "text": "Type, spacing and shape\n\nThis pass pulled everything onto a scale. There were 31 different type sizes across the screens, and two of them were arithmetic accidents nobody chose. There are nine now, and only three weights.\n\nGaps went from 18 different values to seven, on a four pixel rhythm. Corner radii went from 23 to five, plus fully round.\n\nThe scales are enforced when the screens are built, so nothing can drift off them again.\n\nSection headings are sentence case now. A shouted label in tiny tracked capitals is noise, and there were 31 of them."
     },
     {
       "id": "note-colour",
       "x": -500,
       "y": 880,
       "w": 420,
-      "text": "Two colours doing two jobs.\n\nOrange is the brand and the model. It carries the wash at the top of the home screen, the model's badge, the panels it speaks from and the switches that let it act.\n\nBlack is the one action you are meant to take. Every slide to confirm and every primary button is a black pill, so the thing you are about to do never gets confused with the thing the model is suggesting.\n\nEverything else is a warm neutral. Green is money coming in, red is a bill nobody is covering."
+      "text": "Colour\n\nThe structure is monochrome. Greys and near black, on a near white page. A black circle marks a main action and a black pill marks the one thing you are meant to do on a screen.\n\nThe only colour that is not a grey belongs to the model. Its badge is orange, and the panel its words sit in is five percent of that orange. Nothing else in the app may use it.\n\nGreen and red are kept for meaning alone. Green is money coming in. Red is a bill nobody is covering."
     },
     {
       "id": "note-naira",
       "x": -500,
-      "y": 1120,
+      "y": 1220,
       "w": 420,
-      "text": "On the Naira sign\n\nGoogle serves fonts in pieces and none of the pieces contain the Naira sign, so loading a font the normal way puts every Naira sign in a different typeface from the digits next to it. The screens carry their own cut down copy of the font instead.\n\nThis also narrowed the typeface choice. Of the geometric sans faces that suit these references, Figtree and Manrope have no Naira sign at all. Plus Jakarta Sans does.\n\nThe sign also gets a hair of space on each side, and no money is set below about 12.5px, because under that its two crossbars stop rendering and it turns into a plain N."
+      "text": "On the Naira sign\n\nGoogle serves fonts in pieces and none of the pieces contain the Naira sign, so loading a font the normal way puts every Naira sign in a different typeface from the digits next to it. The screens carry their own cut down copy of the font instead.\n\nThis also narrowed the typeface choice. Figtree and Manrope both suit these references and neither has a Naira sign at all. Plus Jakarta Sans does.\n\nThe sign gets a hair of space on each side, or its two crossbars read as a line through the number. And the type scale starts at 13px, which keeps every money figure above the size where those crossbars stop rendering."
     },
     {
       "id": "note-placeholder",
       "x": -500,
-      "y": 1480,
+      "y": 1600,
       "w": 420,
       "text": "The name, the account numbers, the meter number and the amounts are all made up. Merchant tiles are grey squares on purpose, since real logos would come from your own data.\n\nTell me what the real ones should be and I will change them."
+    },
+    {
+      "id": "note-contrast",
+      "x": -500,
+      "y": 880,
+      "w": 420,
+      "text": "Contrast\n\nEvery text pair on these screens was measured against WCAG AA at the size it is actually used. Fourteen pairs failed before this pass and none fail now.\n\nThe worst was the thing you looked at first. The balance used to be white on an orange wash at 2.0 to 1, where 3.0 is the floor. The account number under it was 1.46 to 1. The wash is gone and the balance is near black on the page at 17.3 to 1.\n\nNo text is set in anything lighter than the mid grey, which clears 4.5 to 1 on white, on the page and on a filled panel."
     }
   ],
   "launch": {

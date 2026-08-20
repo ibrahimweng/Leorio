@@ -17,18 +17,18 @@ CSS = """
 :root{
   --acc:""" + ACC + """;
   --fill:""" + build.FILL + """;
-  --sur-bg:#EDE9E4; --sur-card:#FFFFFF; --sur-ink:#2A241E;
-  --sur-mid:#7A7168; --sur-line:#DDD7D0; --sur-shadow:0 26px 64px rgba(30,22,14,.18);
+  --sur-bg:#E8E8EA; --sur-card:#FFFFFF; --sur-ink:#26262B;
+  --sur-mid:#71717A; --sur-line:#D8D8DC; --sur-shadow:0 26px 64px rgba(17,17,19,.16);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --sur-bg:#14110E; --sur-card:#1D1917; --sur-ink:#E6E0D9;
-    --sur-mid:#968C82; --sur-line:#2C2723; --sur-shadow:0 26px 64px rgba(0,0,0,.55);
+    --sur-bg:#0F0F11; --sur-card:#191A1D; --sur-ink:#E3E3E7;
+    --sur-mid:#8E8E98; --sur-line:#26262B; --sur-shadow:0 26px 64px rgba(0,0,0,.55);
   }
 }
 :root[data-theme="dark"]{
-  --sur-bg:#14110E; --sur-card:#1D1917; --sur-ink:#E6E0D9;
-  --sur-mid:#968C82; --sur-line:#2C2723; --sur-shadow:0 26px 64px rgba(0,0,0,.55);
+  --sur-bg:#0F0F11; --sur-card:#191A1D; --sur-ink:#E3E3E7;
+  --sur-mid:#8E8E98; --sur-line:#26262B; --sur-shadow:0 26px 64px rgba(0,0,0,.55);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -41,16 +41,16 @@ body{
 .wrap{display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:22px; height:100vh; height:100dvh; padding:0}
 body.desk .wrap{padding:24px 20px}
-.device{position:relative; flex-shrink:0; overflow:hidden; background:#FFFFFF}
-body.desk .device{border-radius:44px; box-shadow:var(--sur-shadow), 0 0 0 9px #17130F, 0 0 0 10px #342C25}
+.device{position:relative; flex-shrink:0; overflow:hidden; background:""" + build.BG + """}
+body.desk .device{border-radius:44px; box-shadow:var(--sur-shadow), 0 0 0 9px #111113, 0 0 0 10px #2E2E34}
 .stage{width:393px; transform-origin:top left; position:relative}
-.screen{position:absolute; inset:0; display:none; will-change:transform; background:#FFFFFF}
+.screen{position:absolute; inset:0; display:none; will-change:transform; background:""" + build.BG + """}
 .screen.live{display:block}
 .screen .pg{position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch}
 .screen .pg::-webkit-scrollbar{width:0;height:0}
 .screen[data-screen="Ask"] .fauxbg{
   position:absolute; inset:0; opacity:1 !important; padding:0 !important;
-  background:rgba(30,20,10,.34); overflow:hidden}
+  background:rgba(17,17,19,.36); overflow:hidden}
 .screen[data-screen="Ask"] .fauxbg > *{display:none !important}
 [data-go],[data-act],.slide{cursor:pointer; -webkit-tap-highlight-color:transparent}
 [data-go]:active,[data-act]:active{opacity:.62}
@@ -61,7 +61,7 @@ body.desk .device{border-radius:44px; box-shadow:var(--sur-shadow), 0 0 0 9px #1
 kbd{font:inherit; background:var(--sur-card); border:1px solid var(--sur-line);
   border-radius:6px; padding:1px 6px; color:var(--sur-ink)}
 #toast{position:fixed; left:50%; bottom:36px; transform:translate(-50%,20px);
-  background:#17130F; color:#FBF7F3; font-size:13.5px; font-weight:500;
+  background:#111113; color:#F6F6F7; font-size:13.5px; font-weight:500;
   padding:11px 18px; border-radius:22px; opacity:0; pointer-events:none;
   transition:opacity .22s ease, transform .22s ease; z-index:60; max-width:80vw; text-align:center}
 #toast.on{opacity:1; transform:translate(-50%,0)}

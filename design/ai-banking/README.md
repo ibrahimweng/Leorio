@@ -87,10 +87,32 @@ something that just happens.
 
 ## The look
 
-Taken from reference screens the founder supplied: a saturated warm wash at
-the top of the home screen fading into white, white cards separated by soft
-shadow rather than hairlines, big soft corners, a pastel badge behind every
-service icon, and a black pill for the one action you are meant to take.
+Monochrome structure on a near white page. White cards separated by soft
+shadow rather than hairlines. A circle behind every icon, grey for a list and
+black for a main action. A black pill for the one thing you are meant to do on
+a screen. Sentence case section headings.
+
+The only colour that is not a grey belongs to the model. Its badge is orange
+and the panel its words sit in is a five percent tint of that orange. Nothing
+else may use it. Green and red are kept for meaning alone, which is money
+coming in and a bill nobody is covering.
+
+## The three scales
+
+`tokens.py` holds a type ramp of nine sizes, a spacing rhythm of four pixels
+and five corner radii. `snap()` in `build.py` pulls every value in the built
+screens onto those scales, so nothing can drift off them.
+
+Before this was enforced there were 31 type sizes, five weights, 18 gap values
+and 23 radii, and two of the type sizes were arithmetic accidents nobody had
+chosen.
+
+## Contrast
+
+Every text pair was measured against WCAG AA at the size it is used. Fourteen
+failed before the clean up and none fail now. No text is set in anything
+lighter than the mid grey, which clears 4.5 to 1 on white, on the page and on
+a filled panel.
 
 ## Fonts and the Naira sign
 

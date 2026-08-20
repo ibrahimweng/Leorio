@@ -1,6 +1,6 @@
 # Generates the .dc.html artboards for the AI banking design canvas.
 # Look and feel live in tokens.py. Run: python3 build.py
-import os
+import os, re
 OUT = os.path.dirname(os.path.abspath(__file__))
 
 from tokens import *
@@ -46,6 +46,37 @@ def screen(inner):
     return ('<div style="position: relative; width: 393px; height: 852px; background: ' + BG
             + '; color: ' + INK + '; overflow: hidden">\n' + inner + '\n</div>\n')
 
+def _near(v, scale):
+    return min(scale, key=lambda x: (abs(x - v), x))
+
+def snap(html):
+    """Pull every size, gap and radius onto its scale. Nothing drifts."""
+    html = re.sub(r"font-size: ([0-9.]+)px",
+                  lambda m: "font-size: %dpx" % _near(float(m.group(1)), TYPE), html)
+    html = re.sub(r"font-weight: (\d+)",
+                  lambda m: "font-weight: %d" % WEIGHT.get(int(m.group(1)), 500), html)
+    html = re.sub(r"\b(gap|row-gap|column-gap): ([0-9.]+)px",
+                  lambda m: "%s: %dpx" % (m.group(1), _near(float(m.group(2)), SPACE)), html)
+
+    def _rad(m):
+        v = float(m.group(1))
+        if v >= 100 or v < 8:          # a pill, or too small to belong to the scale
+            return m.group(0)
+        return "border-radius: %dpx" % _near(v, RADII)
+    html = re.sub(r"border-radius: ([0-9.]+)px", _rad, html)
+
+    def _pad(m):
+        out = []
+        for p in m.group(1).split():
+            if p.endswith("px"):
+                v = float(p[:-2])
+                out.append("0" if v == 0 else "%dpx" % _near(v, SPACE))
+            else:
+                out.append(p)
+        return "padding: " + " ".join(out)
+    html = re.sub(r"padding: ([^;\"]+)", _pad, html)
+    return html
+
 NAIRA = "&#8358;"
 EMIT = (__name__ == "__main__")
 SCREENS = {}
@@ -60,6 +91,7 @@ def hook(go="", act=""):
     return out
 
 def write(name, inner, anim="", italic=False):
+    inner = snap(inner)
     inner = inner.replace(NAIRA, '<span style="margin: 0 0.09em 0 0.05em">' + NAIRA + '</span>')
     SCREENS[name] = inner
     if EMIT:
@@ -103,6 +135,7 @@ ICONS = {
  "list": '<path d="M4 6.6h16M4 12h16M4 17.4h9.6"/>',
  "clock": '<circle cx="12" cy="12" r="8.6"/><path d="M12 6.8V12l3.4 2"/>',
  "receipt": '<path d="M5.4 3.6h13.2v17.2l-2.6-1.6-2.2 1.6-2.2-1.6-2.2 1.6-2.2-1.6-1.8 1.6z"/><path d="M8.6 8.6h6.8M8.6 12.8h6.8"/>',
+ "bell": '<path d="M18 9.6a6 6 0 1 0-12 0c0 5.4-2.2 6.6-2.2 6.6h16.4S18 15 18 9.6z"/><path d="M13.7 19.6a2 2 0 0 1-3.4 0"/>',
  "mic": '<rect x="9.4" y="3" width="5.2" height="9.6" rx="2.6"/><path d="M5.6 11.2a6.4 6.4 0 0 0 12.8 0M12 17.6V21"/>',
 }
 
@@ -112,18 +145,26 @@ def icon(name, size=22, color=INK2, sw=1.7, extra=""):
             + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: ' + color
             + extra + '">' + ICONS[name] + '</svg>')
 
-def chevbtn(size=24):
-    return ('<div style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: ' + str(size // 2)
-      + 'px; background: ' + FILL + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + chev(11, INK3, 2.3) + '</div>')
+def avatar(t, size=38, bg=FILL, fg=INK2, act="", eid=""):
+    s = str(size)
+    return ('<div' + hook("", act) + (' id="' + eid + '"' if eid else '') + ' style="width: ' + s + 'px; height: ' + s
+      + 'px; border-radius: ' + str(size // 2) + 'px; background: ' + bg
+      + '; display: flex; align-items: center; justify-content: center; font-size: ' + str(round(size * 0.36, 1))
+      + 'px; font-weight: 700; color: ' + fg + '; flex-shrink: 0">' + t + '</div>')
 
-def badge(ic, t=None, size=44, radius=R_ICON, isz=None):
-    """A pastel square behind a service or merchant icon."""
-    bg, fg = tone(t or itone(ic))
-    isz = isz or int(round(size * 0.47))
-    return ('<div style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: ' + radius
+def chevbtn(size=24):
+    return ('<div style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: ' + PILL
+      + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      + chev(11, INK3, 2.2) + '</div>')
+
+def badge(ic, t=None, size=44, radius=R_ICON, isz=None, dark=False):
+    """A circle behind an icon. Grey by default, black when it is a main action."""
+    bg = BTN if dark else FILL
+    fg = "#FFFFFF" if dark else INK
+    isz = isz or int(round(size * 0.46))
+    return ('<div style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: ' + PILL
       + '; background: ' + bg + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon(ic, isz, fg, 1.9) + '</div>')
+      + icon(ic, isz, fg, 1.8) + '</div>')
 
 def chev(size=14, color=INK3, sw=2):
     s = str(size)
@@ -131,7 +172,7 @@ def chev(size=14, color=INK3, sw=2):
             '<path d="M5 3l4 4-4 4" stroke="' + color + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round"/></svg>')
 
 def back():
-    return ('<div' + hook("back") + ' style="width: 40px; height: 40px; border-radius: 20px; background: ' + FILL
+    return ('<div' + hook("back") + ' style="width: 40px; height: 40px; border-radius: ' + PILL + '; background: ' + FILL
             + '; display: flex; align-items: center; justify-content: center; margin-left: -2px; flex-shrink: 0">'
             '<svg width="19" height="19" viewBox="0 0 20 20" fill="none"><path d="M12 4.5 6.5 10l5.5 5.5" stroke="' + INK
             + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
@@ -143,7 +184,7 @@ def topbar(title="", right=""):
     r = right if right else '<div style="width: 40px; flex-shrink: 0"></div>'
     return ('<div style="display: flex; align-items: center; height: 44px; gap: 8px">' + back() + t + r + '</div>')
 
-def askbar(placeholder, height=124, tabbar=False):
+def askbar(placeholder, height=106, tabbar=False):
     inner = ('<div' + hook("ask") + ' style="flex-grow: 1; height: 58px; border-radius: ' + pill(58)
         + '; background: ' + SURF + '; ' + SH_RAISE + '; display: flex; align-items: center; gap: 11px; padding: 0 18px 0 10px">'
         + mark(38) + '<span style="flex-grow: 1; font-size: 15.5px; font-weight: 500; color: ' + INK3 + '">' + placeholder + '</span>'
@@ -166,7 +207,7 @@ def tinted(inner, note, pad="14px 16px"):
 def slide(label, go="", lid=""):
     return ('<div class="slide"' + hook(go) + ' style="position: relative; height: 60px; border-radius: ' + pill(60)
         + '; background: ' + BTN + '; ' + SH_BTN + '; display: flex; align-items: center; padding: 5px">'
-        '<div class="knob" style="width: 50px; height: 50px; border-radius: 25px; background: #FFFFFF'
+        '<div class="knob" style="width: 50px; height: 50px; border-radius: ' + PILL + '; background: #FFFFFF'
         '; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 2">'
         '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h11M11 6l4 4-4 4" stroke="' + BTN
         + '" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
@@ -189,8 +230,14 @@ def aicard(text, head="", size="15.5px", aid=""):
          + '<span style="font-size: 14.5px; font-weight: 700; letter-spacing: -0.01em; color: ' + INK + '">' + head + '</span></div>')
     return h + panel(text, size, aid)
 
-def label(t, color=INK3):
-    return ('<div style="font-size: 10.5px; font-weight: 800; letter-spacing: 0.13em; color: ' + color + '">' + t + '</div>')
+def label(t, color=INK):
+    """A section heading. Sentence case, because a shouted label is noise."""
+    txt = t if t[:1].islower() else t[:1].upper() + t[1:].lower()
+    return ('<div style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: ' + color + '">' + txt + '</div>')
+
+def caption(t, color=INK3):
+    """A quiet line above something, e.g. what you said."""
+    return ('<div style="font-size: 13px; font-weight: 500; color: ' + color + '">' + t + '</div>')
 
 def money(whole, dec, size=50, dsize=24, color=INK, dcolor=None):
     return ('<div style="display: flex; align-items: baseline; gap: 1px">'
@@ -210,56 +257,57 @@ def page(inner, gap=14, top=54, center=False, wash_h=0):
 
 # ================= HOME =================
 def svc_tile(name, ic, go=""):
-    return ('<div' + hook(go) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 9px">'
-      + badge(ic, None, 54, R_TILE, 24)
+    return ('<div' + hook(go) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 8px">'
+      + badge(ic, None, 48, R_TILE, 21, True)
       + '<span style="font-size: 11.5px; font-weight: 600; color: ' + INK2 + '">' + name + '</span></div>')
 
 home = page(
-  '<div style="display: flex; align-items: center; justify-content: space-between; height: 44px">'
-    '<div style="display: flex; flex-direction: column; gap: 4px">' + label("EVERYDAY ACCOUNT", ON_WASH_2)
-      + '<span class="num" style="font-size: 12.5px; font-weight: 600; color: ' + ON_WASH_3 + '; letter-spacing: 0.06em">0102 4457 88</span></div>'
-    '<div style="width: 40px; height: 40px; border-radius: 20px; background: rgba(255,255,255,0.22); display: flex; align-items: center; justify-content: center; font-size: 13.5px; font-weight: 700; color: '
-      + ON_WASH + '">IW</div></div>'
-  + '<div style="display: flex; flex-direction: column; gap: 9px; padding-top: 2px">'
-    + '<span style="font-size: 13.5px; font-weight: 600; color: ' + ON_WASH_2 + '">Total balance</span>'
-    + money("&#8358;248,320", ".75", 46, 23, ON_WASH, ON_WASH_2)
-    + '<div style="display: flex; gap: 18px; align-items: center; padding-top: 2px">'
-      '<div style="display: flex; align-items: center; gap: 7px">'
-        '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 2.5v9M3.6 8.1 7 11.5l3.4-3.4" stroke="' + ON_WASH + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-        '<span class="num" style="font-size: 13.5px; font-weight: 700; color: ' + ON_WASH + '">&#8358;640,000 in</span></div>'
-      '<div style="display: flex; align-items: center; gap: 7px">'
-        '<svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M7 11.5v-9M3.6 5.9 7 2.5l3.4 3.4" stroke="' + ON_WASH_2 + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-        '<span class="num" style="font-size: 13.5px; font-weight: 700; color: ' + ON_WASH_2 + '">&#8358;391,680 out</span></div></div></div>'
-  + '<div style="' + cardstyle("15px 10px") + '; ' + SH_RAISE + '; display: flex; gap: 6px; margin-top: 4px">'
+  '<div style="display: flex; align-items: center; gap: 12px; height: 48px">'
+    + avatar("IW", 44)
+    + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
+      + '<span style="font-size: 13px; font-weight: 500; color: ' + INK3 + '">Good morning</span>'
+      + '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">Ibrahim Weng</span></div>'
+    + '<div style="width: 44px; height: 44px; border-radius: ' + PILL + '; background: ' + SURF + '; ' + SHADOW
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("bell", 20, INK, 1.8) + '</div></div>'
+  + '<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 4px">'
+    + caption("Total balance")
+    + money("&#8358;248,320", ".75", 44, 22, INK, INK3)
+    + '<div style="display: flex; gap: 20px; align-items: center; padding-top: 4px">'
+      '<div style="display: flex; align-items: center; gap: 6px">'
+        '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2.5v9M3.6 8.1 7 11.5l3.4-3.4" stroke="' + IN + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        '<span class="num" style="font-size: 14px; font-weight: 600; color: ' + INK2 + '">&#8358;640,000 in</span></div>'
+      '<div style="display: flex; align-items: center; gap: 6px">'
+        '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 11.5v-9M3.6 5.9 7 2.5l3.4 3.4" stroke="' + INK3 + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        '<span class="num" style="font-size: 14px; font-weight: 600; color: ' + INK2 + '">&#8358;391,680 out</span></div></div></div>'
+  + '<div style="' + cardstyle("16px 8px") + '; display: flex; gap: 4px">'
       + svc_tile("Airtime","airtime","Airtime") + svc_tile("Data","data","Airtime")
       + svc_tile("Power","power","PowerPay") + svc_tile("Send","send","Pay") + svc_tile("More","more","Services") + '</div>'
-  + '<div style="display: flex; align-items: center; gap: 9px; padding-top: 4px">'
-      + '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">Three things this morning</span></div>'
-  + '<div style="display: flex; flex-direction: column; gap: 12px">'
+  + label("Three things this morning")
+  + '<div style="display: flex; flex-direction: column; gap: 12px; margin-top: -4px">'
 
-    + '<div id="mBill" style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 12px">'
+    + '<div id="mBill" style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
       + aicard("Your Ikeja Electric bill lands on Thursday. Last month it was &#8358;7,500.", "Due on Thursday")
-      + '<div style="display: flex; gap: 9px; align-items: center">'
-        '<div' + hook("PowerPay") + ' style="flex-grow: 1; height: 50px; border-radius: ' + pill(50) + '; background: ' + BTN + '; ' + SH_BTN
+      + '<div style="display: flex; gap: 8px; align-items: center">'
+        '<div' + hook("PowerPay") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
         + '; color: ' + BTN_INK + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700">Pay &#8358;8,000 now</div>'
-        '<div' + hook("", "dismiss") + ' style="width: 50px; height: 50px; border-radius: 25px; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
-        '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="' + INK3 + '" stroke-width="2" stroke-linecap="round"/></svg></div></div></div>'
+        '<div' + hook("", "dismiss") + ' style="width: 52px; height: 52px; border-radius: ' + PILL + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
+        '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="' + INK2 + '" stroke-width="2" stroke-linecap="round"/></svg></div></div></div>'
 
-    + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 12px">'
+    + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
       + aicard("Your data usually runs out about now. The same 5GB is &#8358;2,500.", "Your data is nearly gone")
-      + '<div style="display: flex; align-items: center; gap: 12px; height: 60px; border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 14px">'
-        + badge("data", None, 38, "12px", 19)
+      + '<div style="display: flex; align-items: center; gap: 12px; height: 64px; border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 12px">'
+        + badge("data", None, 40, R_ICON, 20)
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
-          '<span style="font-size: 14px; font-weight: 700">5GB for 30 days</span>'
-          '<span style="font-size: 12px; font-weight: 500; color: ' + INK3 + '">MTN &#183; your line</span></div>'
+          '<span style="font-size: 15px; font-weight: 600">5GB for 30 days</span>'
+          '<span style="font-size: 13px; font-weight: 500; color: ' + INK3 + '">MTN &#183; your line</span></div>'
         '<span class="num" style="font-size: 15px; font-weight: 700">&#8358;2,500</span></div>'
-      '<div' + hook("Airtime") + ' style="height: 46px; border-radius: ' + pill(46) + '; background: ' + FILL
-      + '; display: flex; align-items: center; justify-content: center; gap: 7px">'
-        '<span style="font-size: 14.5px; font-weight: 700; color: ' + INK + '">Buy it again</span>' + chev(12, INK, 2.2) + '</div></div>'
+      '<div' + hook("Airtime") + ' style="height: 48px; border-radius: ' + PILL + '; background: ' + FILL
+      + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
+        '<span style="font-size: 15px; font-weight: 600; color: ' + INK + '">Buy it again</span>' + chev(12, INK, 2.2) + '</div></div>'
 
-    + '<div' + hook("Answer") + ' style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 12px">'
+    + '<div' + hook("Answer") + ' style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
       + aicard("You spent &#8358;18,900 on airtime and data last month. That is your highest month this year.", "Where your money went") + '</div>'
-  + '</div>', 14, 54, False, 300) + askbar("Ask, or just say what you need", 132)
+  + '</div>', 16) + askbar("Ask, or just say what you need", 112)
 write("Main", home)
 
 # ================= ALL SERVICES =================
@@ -315,15 +363,8 @@ def offer(text, action, go=""):
       + chev(12, INK, 2.2) + '</div></div>')
 
 def quote(t):
-    return ('<div style="display: flex; flex-direction: column; gap: 8px">' + label("YOU SAID")
+    return ('<div style="display: flex; flex-direction: column; gap: 6px">' + caption("You said")
       + '<span style="font-size: 17px; font-style: italic; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
-
-def avatar(t, size=38, bg=FILL, fg=INK2, act="", eid=""):
-    s = str(size)
-    return ('<div' + hook("", act) + (' id="' + eid + '"' if eid else '') + ' style="width: ' + s + 'px; height: ' + s
-      + 'px; border-radius: ' + str(size // 2) + 'px; background: ' + bg
-      + '; display: flex; align-items: center; justify-content: center; font-size: ' + str(round(size * 0.36, 1))
-      + 'px; font-weight: 700; color: ' + fg + '; flex-shrink: 0">' + t + '</div>')
 
 def plainrow(k, v, last=False, vcolor=INK, chevron=False, vid=""):
     border = "" if last else "border-bottom: 1px solid " + LINE + "; "
@@ -374,7 +415,7 @@ write("Airtime", airtime, "", True)
 power = page(
   topbar()
   + '<div style="display: flex; flex-direction: column; gap: 14px; align-items: flex-start">'
-    '<div style="width: 52px; height: 52px; border-radius: 26px; background: color-mix(in srgb, ' + ACC
+    '<div style="width: 52px; height: 52px; border-radius: ' + PILL + '; background: color-mix(in srgb, ' + ACC
       + ' 10%, ' + SURF + '); border: 1px solid color-mix(in srgb, ' + ACC + ' 26%, transparent); display: flex; align-items: center; justify-content: center">'
       + icon("check", 24, ACC, 2.0) + '</div>'
     '<div style="display: flex; flex-direction: column; gap: 5px">' + money("&#8358;8,000", "", 38, 20)
@@ -384,7 +425,7 @@ power = page(
     + label("METER TOKEN")
     + '<span class="num" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
     + '<div' + hook("", "copy") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 23px; background: ' + FILL + '">'
-      + icon("copy", 17, ACC, 1.6) + '<span style="font-size: 14px; font-weight: 600; color: ' + ACC + '">Copy the token</span></div></div>'
+      + icon("copy", 17, INK, 1.8) + '<span style="font-size: 14px; font-weight: 600; color: ' + INK + '">Copy the token</span></div></div>'
   + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
     + plainrow("Meter", "0102 4457 8891")
     + plainrow("Units", "38.4 kWh")
@@ -399,19 +440,20 @@ power += ('<div style="position: absolute; left: 0; right: 0; bottom: 0; padding
 write("Power", power)
 
 # ================= BILLS =================
-def chip(t, color, bg):
-    return ('<span style="font-size: 10.5px; font-weight: 800; letter-spacing: 0.04em; color: ' + color
-      + '; background: ' + bg + '; border-radius: ' + R_TAG + '; padding: 4px 9px; white-space: nowrap">' + t + '</span>')
+def chip(t, color=INK3):
+    """A status, said in the subtitle rather than shouted in a pill."""
+    txt = t if t[:1].islower() else t[:1].upper() + t[1:].lower()
+    return ('<span style="font-size: 13px; font-weight: 600; color: ' + color + '; white-space: nowrap">&#183; ' + txt + '</span>')
 
 def bill(name, ic, sub, amount, chp, last=False, dim=False, go="", act="soon"):
     border = "" if last else "border-bottom: 1px solid " + LINE + "; "
     nc = INK3 if dim else INK
-    return ('<div' + hook(go, "" if go else act) + ' style="' + border + 'display: flex; align-items: center; gap: 13px; height: 70px; padding: 0 14px">'
+    return ('<div' + hook(go, "" if go else act) + ' style="' + border + 'display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 14px">'
       + badge(ic, None, 40, R_ICON, 20)
       + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px">'
       '<span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em; color: ' + nc + '">' + name + '</span>'
-      '<div style="display: flex; align-items: center; gap: 7px">'
-      '<span style="font-size: 12px; font-weight: 500; color: ' + INK3 + '">' + sub + '</span>' + chp + '</div></div>'
+      '<div style="display: flex; align-items: center; gap: 4px">'
+      '<span style="font-size: 13px; font-weight: 500; color: ' + INK3 + '; white-space: nowrap">' + sub + '</span>' + chp + '</div></div>'
       '<span class="num" style="font-size: 15px; font-weight: 700; color: ' + nc + '">' + amount + '</span></div>')
 
 bills = page(
@@ -419,15 +461,15 @@ bills = page(
   + '<div style="' + cardstyle("14px") + '">' + aline("&#8358;34,500 of bills this month. Two of them are not covered.", "16px") + '</div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("THIS MONTH")
     + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
-      + bill("Ikeja Electric", "power", "Due Thursday", "&#8358;8,000", chip("I PAY IT", "#FFFFFF", ACC), False, False, "PowerPay")
-      + bill("DStv Compact", "tv", "Due 24 August", "&#8358;12,500", chip("NOT COVERED", WARN, "rgba(176,69,58,0.10)"))
-      + bill("Spectranet", "globe", "Due 27 August", "&#8358;15,000", chip("NOT COVERED", WARN, "rgba(176,69,58,0.10)"))
-      + bill("LAWMA waste", "waste", "Paid 2 August", "&#8358;2,000", chip("PAID", IN, "rgba(14,124,90,0.10)"), False, True)
-      + bill("MTN 5GB", "data", "Paid 4 August", "&#8358;2,500", chip("PAID", IN, "rgba(14,124,90,0.10)"), True, True) + '</div></div>'
+      + bill("Ikeja Electric", "power", "Due Thursday", "&#8358;8,000", chip("I pay it", ACC_TEXT), False, False, "PowerPay")
+      + bill("DStv Compact", "tv", "Due 24 August", "&#8358;12,500", chip("Not covered", WARN))
+      + bill("Spectranet", "globe", "Due 27 August", "&#8358;15,000", chip("Not covered", WARN))
+      + bill("LAWMA waste", "waste", "Paid 2 August", "&#8358;2,000", '', False, True)
+      + bill("MTN 5GB", "data", "Paid 4 August", "&#8358;2,500", '', True, True) + '</div></div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 9px">' + icon("plus", 17, ACC, 1.8)
-    + '<span style="font-size: 14.5px; font-weight: 600; color: ' + ACC + '">Add a bill</span></div>'
-  + offer("DStv and Spectranet are not covered. Want me to pay them too?", "Set both up", "Rules"), 14) + askbar("Ask about your bills", 118)
+    + '; display: flex; align-items: center; justify-content: center; gap: 9px">' + icon("plus", 17, INK, 2)
+    + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Add a bill</span></div>'
+  + offer("DStv and Spectranet are not covered. Shall I pay them?", "Set both up", "Rules"), 14) + askbar("Ask about your bills", 106)
 write("Bills", bills)
 
 # ================= LOAN =================
@@ -514,8 +556,8 @@ vcard = page(
     + '<div style="height: 7px; border-radius: 4px; background: ' + FILL + '; overflow: hidden"><div style="width: 42%; height: 7px; border-radius: 4px; background: ' + ACC + '"></div></div>'
     + '<span class="num" style="font-size: 12.5px; color: ' + INK3 + '">&#8358;29,000 left before it stops working</span></div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 9px">' + icon("plus", 17, ACC, 1.8)
-    + '<span style="font-size: 14.5px; font-weight: 600; color: ' + ACC + '">Make another card</span></div>', 14) + askbar("Ask about this card", 118)
+    + '; display: flex; align-items: center; justify-content: center; gap: 9px">' + icon("plus", 17, INK, 2)
+    + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Make another card</span></div>', 14) + askbar("Ask about this card", 106)
 write("Card", vcard)
 
 # ================= ASKING BY VOICE =================
@@ -539,7 +581,7 @@ ask = ('<div' + hook("back") + ' class="fauxbg" style="padding: 54px 20px 0 20px
   '<div style="display: flex; align-items: center; justify-content: space-between; height: 44px">'
     '<div style="display: flex; flex-direction: column; gap: 4px">' + label("EVERYDAY ACCOUNT")
     + '<span class="num" style="font-size: 12px; color: ' + INK3 + '; letter-spacing: 0.07em">0102 4457 88</span></div>'
-    '<div style="width: 38px; height: 38px; border-radius: 19px; background: ' + FILL + '"></div></div>'
+    '<div style="width: 38px; height: 38px; border-radius: ' + PILL + '; background: ' + FILL + '"></div></div>'
   + money("&#8358;248,320", ".75", 48, 23)
   + '<div style="display: flex; gap: 10px">' + svc_tile("Airtime","airtime") + svc_tile("Data","data")
     + svc_tile("Power","power") + svc_tile("Send","send") + svc_tile("More","more") + '</div></div>')
@@ -549,7 +591,7 @@ ask += ('<div style="position: absolute; left: 0; right: 0; top: 318px; bottom: 
   + ACC + ' 50%, rgba(0,0,0,0) 100%)"></div></div>'
   '<div style="display: flex; justify-content: center; padding: 12px 0 0 0"><div style="width: 38px; height: 4px; border-radius: 2px; background: ' + LINE2 + '"></div></div>'
   '<div style="padding: 24px 20px 16px 20px; display: flex; flex-direction: column; gap: 22px; flex-grow: 1">'
-    '<div style="display: flex; align-items: center; gap: 9px">' + mark(20) + label("LISTENING", ACC) + '</div>'
+    '<div style="display: flex; align-items: center; gap: 9px">' + mark(20) + label("LISTENING", ACC_TEXT) + '</div>'
     '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.26; color: ' + INK + '; text-wrap: pretty">2k data for<span style="color: ' + INK3 + '"> mum</span></div>'
     + wave()
     + '<div style="display: flex; flex-direction: column; gap: 12px">' + label("OR TRY ONE OF THESE")
@@ -591,7 +633,7 @@ def qchip(t):
 
 answer = page(
   '<div style="display: flex; align-items: center; justify-content: space-between; height: 44px; gap: 12px">' + back()
-    + '<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px">' + label("YOU ASKED")
+    + '<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px">' + caption("You asked")
     + '<span style="font-size: 13px; color: ' + INK2 + '">how much do I spend on airtime and data</span></div></div>'
   + aline("&#8358;18,900 on airtime and data last month. That is your highest month this year.")
   + '<div style="' + cardstyle("18px 16px 8px 16px") + '; display: flex; flex-direction: column; gap: 18px">'
@@ -599,7 +641,7 @@ answer = page(
       + '<div style="display: flex; align-items: center; gap: 5px; height: 28px; padding: 0 11px; border-radius: 14px; background: rgba(176,69,58,0.10); margin-bottom: 4px">'
       '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       '<span class="num" style="font-size: 12.5px; font-weight: 600; color: ' + WARN + '">&#8358;4,200</span></div></div>'
-    + '<div style="display: flex; gap: 9px; height: 84px; align-items: stretch">'
+    + '<div style="display: flex; gap: 8px; height: 76px; align-items: stretch">'
       + barm(38,"Feb") + barm(50,"Mar") + barm(41,"Apr") + barm(56,"May") + barm(47,"Jun") + barm(68,"Jul", True) + '</div>'
     + '<div style="display: flex; flex-wrap: wrap; gap: 7px">' + qchip("Airtime and data") + qchip("Last month") + '</div>'
     + '<div' + hook("", "soon") + ' style="border-top: 1px solid ' + LINE + '; display: flex; align-items: center; gap: 9px; height: 48px">'
@@ -610,7 +652,7 @@ answer = page(
     + mrow("MTN data", "data", "5 top ups", "&#8358;12,500")
     + mrow("MTN airtime", "airtime", "7 top ups", "&#8358;4,400")
     + mrow("Glo airtime", "airtime", "2 top ups", "&#8358;2,000") + '</div></div>'
-  + '<div style="' + cardstyle("14px") + '">' + aline("A 10GB monthly plan is &#8358;4,000 and would save about &#8358;1,800.", "15.5px") + '</div>', 13) + askbar("Ask about this", 118)
+  + '<div style="' + cardstyle("14px") + '">' + aline("A 10GB monthly plan is &#8358;4,000 and would save about &#8358;1,800.", "15.5px") + '</div>', 13) + askbar("Ask about this", 106)
 write("Answer", answer)
 
 # ================= SEND MONEY =================
@@ -642,11 +684,11 @@ write("Pay", pay, "", True)
 
 # ================= STANDING INSTRUCTIONS =================
 def switch(on, act="toggle"):
-    knob = '<div style="width: 26px; height: 26px; border-radius: 13px; background: #FFFFFF"></div>'
+    knob = '<div style="width: 26px; height: 26px; border-radius: ' + PILL + '; background: #FFFFFF"></div>'
     if on:
-        return ('<div' + hook("", act) + ' class="sw on" style="width: 52px; height: 32px; border-radius: 16px; background: ' + ACC
+        return ('<div' + hook("", act) + ' class="sw on" style="width: 52px; height: 32px; border-radius: ' + PILL + '; background: ' + ACC
           + '; padding: 3px; display: flex; justify-content: flex-end; flex-shrink: 0; margin-top: 2px">' + knob + '</div>')
-    return ('<div' + hook("", act) + ' class="sw" style="width: 52px; height: 32px; border-radius: 16px; background: #E4DFD9'
+    return ('<div' + hook("", act) + ' class="sw" style="width: 52px; height: 32px; border-radius: ' + PILL + '; background: #E4E4E8'
       '; padding: 3px; display: flex; justify-content: flex-start; flex-shrink: 0; margin-top: 2px">' + knob + '</div>')
 
 def rule(title, desc, log, link, on, act="toggle"):
@@ -656,7 +698,7 @@ def rule(title, desc, log, link, on, act="toggle"):
     if log:
         foot = ('<div style="display: flex; align-items: center; height: 32px; border-top: 1px solid ' + LINE + '; padding-top: 6px">'
           '<span class="num" style="flex-grow: 1; font-size: 12.5px; font-weight: 500; color: ' + INK3 + '">' + log + '</span>'
-          '<span' + hook("", "soon") + ' style="font-size: 13.5px; font-weight: 700; color: ' + ACC + '">' + link + '</span></div>')
+          '<span' + hook("", "soon") + ' style="font-size: 13.5px; font-weight: 700; color: ' + ACC_TEXT + '">' + link + '</span></div>')
     return ('<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
       '<div style="display: flex; align-items: flex-start; gap: 14px">'
       '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px">'
@@ -682,9 +724,9 @@ rules = page(
     + never("Anything over &#8358;20,000")
     + never("Taking a loan on your behalf") + '</div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 9px">' + icon("plus", 17, ACC, 1.8)
-    + '<span style="font-size: 14.5px; font-weight: 600; color: ' + ACC + '">Add an instruction</span></div>', 14)
-rules += askbar("Ask me to set one up", 112)
+    + '; display: flex; align-items: center; justify-content: center; gap: 9px">' + icon("plus", 17, INK, 2)
+    + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Add an instruction</span></div>', 14)
+rules += askbar("Ask me to set one up", 106)
 write("Rules", rules)
 
 # ================= ELECTRICITY, BEFORE PAYING =================
@@ -717,7 +759,7 @@ write("PowerPay", powerpay, "", True)
 done = page(
   '<div style="display: flex; align-items: center; height: 44px"></div>'
   + '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
-    '<div style="width: 56px; height: 56px; border-radius: 28px; background: color-mix(in srgb, ' + ACC
+    '<div style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: color-mix(in srgb, ' + ACC
       + ' 10%, ' + SURF + '); border: 1px solid color-mix(in srgb, ' + ACC + ' 26%, transparent); display: flex; align-items: center; justify-content: center">'
       + icon("check", 26, ACC, 2.0) + '</div>'
     '<div style="display: flex; flex-direction: column; gap: 6px">'
