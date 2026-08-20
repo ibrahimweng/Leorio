@@ -5,6 +5,8 @@ language model. They are a design brainstorm, not code for the Leorio app.
 
 There are two things to build.
 
+- `tokens.py` holds every colour, typeface, corner radius and shadow. The
+  screens never write one directly, so the look is changed in that one file.
 - `python3 build.py` writes the `.dc.html` screens for the review canvas.
   `canvas.json` places them and holds the notes.
 - `python3 prototype.py` writes `prototype.html`, a walkable version of the
@@ -72,18 +74,28 @@ something that just happens.
 3. The model prepares an action and the person confirms it. Nothing moves on
    its own unless a rule was switched on by hand.
 4. Every answer links back to the payments it was added up from.
-5. Two type styles. Money and interface text are Libre Franklin. Anything the
-   model wrote is Newsreader, a serif. You can tell them apart at a glance.
-6. One accent colour, kept for the model and the action it proposes.
+5. The model always speaks from a soft peach panel with its badge beside it,
+   and nothing from your bank ever sits in one. That is how you tell a fact
+   from a summary at a glance.
+6. Orange is the brand and the model. Black is the one action you are meant to
+   take, so a suggestion never looks like a confirmation.
 7. You speak to ask and you read the answer. There is no spoken reply.
 8. You change an answer by tapping the chips in it, not by asking again.
 9. Home is already full, so nobody faces an empty box.
 10. Autonomy is handed over one rule at a time, and each rule keeps a log.
 11. A loan is never offered unprompted, and its whole cost is on one screen.
 
+## The look
+
+Taken from reference screens the founder supplied: a saturated warm wash at
+the top of the home screen fading into white, white cards separated by soft
+shadow rather than hairlines, big soft corners, a pastel badge behind every
+service icon, and a black pill for the one action you are meant to take.
+
 ## Fonts and the Naira sign
 
-The screens carry their own fonts. See `fonts/README.md` for why.
+The screens carry their own font. See `fonts/README.md` for why, and for why
+the typeface choice was narrower than it looks.
 
 The Naira sign needs two more things. It gets a hair of space on each side,
 because its two crossbars stick out past the N and otherwise read as a line

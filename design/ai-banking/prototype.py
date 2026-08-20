@@ -3,7 +3,7 @@
 import os, build
 
 OUT = os.path.dirname(os.path.abspath(__file__))
-ACC = "#1B3B6F"
+ACC = build.ACC_HEX
 
 ORDER = ["Main", "Ask", "Services", "Airtime", "PowerPay", "Power", "Bills",
          "Loan", "Card", "Answer", "Pay", "Rules", "Done"]
@@ -16,40 +16,41 @@ for name in ORDER:
 CSS = """
 :root{
   --acc:""" + ACC + """;
-  --sur-bg:#E9EBEF; --sur-card:#FFFFFF; --sur-ink:#2B3340; --sur-ink2:#69738220;
-  --sur-mid:#6B7686; --sur-line:#D6DAE1; --sur-shadow:0 24px 60px rgba(15,21,33,.16);
+  --fill:""" + build.FILL + """;
+  --sur-bg:#EDE9E4; --sur-card:#FFFFFF; --sur-ink:#2A241E;
+  --sur-mid:#7A7168; --sur-line:#DDD7D0; --sur-shadow:0 26px 64px rgba(30,22,14,.18);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --sur-bg:#0F1216; --sur-card:#171B21; --sur-ink:#DCE0E7;
-    --sur-mid:#8B94A2; --sur-line:#262C34; --sur-shadow:0 24px 60px rgba(0,0,0,.5);
+    --sur-bg:#14110E; --sur-card:#1D1917; --sur-ink:#E6E0D9;
+    --sur-mid:#968C82; --sur-line:#2C2723; --sur-shadow:0 26px 64px rgba(0,0,0,.55);
   }
 }
 :root[data-theme="dark"]{
-  --sur-bg:#0F1216; --sur-card:#171B21; --sur-ink:#DCE0E7;
-  --sur-mid:#8B94A2; --sur-line:#262C34; --sur-shadow:0 24px 60px rgba(0,0,0,.5);
+  --sur-bg:#14110E; --sur-card:#1D1917; --sur-ink:#E6E0D9;
+  --sur-mid:#968C82; --sur-line:#2C2723; --sur-shadow:0 26px 64px rgba(0,0,0,.55);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
   background:var(--sur-bg); color:var(--sur-ink);
-  font-family:'Libre Franklin','Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-family:'Plus Jakarta Sans',-apple-system,'Helvetica Neue',Arial,sans-serif;
   -webkit-font-smoothing:antialiased; overflow:hidden;
   min-height:100vh; min-height:100dvh;
 }
 .wrap{display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:22px; height:100vh; height:100dvh; padding:0}
 body.desk .wrap{padding:24px 20px}
-.device{position:relative; flex-shrink:0; overflow:hidden; background:#F4F5F7}
-body.desk .device{border-radius:42px; box-shadow:var(--sur-shadow), 0 0 0 9px #14171C, 0 0 0 10px #2B313A}
+.device{position:relative; flex-shrink:0; overflow:hidden; background:#FFFFFF}
+body.desk .device{border-radius:44px; box-shadow:var(--sur-shadow), 0 0 0 9px #17130F, 0 0 0 10px #342C25}
 .stage{width:393px; transform-origin:top left; position:relative}
-.screen{position:absolute; inset:0; display:none; will-change:transform; background:#F4F5F7}
+.screen{position:absolute; inset:0; display:none; will-change:transform; background:#FFFFFF}
 .screen.live{display:block}
 .screen .pg{position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch}
 .screen .pg::-webkit-scrollbar{width:0;height:0}
 .screen[data-screen="Ask"] .fauxbg{
   position:absolute; inset:0; opacity:1 !important; padding:0 !important;
-  background:rgba(15,21,33,.32); overflow:hidden}
+  background:rgba(30,20,10,.34); overflow:hidden}
 .screen[data-screen="Ask"] .fauxbg > *{display:none !important}
 [data-go],[data-act],.slide{cursor:pointer; -webkit-tap-highlight-color:transparent}
 [data-go]:active,[data-act]:active{opacity:.62}
@@ -60,7 +61,7 @@ body.desk .device{border-radius:42px; box-shadow:var(--sur-shadow), 0 0 0 9px #1
 kbd{font:inherit; background:var(--sur-card); border:1px solid var(--sur-line);
   border-radius:6px; padding:1px 6px; color:var(--sur-ink)}
 #toast{position:fixed; left:50%; bottom:36px; transform:translate(-50%,20px);
-  background:#14171C; color:#F3F5F8; font-size:13.5px; font-weight:500;
+  background:#17130F; color:#FBF7F3; font-size:13.5px; font-weight:500;
   padding:11px 18px; border-radius:22px; opacity:0; pointer-events:none;
   transition:opacity .22s ease, transform .22s ease; z-index:60; max-width:80vw; text-align:center}
 #toast.on{opacity:1; transform:translate(-50%,0)}
@@ -205,9 +206,9 @@ function setText(id, html){ var e = document.getElementById(id); if(e) e.innerHT
 function paintChips(screenName, on){
   [].forEach.call(screens[screenName].querySelectorAll('.bchip'), function(c){
     var live = on(c.dataset.act.split('|'));
-    c.style.border = live ? '1px solid var(--acc)' : '1px solid #D5DAE2';
-    c.style.background = live ? 'color-mix(in srgb, var(--acc) 7%, #FFFFFF)' : '#FFFFFF';
-    c.firstElementChild.style.color = live ? 'var(--acc)' : '#0F1521';
+    c.style.background = live ? 'color-mix(in srgb, var(--acc) 13%, #FFFFFF)' : '#F6F3F0';
+    c.style.boxShadow = live ? 'inset 0 0 0 1.5px var(--acc)' : 'none';
+    c.firstElementChild.style.color = live ? 'var(--acc)' : '#17130F';
   });
 }
 function renderAirtime(){
@@ -242,10 +243,9 @@ function renderLoan(){
   var chips = screens.Loan.querySelectorAll('.dchip');
   [].forEach.call(chips, function(c, i){
     var on = (i + 1) === st.loanMonths;
-    c.style.background = on ? 'var(--acc)' : '#FFFFFF';
-    c.style.color = on ? '#FFFFFF' : '#5A6472';
-    c.style.fontWeight = on ? '600' : '500';
-    c.style.border = on ? '1px solid var(--acc)' : '1px solid #D5DAE2';
+    c.style.background = on ? '#14110D' : '#F6F3F0';
+    c.style.color = on ? '#FFFFFF' : '#6B635B';
+    c.style.fontWeight = on ? '700' : '600';
   });
 }
 function renderCard(){
@@ -276,10 +276,10 @@ function fillDone(kind){
   var rows = '';
   d.rows.forEach(function(r, i){
     var last = i === d.rows.length - 1;
-    rows += '<div style="' + (last ? '' : 'border-bottom:1px solid #E2E6EC;')
-      + 'display:flex;align-items:center;height:50px;padding:0 15px;gap:10px">'
-      + '<span style="flex-grow:1;font-size:13.5px;color:#5A6472">' + r[0] + '</span>'
-      + '<span class="num" style="font-size:14.5px;font-weight:500;color:#0F1521">' + r[1] + '</span></div>';
+    rows += '<div style="' + (last ? '' : 'border-bottom:1px solid #EFEBE6;')
+      + 'display:flex;align-items:center;height:54px;padding:0 16px;gap:10px">'
+      + '<span style="flex-grow:1;font-size:14px;font-weight:500;color:#6B635B">' + r[0] + '</span>'
+      + '<span class="num" style="font-size:15px;font-weight:700;color:#17130F">' + r[1] + '</span></div>';
   });
   document.getElementById('dnCard').innerHTML = rows;
   document.getElementById('dnOffer').style.display = d.offer ? 'block' : 'none';
@@ -288,10 +288,8 @@ function fillDone(kind){
 /* ---------- taps ---------- */
 function toggleSwitch(el){
   var on = el.classList.toggle('on');
-  var knob = el.firstElementChild;
-  el.style.background = on ? 'var(--acc)' : '#D7DCE4';
+  el.style.background = on ? 'var(--acc)' : '#E4DFD9';
   el.style.justifyContent = on ? 'flex-end' : 'flex-start';
-  knob.style.border = on ? 'none' : '1px solid #D5DAE2';
   toast(on ? 'Instruction switched on' : 'Instruction switched off');
 }
 
@@ -423,7 +421,7 @@ HTML = ("<title>Banking Flow Prototype</title>\n<style>\n" + build.faces(True) +
   '  <div class="device" id="device">\n'
   '    <div class="stage" id="stage">\n' + screens + '    </div>\n  </div>\n'
   '  <p class="legend" id="legend">Tap through it. <b>Airtime</b>, <b>Data</b> and <b>Power</b> on the home screen open a prepared purchase. '
-  'The <b>ask bar</b> at the bottom of any screen opens the voice sheet. Drag the blue knob to confirm a payment, or just tap it. '
+  'The <b>ask bar</b> at the bottom of any screen opens the voice sheet. Drag the black knob to confirm a payment, or just tap it. '
   'The <b>bundle chips</b>, the <b>loan stepper</b> and the <b>switches</b> all really change. '
   'Anything that answers <em>not wired up</em> is a screen this walkthrough does not include.</p>\n'
   '</div>\n<div id="toast"></div>\n<script>\n' + JS + '\n</script>\n')

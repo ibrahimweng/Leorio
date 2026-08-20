@@ -202,28 +202,28 @@
       "x": -500,
       "y": 0,
       "w": 420,
-      "text": "The problem with adding services\n\nEvery app in this market ends up with sixteen coloured tiles on the home screen, and it breaks the moment you add the seventeenth.\n\nSo the services sit on three surfaces doing three different jobs.\n\nThe grid is for finding things. It shows only the handful you use, and the rest are grouped rows behind it.\n\nThe sentence is for speed. Saying what you want collapses a five step form into one line, which is where the app earns its keep.\n\nThe card is for confirming. Every service, all forty of them, ends in the same card with the same slide. One thing to learn, not forty."
+      "text": "The problem with adding services\n\nEvery app in this market ends up with sixteen coloured tiles on the home screen, and it breaks the moment you add the seventeenth.\n\nSo the services sit on three surfaces doing three different jobs.\n\nThe grid is for finding things. It shows only the handful you use, and the rest are grouped rows behind it.\n\nThe sentence is for speed. Saying what you want collapses a five step form into one line, which is where the app earns its keep.\n\nThe card is for confirming. Every service, all forty of them, ends in the same card with the same black slide. One thing to learn, not forty."
     },
     {
       "id": "note-type",
       "x": -500,
       "y": 600,
       "w": 420,
-      "text": "Two type styles, and only two.\n\nMoney and interface text are set in Libre Franklin. Anything the app wrote is set in Newsreader, a serif.\n\nSo a reader can always tell which part of the screen is a fact from the bank and which part is the app talking."
+      "text": "How you tell the model apart\n\nThe reference uses one typeface everywhere, so the serif that used to mark the model's voice is gone.\n\nIn its place, the model always speaks from a soft peach panel with its badge beside it, and nothing from your bank ever sits in one. It is the same idea as before, done the way the reference does it.\n\nThe typeface is Plus Jakarta Sans throughout."
     },
     {
       "id": "note-colour",
       "x": -500,
       "y": 880,
       "w": 420,
-      "text": "One accent colour, kept for the app's own voice and for the action it is proposing. Money stays neutral apart from green for money coming in and red for a bill nobody is watching.\n\nTry the other accents on the row of chips above any screen."
+      "text": "Two colours doing two jobs.\n\nOrange is the brand and the model. It carries the wash at the top of the home screen, the model's badge, the panels it speaks from and the switches that let it act.\n\nBlack is the one action you are meant to take. Every slide to confirm and every primary button is a black pill, so the thing you are about to do never gets confused with the thing the model is suggesting.\n\nEverything else is a warm neutral. Green is money coming in, red is a bill nobody is covering."
     },
     {
       "id": "note-naira",
       "x": -500,
       "y": 1120,
       "w": 420,
-      "text": "On the Naira sign\n\nGoogle serves these fonts in pieces and none of the pieces contain the Naira sign, so loading them the normal way puts every Naira sign in a different typeface from the digits next to it. The screens carry their own cut down copies of the fonts instead.\n\nTwo more things the sign needs. A hair of space on each side, or the two bars read as a line through the number. And a floor of about 12.5px, because below that the two bars stop rendering and it turns into a plain N."
+      "text": "On the Naira sign\n\nGoogle serves fonts in pieces and none of the pieces contain the Naira sign, so loading a font the normal way puts every Naira sign in a different typeface from the digits next to it. The screens carry their own cut down copy of the font instead.\n\nThis also narrowed the typeface choice. Of the geometric sans faces that suit these references, Figtree and Manrope have no Naira sign at all. Plus Jakarta Sans does.\n\nThe sign also gets a hair of space on each side, and no money is set below about 12.5px, because under that its two crossbars stop rendering and it turns into a plain N."
     },
     {
       "id": "note-placeholder",
