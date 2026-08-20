@@ -89,6 +89,17 @@ The rest:
 - `History.dc.html` is every movement, newest first
 - `Settings.dc.html` is the account
 
+## Figma
+
+All eighteen screens are also in Figma, as real layers rather than images.
+Text is text, icons are vectors, and the gradients, shadows and background
+blurs come across. The file is **AI Banking Screens**, key
+`BKwjYfTZbP7HzKeGyQr5ba`.
+
+`figma/` holds the converter that puts them there and the notes on how it
+works. It reads the built screens, so Figma is refreshed by building again and
+resending, never by editing anything by hand twice.
+
 ## The three ways to reach a service
 
 A bank with forty services cannot put forty tiles on a screen.
