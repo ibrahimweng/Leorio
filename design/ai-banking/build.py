@@ -267,6 +267,35 @@ def pagehead(title, sub=""):
       '<div style="font-size: 30px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.12; color: '
       + INK + '; text-wrap: balance">' + title + '</div>' + p + '</div>')
 
+def ring(pct, size=180, stroke=14):
+    r = (size - stroke) / 2.0
+    circ = 2 * 3.141592653589793 * r
+    off = circ * (1 - pct / 100.0)
+    half = size / 2.0
+    def n(v):
+        return ("%g" % v)
+    return ('<div style="position: relative; width: ' + str(size) + 'px; height: ' + str(size) + 'px; flex-shrink: 0">'
+      '<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size) + ' ' + str(size)
+      + '" style="transform: rotate(-90deg)">'
+      '<circle cx="' + n(half) + '" cy="' + n(half) + '" r="' + n(r) + '" fill="none" stroke="' + FILL2
+      + '" stroke-width="' + str(stroke) + '"/>'
+      '<circle class="ring" cx="' + n(half) + '" cy="' + n(half) + '" r="' + n(r) + '" fill="none" stroke="' + ACC
+      + '" stroke-width="' + str(stroke) + '" stroke-linecap="round" stroke-dasharray="' + n(circ)
+      + '" stroke-dashoffset="' + n(off) + '"/></svg>'
+      '<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; flex-direction: column; '
+      'align-items: center; justify-content: center; gap: 2px">'
+      '<span id="glPct" class="num" style="font-size: 36px; font-weight: 700; letter-spacing: -0.04em; color: ' + INK + '">'
+      + str(pct) + '%</span>'
+      '<span style="font-size: 13px; font-weight: 500; color: ' + INK3 + '">of the way</span></div></div>')
+
+def meter(done, total):
+    """Coverage, shown as segments rather than a number you can farm."""
+    segs = ''
+    for i in range(total):
+        segs += ('<div style="flex-grow: 1; height: 6px; border-radius: ' + R_TRACK + '; background: '
+                 + (ACC if i < done else FILL2) + '"></div>')
+    return '<div style="display: flex; gap: 4px">' + segs + '</div>'
+
 def T(title, sub=""):
     """Marks a screen's title. page() turns it into the bar and the big head."""
     return "\x00T\x01" + title + "\x01" + sub + "\x02"
@@ -317,6 +346,16 @@ home = page(
   + '<div style="' + cardstyle("16px 8px") + '; display: flex; gap: 4px">'
       + svc_tile("Airtime","airtime","Airtime") + svc_tile("Data","data","Airtime")
       + svc_tile("Power","power","PowerPay") + svc_tile("Send","send","Pay") + svc_tile("More","more","Services") + '</div>'
+  + '<div' + hook("Goal") + ' style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
+    '<div style="display: flex; align-items: center; gap: 12px">'
+      + badge("pot", None, 40, R_ICON, 20)
+      + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
+        '<span style="font-size: 15px; font-weight: 600">Holiday</span>'
+        '<span class="num" style="font-size: 13px; font-weight: 500; color: ' + INK3 + '">&#8358;82,400 of &#8358;250,000</span></div>'
+      + '<span id="mGoalPct" class="num" style="font-size: 17px; font-weight: 700; color: ' + ACC + '">33%</span></div>'
+    '<div style="height: 8px; border-radius: ' + R_TRACK + '; background: ' + FILL2 + '; overflow: hidden">'
+      '<div id="mGoalBar" style="width: 33%; height: 8px; border-radius: ' + R_TRACK + '; background: ' + ACC + '"></div></div>'
+    '<span style="font-size: 13px; font-weight: 500; color: ' + INK3 + '">A fortnight ahead. On track for 26 February.</span></div>'
   + label("Three things this morning")
   + '<div style="display: flex; flex-direction: column; gap: 12px; margin-top: -4px">'
 
@@ -379,7 +418,7 @@ services = page(
       + listrow("School fees", "school", "WAEC, JAMB, tuition", True) + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("SAVE AND BORROW")
     + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
-      + listrow("Savings pot", "pot", "Put money aside")
+      + listrow("Savings pot", "pot", "Put money aside", False, "Goal")
       + listrow("Fixed savings", "clock", "Lock it for a set time", True) + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("MONEY")
     + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
@@ -434,7 +473,7 @@ airtime = page(
         "The bundle you bought last month")
     + '<div style="background: ' + FILL + '; border-radius: ' + R_FIELD + '; overflow: hidden">'
       + plainrow("From", "Everyday &#183; 0102 4457 88", False, INK, True)
-      + plainrow("You get back", "&#8358;25", True, IN, False, "bBack") + '</div></div>'
+      + plainrow("Goes to your Holiday goal", "&#8358;25", True, ACC, False, "bBack") + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("OTHER BUNDLES")
     + '<div style="display: flex; gap: 8px">' + bundle("1GB", "&#8358;800", "gb|1GB for 7 days|800") + bundle("2GB", "&#8358;2,000", "gb|2GB for 30 days|2,000") + bundle("10GB", "&#8358;4,000", "gb|10GB for 30 days|4,000") + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("YOU ALSO TOP UP")
@@ -493,7 +532,12 @@ def bill(name, ic, sub, amount, chp, last=False, dim=False, go="", act="soon"):
 
 bills = page(
   T("Bills", "Everything that repeats each month")
-  + '<div style="' + cardstyle("14px") + '">' + aline("&#8358;34,500 of bills this month. Two of them are not covered.", "16px") + '</div>'
+  + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 14px">'
+    + aline("&#8358;34,500 of bills this month. Three of the five are covered.", "16px")
+    + '<div style="display: flex; flex-direction: column; gap: 8px">' + meter(3, 5)
+      + '<div style="display: flex; justify-content: space-between">'
+        '<span style="font-size: 13px; font-weight: 700; color: ' + ACC + '">3 of 5 covered</span>'
+        '<span style="font-size: 13px; font-weight: 500; color: ' + INK3 + '">2 still to sort</span></div></div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("THIS MONTH")
     + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
       + bill("Ikeja Electric", "power", "Due Thursday", "&#8358;8,000", chip("I pay it", ACC_TEXT), False, False, "PowerPay")
@@ -746,9 +790,9 @@ def never(t):
 rules = page(
   T("Standing instructions", "What I can do without asking you first")
   + '<div style="display: flex; flex-direction: column; gap: 10px">'
+    + rule("Move &#8358;20,000 to Holiday on payday", "The day your salary lands.", "Moved 4 times &#183; &#8358;80,000 put aside", "See log", True)
     + rule("Pay the Ikeja Electric bill", "When it lands, up to &#8358;10,000.", "Paid 3 times &#183; &#8358;22,400", "See log", True)
-    + rule("Buy 5GB when my data runs out", "Once a month at most.", "Bought twice &#183; &#8358;5,000", "See log", True)
-    + rule("Cover a bill from Savings", "Tops you up when a bill would bounce. It tells you every time.", "", "", False) + '</div>'
+    + rule("Buy 5GB when my data runs out", "Once a month at most.", "Bought twice &#183; &#8358;5,000", "See log", True) + '</div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("I WILL ALWAYS ASK FIRST")
     + never("Paying anyone you have not paid before")
     + never("Anything over &#8358;20,000")
@@ -789,7 +833,7 @@ write("PowerPay", powerpay, "", True)
 done = page(
   T("All done", "Your receipt is below, and in your messages")
   + '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
-    '<div style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: color-mix(in srgb, ' + ACC
+    '<div id="dnMark" style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: color-mix(in srgb, ' + ACC
       + ' 10%, ' + SURF + '); border: 1px solid color-mix(in srgb, ' + ACC + ' 26%, transparent); display: flex; align-items: center; justify-content: center">'
       + icon("check", 26, ACC, 2.0) + '</div>'
     '<div style="display: flex; flex-direction: column; gap: 6px">'
@@ -806,6 +850,41 @@ done += ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom
   '<div' + hook("Main") + ' style="flex-grow: 1; height: 52px; border-radius: ' + pill(52) + '; background: ' + BTN + '; ' + SH_BTN
   + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + BTN_INK + '">Done</div></div>')
 write("Done", done)
+
+# ================= A GOAL =================
+def feeder(name, ic, sub, amount, last=False):
+    border = "" if last else "border-bottom: 1px solid " + LINE + "; "
+    return ('<div style="' + border + 'display: flex; align-items: center; gap: 12px; height: 64px; padding: 0 14px">'
+      + badge(ic, None, 40, R_ICON, 20)
+      + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
+      '<span style="font-size: 15px; font-weight: 600">' + name + '</span>'
+      '<span style="font-size: 13px; font-weight: 500; color: ' + INK3 + '">' + sub + '</span></div>'
+      '<span class="num" style="font-size: 15px; font-weight: 700; color: ' + ACC + '">' + amount + '</span></div>')
+
+goal = page(
+  T("Holiday", "&#8358;250,000 by 12 March")
+  + '<div style="' + cardstyle("20px") + '; display: flex; flex-direction: column; align-items: center; gap: 16px">'
+    + ring(33)
+    + '<div style="display: flex; flex-direction: column; align-items: center; gap: 4px">'
+      + '<div style="display: flex; align-items: baseline; gap: 1px">'
+        '<span id="glAmt" class="num" style="font-size: 30px; font-weight: 700; letter-spacing: -0.04em; color: ' + INK + '">&#8358;82,400</span></div>'
+      + '<span class="num" style="font-size: 15px; font-weight: 500; color: ' + INK3 + '">of &#8358;250,000 put aside</span></div></div>'
+  + aline("You are a fortnight ahead. Keep this up and you will get there on 26 February.", "16px")
+  + '<div style="display: flex; flex-direction: column; gap: 12px">' + label("What is feeding it")
+    + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+      + feeder("Payday transfer", "pot", "&#8358;20,000 every month", "&#8358;80,000")
+      + feeder("Round ups", "plus", "The change from card payments", "&#8358;2,280")
+      + feeder("Money back on top ups", "airtime", "Instead of cash back", "&#8358;120", True) + '</div></div>'
+  + '<div style="display: flex; gap: 10px">'
+    '<div' + hook("", "soon") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
+    + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + BTN_INK + '">Add money</div>'
+    '<div' + hook("Rules") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + FILL
+    + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + INK + '">Change the plan</div></div>'
+  + '<div style="display: flex; gap: 10px; align-items: flex-start">' + icon("lock", 16, INK3, 1.8, "; margin-top: 2px")
+    + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
+    + '; text-wrap: pretty">Nothing here is locked. Take it back whenever you need it.</span></div>', 20)
+goal += askbar("Ask about this goal", 106)
+write("Goal", goal)
 
 if EMIT:
     print("built:", ", ".join(sorted(f for f in os.listdir(OUT) if f.endswith(".dc.html"))))

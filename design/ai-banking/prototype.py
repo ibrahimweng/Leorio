@@ -9,7 +9,7 @@ ACC = build.ACC_HEX
 ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
 ORDER = ["Main", "Ask", "Services", "Airtime", "PowerPay", "Power", "Bills",
-         "Loan", "Card", "Answer", "Pay", "Rules", "Done"]
+         "Loan", "Card", "Answer", "Pay", "Rules", "Goal", "Done"]
 
 screens = ""
 for name in ORDER:
@@ -219,8 +219,9 @@ function push(name, mode){
   }
   setTimeout(done, D(460) + 320);          // never leave a screen stuck mid slide
   stack.push({ name:name, mode:mode||'push' });
-  if(name === 'Main') countBalance();
+  if(name === 'Main'){ countBalance(); animateHomeGoal(); }
   if(name === 'Ask') startWave();
+  if(name === 'Goal') animateRing();
 }
 
 function back(){
@@ -257,7 +258,7 @@ function home(){
   screens.Main.classList.add('live');
   screens.Main.style.transform = ''; screens.Main.style.opacity = '';
   resetScroll(screens.Main);
-  padDocks(); enter(screens.Main); countBalance();
+  padDocks(); enter(screens.Main); countBalance(); animateHomeGoal();
 }
 
 var toastTimer;
@@ -290,6 +291,31 @@ function countBalance(){
           '<span class="num" style="font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--ink3)">.' +
           (dec < 10 ? '0' : '') + dec + '</span></div>';
       } });
+}
+
+/* ---------- progress, which only ever moves on real behaviour ---------- */
+function animateRing(){
+  var r = screens.Goal.querySelector('.ring');
+  var pct = document.getElementById('glPct');
+  if(!r) return;
+  var circ = parseFloat(r.getAttribute('stroke-dasharray'));
+  var target = parseFloat(r.getAttribute('stroke-dashoffset'));
+  function land(){ A.remove(r); r.style.strokeDashoffset = target; if(pct) pct.textContent = '33%'; }
+  if(REDUCED){ land(); return; }
+  A.remove(r);
+  A({ targets: r, strokeDashoffset: [circ, target], duration: 1100, easing: 'easeOutExpo' });
+  var o = { v: 0 };
+  A({ targets: o, v: 33, duration: 1100, easing: 'easeOutExpo', round: 1,
+      update: function(){ if(pct) pct.textContent = o.v + '%'; } });
+  setTimeout(land, 1500);
+}
+function animateHomeGoal(){
+  var bar = document.getElementById('mGoalBar');
+  if(!bar) return;
+  if(REDUCED){ bar.style.width = '33%'; return; }
+  A.remove(bar);
+  A({ targets: bar, width: ['0%', '33%'], duration: 900, delay: 260, easing: 'easeOutExpo' });
+  setTimeout(function(){ A.remove(bar); bar.style.width = '33%'; }, 1400);
 }
 
 /* ---------- the voice waveform ---------- */
@@ -371,7 +397,8 @@ function renderCard(){
 var DONE = {
   Airtime: function(){ return {
     amt: st.bundlePrice, what: st.bundle.split(' for ')[0] + ' sent to ' + st.who,
-    rows: [['From','Everyday &#183; 0102 4457 88'], ['Reference','MTN-88231-4471']], offer: true }; },
+    rows: [['From','Everyday &#183; 0102 4457 88'],
+           ['To your Holiday goal', ng(Math.round(st.bundlePrice * 0.01))]], offer: true }; },
   Pay: function(){ return {
     amt: 50000, what: 'Sent to Sarah Adeyemi',
     rows: [['From','Everyday &#183; 0102 4457 88'], ['Reference','Flat deposit']], offer: false }; },
@@ -382,6 +409,18 @@ var DONE = {
 };
 function fillDone(kind){
   var d = DONE[kind]();
+  var sc = screens.Done, loan = (kind === 'Loan');
+  var head = sc.querySelector('.phead > div:first-child');
+  var sub = sc.querySelector('.phead > div:last-child');
+  var mark = document.getElementById('dnMark');
+  var navT = sc.querySelector('.navtitle');
+  // Borrowing money is not an achievement, so it gets no tick and no cheer.
+  if(mark) mark.style.display = loan ? 'none' : 'flex';
+  if(head) head.textContent = loan ? 'Loan taken' : 'All done';
+  if(sub) sub.textContent = loan
+    ? 'You owe this back by ' + plusDays(30) + '. Late costs \u20a62,000 a day.'
+    : 'Your receipt is below, and in your messages';
+  if(navT) navT.textContent = loan ? 'Loan taken' : 'All done';
   setText('dnAmt', '<span class="num" style="font-size:36px;font-weight:700;letter-spacing:-.04em;line-height:1">' + ng(d.amt) + '</span>');
   setText('dnWhat', d.what);
   var rows = '';

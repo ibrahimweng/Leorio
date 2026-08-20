@@ -103,6 +103,14 @@
       "w": 393,
       "h": 852,
       "title": "Virtual card"
+    },
+    {
+      "file": "Goal.dc.html",
+      "x": 3138,
+      "y": 0,
+      "w": 393,
+      "h": 852,
+      "title": "A goal"
     }
   ],
   "annotations": [
@@ -228,7 +236,7 @@
     {
       "id": "note-placeholder",
       "x": -500,
-      "y": 1980,
+      "y": 2560,
       "w": 420,
       "text": "The name, the account numbers, the meter number and the amounts are all made up. Merchant tiles are grey squares on purpose, since real logos would come from your own data.\n\nTell me what the real ones should be and I will change them."
     },
@@ -245,6 +253,20 @@
       "y": 1560,
       "w": 420,
       "text": "Motion\n\nThe walkthrough moves with anime.js, which rides inside the file because a published page cannot load a script from anywhere else.\n\nScreens slide in and the one behind slides back. Cards arrive in a stagger. The balance counts up. The waveform breathes while the model listens. The knob on a slide to confirm springs back if you let go early.\n\nEvery one of those has a fall back. If the frame loop is throttled, a timer stops the animation and snaps the screen to its finished state, so nothing can be left blank or stuck half way. It all switches off if the phone is set to reduce motion.\n\nThe artboards here are still pictures. The motion is in the walkthrough."
+    },
+    {
+      "id": "note-goal",
+      "x": 3138,
+      "y": -300,
+      "w": 393,
+      "text": "7. A goal\n\nProgress needs somewhere honest to point. The ring only moves when money is actually put aside, never when you spend or transact.\n\nUnderneath it is the record of what is feeding it, so the number is auditable rather than a score. The payday rule, the round ups, and the money that used to come back as cash on top ups.\n\nThe last line matters as much as the ring. Nothing here is locked, so the goal is a plan you are keeping rather than a trap the product has set."
+    },
+    {
+      "id": "note-gamify",
+      "x": -500,
+      "y": 1980,
+      "w": 420,
+      "text": "What the gamification research changed\n\nThe review this came from says the same thing twice. Game mechanics do lift engagement, and engagement is not the same as a better financial outcome. So the rule here is that a mechanic may only reward a behaviour that is good for the person, never one that is good for the product.\n\nThree things changed because of that.\n\nThe money back on a top up used to be cash, which pays you to transact more. It now goes into the goal, so the reward for spending is saving.\n\nBorrowing no longer gets a celebration. Every other purchase ends with a tick and a cheerful line. A loan ends with what you owe and when, and nothing invites you back.\n\nBills gained a coverage meter, because being covered is the behaviour worth showing progress on.\n\nFour things were deliberately not built. No points, no badges, no leaderboard, and no streak you can break. The review is clear that the long term evidence for those is thin, and a streak in particular punishes the irregular income this product is for.\n\nOne more decision worth knowing. Lending apps in this market commonly show progress towards a bigger credit limit. That is the one mechanic here that would reliably lift borrowing, and it is not in the product."
     }
   ],
   "launch": {

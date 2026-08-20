@@ -26,6 +26,7 @@ Core:
 - `Pay.dc.html` is a transfer the model filled in for you to confirm
 - `Done.dc.html` is the end of any purchase, and where it offers to repeat it
 - `Rules.dc.html` is the standing instructions it may run on its own
+- `Goal.dc.html` is a savings goal, and the record of what is feeding it
 
 Services:
 
@@ -113,6 +114,30 @@ breathes and the slide knob springs back. Every one of those has a fall back.
 If the frame loop is throttled, a timer stops the animation and snaps the
 screen to its finished state, so nothing is left blank or stuck half way. It
 all switches off when the phone asks for reduced motion.
+
+## Gamification, and what was left out
+
+The mechanics here follow one rule taken from a systematic review of
+gamification in financial products. A mechanic may only reward a behaviour
+that is good for the person, never one that is good for the product.
+
+Three things changed because of it.
+
+1. The money back on a top up used to be cash, which pays somebody to
+   transact more. It goes into the savings goal now, so the reward for
+   spending is saving.
+2. Borrowing no longer gets a celebration. Every other purchase ends with a
+   tick and a cheerful line. A loan ends with what you owe and when.
+3. Bills gained a coverage meter, because being covered is the behaviour
+   worth showing progress on.
+
+Four things were deliberately not built: points, badges, a leaderboard, and a
+streak. The long term evidence for those is thin, and a streak in particular
+punishes the irregular income this product is for.
+
+Lending apps in this market commonly show progress towards a larger credit
+limit. That is the one mechanic here that would reliably lift borrowing, and
+it is not in the product.
 
 ## The three scales
 
