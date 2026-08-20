@@ -25,8 +25,13 @@ carry it.
 2. Titles are true black and heavy. Everything supporting them is a light grey.
 3. Money splits in two. The whole number is black and heavy, the decimal is two
    thirds the size and pale.
-4. An icon is a rounded square in its own saturated colour with a white glyph.
-   A service keeps its colour everywhere it appears.
+4. A **thing** that exists is an icon in a rounded square, in its own
+   saturated colour with a white glyph. A service keeps its colour everywhere
+   it appears, so you find electricity by its colour before you read the word.
+   An **action** you can take is the same glyph in the same colour, drawn as a
+   bare line with no square behind it. That is the rule the reference follows,
+   and it is what keeps a row of four shortcuts from shouting louder than the
+   thing it sits next to.
 5. A card is either a flat grey fill or a dashed outline. Nothing casts a
    shadow except a button, the ask bar and a sheet.
 6. A sheet rises over a page that is dimmed and blurred, and floats clear of

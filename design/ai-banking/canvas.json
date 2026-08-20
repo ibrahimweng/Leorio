@@ -151,7 +151,7 @@
       "x": 0,
       "y": -1020,
       "w": 1100,
-      "text": "THE DESIGN SYSTEM\n\nTaken from the Fuse wallet screens and applied to the whole product. Six rules carry it.\n\n1. The page is white. Grey only ever appears as a card, never behind one.\n2. Titles are true black and heavy. Everything supporting them is a light grey.\n3. Money splits in two. The whole number is black and heavy, the decimal is two thirds the size and pale.\n4. An icon is a rounded square in its own saturated colour with a white glyph.\n5. A card is either a flat grey fill or a dashed outline. Nothing casts a shadow except a button, the ask bar and a sheet.\n6. A sheet rises over a page that is dimmed and blurred, and floats clear of all four edges."
+      "text": "THE DESIGN SYSTEM\n\nTaken from the Fuse wallet screens and applied to the whole product. Six rules carry it.\n\n1. The page is white. Grey only ever appears as a card, never behind one.\n2. Titles are true black and heavy. Everything supporting them is a light grey.\n3. Money splits in two. The whole number is black and heavy, the decimal is two thirds the size and pale.\n4. A thing that exists is an icon in a rounded square in its own saturated colour with a white glyph. An action you can take is the same glyph, bare, with no square behind it.\n5. A card is either a flat grey fill or a dashed outline. Nothing casts a shadow except a button, the ask bar and a sheet.\n6. A sheet rises over a page that is dimmed and blurred, and floats clear of all four edges."
     },
     {
       "id": "note-scales",
@@ -179,7 +179,7 @@
       "x": 0,
       "y": -300,
       "w": 393,
-      "text": "1. Home\n\nThe whole top block is deliberately small. A kicker, the balance, one button. The balance at sixty pixels was eating the fold and pushing the model's first card off the screen, so it came down to thirty six with the kobo at twenty two.\n\nThe four services are one flat row rather than a grid of tiles, which saves about a hundred and ninety pixels. Colour still does the finding.\n\nEverything under Activities is the feed. The model's most useful card leads it, because on a screen this size the first thing you read decides what the app is."
+      "text": "1. Home\n\nThe whole top block is deliberately small. A kicker, the balance, one button. The balance at sixty pixels was eating the fold and pushing the model's first card off the screen, so it came down to thirty six with the kobo at twenty two.\n\nThe four services are one flat row rather than a grid of tiles, which saves about a hundred and ninety pixels. They are bare glyphs, not filled squares, because they are actions rather than things. Colour still does the finding, it just stops shouting.\n\nEverything under Activities is the feed. The model's most useful card leads it, because on a screen this size the first thing you read decides what the app is."
     },
     {
       "id": "note-actions",

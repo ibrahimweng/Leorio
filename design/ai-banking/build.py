@@ -120,6 +120,7 @@ ICONS = {
  "tv": '<rect x="3" y="6.6" width="18" height="11.4" rx="2.2"/><path d="M8.6 21h6.8M9.4 3.4 12 6.6l2.6-3.2"/>',
  "send": '<path d="M7.4 16.6 16.6 7.4M9.6 7.4h7v7"/>',
  "more": '<circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/>',
+ "grid": '<rect x="3.4" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="3.4" y="13.2" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="13.2" width="7.4" height="7.4" rx="2.2"/>',
  "card": '<rect x="2.6" y="5.4" width="18.8" height="13.2" rx="2.6"/><path d="M2.6 10.2h18.8"/>',
  "loan": '<ellipse cx="12" cy="6.6" rx="7" ry="2.8"/><path d="M5 6.6v4.8c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8V6.6"/><path d="M5 11.4v5c0 1.5 3.1 2.8 7 2.8s7-1.3 7-2.8v-5"/>',
  "pot": '<path d="M5 10.4h14V17a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3z"/><path d="M9 10.4V7.4a3 3 0 0 1 6 0v3"/>',
@@ -265,16 +266,22 @@ def dashedcard(pad="18px", radius=R_CARD, bg=SURF, extra=""):
     """A dashed outline, which is how the reference draws somewhere to go next."""
     return 'background: ' + bg + '; ' + DASH + '; border-radius: ' + radius + '; padding: ' + pad + ';' + extra
 
-def quickrow(items):
-    """A single flat row of shortcuts. An icon square with its label under it,
-    every cell the same width so the row lines up with the page."""
+def quickrow(items, card=True):
+    """A row of shortcuts. An action is drawn as a bare line glyph with no tile
+    behind it, which is the rule the reference follows: the filled colour
+    square is kept for a thing that exists, like a bill or a service in the
+    catalogue. The colour stays, so you still find electricity by its colour,
+    but it stops shouting."""
     cells = ''
     for name, ic, go in items:
         cells += ('<div' + hook(go) + ' class="qcell" style="flex-grow: 1; flex-basis: 0; min-width: 0; display: flex; '
-          'flex-direction: column; align-items: center; gap: 8px">' + badge(ic, None, 52, R_TILE, 26)
-          + '<span style="font-size: 12px; font-weight: 700; color: ' + INK + '; white-space: nowrap; '
+          'flex-direction: column; align-items: center; gap: 10px; padding: 2px 0">' + icon(ic, 22, paint(ic), 1.9)
+          + '<span style="font-size: 12px; font-weight: 400; color: ' + INK + '; white-space: nowrap; '
             'overflow: hidden; text-overflow: ellipsis; max-width: 100%">' + name + '</span></div>')
-    return '<div style="display: flex; gap: 12px">' + cells + '</div>'
+    inner = '<div style="display: flex; gap: 4px">' + cells + '</div>'
+    if not card:
+        return inner
+    return '<div style="' + cardstyle("14px 8px", "20px") + '">' + inner + '</div>'
 
 def dashtile(name, sub, ic, go="", act="", height=128):
     """The home grid. Icon at the top, the words held down at the bottom."""
@@ -565,7 +572,7 @@ home_inner = (
     + '<div id="mBal">' + money("&#8358;248,320", ".75", 36) + '</div></div>'
   + '<div style="padding: 4px 0 8px 0">' + ctabtn("Receive", "", "receive", "down", "black", 44) + '</div>'
   + quickrow([("Airtime", "airtime", "Airtime"), ("Bills", "power", "Bills"),
-              ("Savings", "pot", "Goal"), ("Services", "more", "Services")])
+              ("Savings", "pot", "Goal"), ("Services", "grid", "Services")])
   + '<div style="padding-top: 8px">' + label("Activities") + '</div>'
   + '<div style="display: flex; flex-direction: column; gap: 12px; margin-top: -4px">'
     + LEAD
@@ -796,9 +803,10 @@ write("Loan", loan)
 
 # ================= VIRTUAL CARD =================
 def act(name, ic, go="", action="soon", col=None):
-    return ('<div' + hook(go, "" if go else action) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 9px">'
-      + badge(ic, None, 52, R_TILE, 25, False, col)
-      + '<span style="font-size: 15px; font-weight: 700; color: ' + INK + '">' + name + '</span></div>')
+    """An action on a detail screen. Same rule as quickrow, so no tile."""
+    return ('<div' + hook(go, "" if go else action) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 2px 0">'
+      + icon(ic, 22, col or paint(ic), 1.9)
+      + '<span style="font-size: 12px; font-weight: 400; color: ' + INK + '">' + name + '</span></div>')
 
 vcard = page(
   T("Virtual card", "Made for one merchant, with its own limit")
@@ -819,7 +827,7 @@ vcard = page(
           '<span style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">EXPIRES</span>'
           '<span class="num" style="font-size: 13px; font-weight: 500; color: #FFFFFF">09/28</span></div>'
         '</div></div></div>'
-  + '<div style="display: flex; gap: 10px">' + act("Reveal","search","","reveal") + act("Freeze","freeze","","freeze", IC["cyan"]) + act("Fund","plus","","soon", IC["green"]) + act("Rules","list","Rules", IC["purple"]) + '</div>'
+  + '<div style="' + cardstyle("14px 8px", "20px") + ' display: flex; gap: 4px">' + act("Reveal","search","","reveal") + act("Freeze","freeze","","freeze", IC["cyan"]) + act("Fund","plus","","soon", IC["green"]) + act("Rules","list","Rules", IC["purple"]) + '</div>'
   + '<div style="' + bordered("16px", "24px") + '">' + aline("This card has paid Netflix four times, &#8358;21,000 in all.", "17px") + '</div>'
   + '<div style="' + cardstyle("15px") + '; display: flex; flex-direction: column; gap: 11px">'
     + '<div style="display: flex; align-items: baseline; justify-content: space-between">'

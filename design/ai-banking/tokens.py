@@ -78,6 +78,7 @@ PAINT = {
     "send": "blue",      "request": "green","card": "black",   "loan": "orange",
     "pot": "green",      "bet": "purple",   "school": "cyan",  "water": "cyan",
     "globe": "blue",     "shield": "green", "more": "black",   "search": "black",
+    "grid": "black",
     "copy": "blue",      "check": "green",  "freeze": "cyan",  "plus": "blue",
     "minus": "orange",   "lock": "purple",  "waste": "amber",  "list": "blue",
     "clock": "purple",   "receipt": "orange","bell": "red",    "mic": "blue",
