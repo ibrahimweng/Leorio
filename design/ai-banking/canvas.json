@@ -33,8 +33,16 @@
       "title": "Sending money"
     },
     {
-      "file": "Rules.dc.html",
+      "file": "Done.dc.html",
       "x": 2092,
+      "y": 0,
+      "w": 393,
+      "h": 852,
+      "title": "Done"
+    },
+    {
+      "file": "Rules.dc.html",
+      "x": 2615,
       "y": 0,
       "w": 393,
       "h": 852,
@@ -57,16 +65,24 @@
       "title": "Buying data"
     },
     {
-      "file": "Power.dc.html",
+      "file": "PowerPay.dc.html",
       "x": 1046,
       "y": 1200,
       "w": 393,
       "h": 852,
-      "title": "Paying a bill"
+      "title": "A bill, before"
+    },
+    {
+      "file": "Power.dc.html",
+      "x": 1569,
+      "y": 1200,
+      "w": 393,
+      "h": 852,
+      "title": "A bill, after"
     },
     {
       "file": "Bills.dc.html",
-      "x": 1569,
+      "x": 2092,
       "y": 1200,
       "w": 393,
       "h": 852,
@@ -74,7 +90,7 @@
     },
     {
       "file": "Loan.dc.html",
-      "x": 2092,
+      "x": 2615,
       "y": 1200,
       "w": 393,
       "h": 852,
@@ -82,7 +98,7 @@
     },
     {
       "file": "Card.dc.html",
-      "x": 2615,
+      "x": 3138,
       "y": 1200,
       "w": 393,
       "h": 852,
@@ -119,53 +135,67 @@
       "text": "4. Sending money\n\nThis is the one card the whole app is built on. Everything it prepares looks like this, whether it is a transfer, airtime, a bill or a loan.\n\nEvery field it guessed is tinted and says where it came from. Tap any tinted field to correct it. Nothing moves until you slide."
     },
     {
-      "id": "note-rules",
+      "id": "note-done",
       "x": 2092,
       "y": -300,
       "w": 393,
-      "text": "5. Standing instructions\n\nThis is where a service stops being a task. The first two rules started life as the offers you saw on the bill screen and the receipt.\n\nOne rule per card, each with a switch and a record of what it did. The list underneath says what it will never do on its own."
+      "text": "5. Done\n\nOne end screen for every service. What changes is the amount, the line under it and the two rows of receipt.\n\nThe card at the bottom is where a one off turns into something standing. It is the same offer that appears after a bill and on the bills screen."
+    },
+    {
+      "id": "note-rules",
+      "x": 2615,
+      "y": -300,
+      "w": 393,
+      "text": "6. Standing instructions\n\nThis is where a service stops being a task. The first two rules started life as the offers you saw after paying a bill and on the bills screen.\n\nOne rule per card, each with a switch and a record of what it did. The list underneath says what it will never do on its own."
     },
     {
       "id": "note-services",
       "x": 0,
       "y": 900,
       "w": 393,
-      "text": "6. All services\n\nThe grid stays, because people learn where things are and tapping is faster than talking when you already know what you want. But only eight tiles get one, and they are the eight you use.\n\nEverything else is grouped rows, which keep working at forty services when a grid has long since stopped. The field at the top is the same input as everywhere else, so searching and asking are one thing."
+      "text": "7. All services\n\nThe grid stays, because people learn where things are and tapping is faster than talking when you already know what you want. But only eight tiles get one, and they are the eight you use.\n\nEverything else is grouped rows, which keep working at forty services when a grid has long since stopped. The field at the top is the same input as everywhere else, so searching and asking are one thing."
     },
     {
       "id": "note-airtime",
       "x": 523,
       "y": 900,
       "w": 393,
-      "text": "7. Buying data\n\nThe same card as sending money. That is the whole point. Forty services, one thing to learn.\n\nThe bundles underneath let you change your mind without saying anything again, and the faces are the people you top up, since most airtime in Nigeria is bought for somebody else."
+      "text": "8. Buying data\n\nThe same card as sending money. That is the whole point. Forty services, one thing to learn.\n\nThe bundles underneath let you change your mind without saying anything again, and the faces are the people you top up, since most airtime in Nigeria is bought for somebody else."
     },
     {
-      "id": "note-power",
+      "id": "note-powerpay",
       "x": 1046,
       "y": 900,
       "w": 393,
-      "text": "8. Paying a bill\n\nWhat comes out of a service matters as much as what goes in. A prepaid meter token is twenty digits you have to type into a box on your wall, so it gets the biggest text on the screen and a copy button.\n\nThen the app offers to do it every month, which is how a one off becomes a standing instruction."
+      "text": "9. A bill, before\n\nThe amount is tinted like the rest, because the app picked it from what you used last month rather than reading it off your message.\n\nThe row of amounts underneath is the same idea as the bundles. You change the number by tapping, not by saying it again."
     },
     {
-      "id": "note-bills",
+      "id": "note-power",
       "x": 1569,
       "y": 900,
       "w": 393,
-      "text": "9. Bills\n\nOne place for everything that repeats, with what is covered and what is not. The app watches the dates so you do not have to.\n\nThe card at the bottom is the same offer again, aimed at the two nobody is watching."
+      "text": "10. A bill, after\n\nWhat comes out of a service matters as much as what goes in. A prepaid meter token is twenty digits you have to type into a box on your wall, so it gets the biggest text on the screen and a copy button.\n\nThen the app offers to do it every month, which is how a one off becomes a standing instruction."
     },
     {
-      "id": "note-loan",
+      "id": "note-bills",
       "x": 2092,
       "y": 900,
       "w": 393,
-      "text": "10. A loan\n\nA loan is not a purchase, so it does not get the purchase card. It gets the whole cost on one screen: what you get, what it costs, what you pay back and when.\n\nThe app never brings a loan up on its own. It only appears when you ask, and the late fee is on the same screen as the money, not buried in terms you have to open."
+      "text": "11. Bills\n\nOne place for everything that repeats, with what is covered and what is not. The app watches the dates so you do not have to.\n\nThe card at the bottom is the same offer again, aimed at the two nobody is watching."
     },
     {
-      "id": "note-card",
+      "id": "note-loan",
       "x": 2615,
       "y": 900,
       "w": 393,
-      "text": "11. Virtual card\n\nA card for one thing, with a limit and a switch to freeze it. Naming it after what it is for is what makes it useful.\n\nThe line in the middle is the app telling you what the card has actually done, which is the sort of thing you would otherwise have to go and count."
+      "text": "12. A loan\n\nA loan is not a purchase, so it does not get the purchase card. It gets the whole cost on one screen: what you get, what it costs, what you pay back and when.\n\nThe app never brings a loan up on its own. It only appears when you ask, and the late fee is on the same screen as the money, not buried in terms you have to open."
+    },
+    {
+      "id": "note-card",
+      "x": 3138,
+      "y": 900,
+      "w": 393,
+      "text": "13. Virtual card\n\nA card for one thing, with a limit and a switch to freeze it. Naming it after what it is for is what makes it useful.\n\nThe line in the middle is the app telling you what the card has actually done, which is the sort of thing you would otherwise have to go and count."
     },
     {
       "id": "note-idea",
@@ -177,28 +207,28 @@
     {
       "id": "note-type",
       "x": -500,
-      "y": 560,
+      "y": 600,
       "w": 420,
       "text": "Two type styles, and only two.\n\nMoney and interface text are set in Libre Franklin. Anything the app wrote is set in Newsreader, a serif.\n\nSo a reader can always tell which part of the screen is a fact from the bank and which part is the app talking."
     },
     {
       "id": "note-colour",
       "x": -500,
-      "y": 840,
+      "y": 880,
       "w": 420,
       "text": "One accent colour, kept for the app's own voice and for the action it is proposing. Money stays neutral apart from green for money coming in and red for a bill nobody is watching.\n\nTry the other accents on the row of chips above any screen."
     },
     {
       "id": "note-naira",
       "x": -500,
-      "y": 1080,
+      "y": 1120,
       "w": 420,
-      "text": "On the Naira sign\n\nGoogle serves these fonts in pieces and none of the pieces contain the Naira sign, so loading them the normal way puts every Naira sign in a different typeface from the digits next to it.\n\nThe screens carry their own cut down copies of the fonts instead, so the sign matches. There is also a hair of space after it, or the two bars read as a line through the number."
+      "text": "On the Naira sign\n\nGoogle serves these fonts in pieces and none of the pieces contain the Naira sign, so loading them the normal way puts every Naira sign in a different typeface from the digits next to it. The screens carry their own cut down copies of the fonts instead.\n\nTwo more things the sign needs. A hair of space on each side, or the two bars read as a line through the number. And a floor of about 12.5px, because below that the two bars stop rendering and it turns into a plain N."
     },
     {
       "id": "note-placeholder",
       "x": -500,
-      "y": 1400,
+      "y": 1480,
       "w": 420,
       "text": "The name, the account numbers, the meter number and the amounts are all made up. Merchant tiles are grey squares on purpose, since real logos would come from your own data.\n\nTell me what the real ones should be and I will change them."
     }
