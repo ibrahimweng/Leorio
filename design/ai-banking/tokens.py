@@ -1,56 +1,102 @@
 """Every design decision in one place.
 
-Monochrome structure with one warm accent, spent only where the model speaks.
-Taken from the reference screens: a near white page, white cards separated by
-soft shadow rather than hairlines, circular icon badges, a black circle for a
-primary action, and sentence case section headings instead of shouty labels.
+The system is taken from the Fuse wallet screens. What defines it:
+
+  A pure white page with no grey behind it. Grey appears only as a card fill.
+  Titles in true black and heavy. Everything supporting them in a light grey.
+  Money split in two, the whole number black and the decimal a pale grey.
+  Icons as small rounded squares in saturated colour with a white glyph.
+  Cards that are either a flat grey fill or a dashed outline, and no shadow.
+  Pills for every button, black for the main one and blue for a contextual one.
+  Sheets that rise from the bottom over a blurred, dimmed page.
 
 Three scales are enforced at build time, so nothing can drift off them:
 a type ramp, a spacing rhythm and a small set of corner radii. See snap()
 in build.py.
+
+One note on the greys. INK2, INK3 and INK4 are sampled from the reference
+screens and are lighter than the accessibility standard allows for small
+text. That was a deliberate call to match the reference exactly. INK2 at
+22px and above clears the standard for large text.
 """
 
 # ---------------------------------------------------------------- colour
-# Every text pair below clears WCAG AA at the size it is used.
 BG        = "#FFFFFF"   # the page, white everywhere
-SURF      = "#FFFFFF"   # a card
-FILL      = "#F5F6F7"   # grey lives here only, inside a card. Never under the page.
-FILL2     = "#DFE2E5"   # a firmer quiet block, e.g. a chart bar
-LINE      = "#EBECEF"   # the hairline round a card, which is what separates it from a white page
-LINE2     = "#DCDEE2"   # a drag handle or a dashed edge
+SURF      = "#FFFFFF"   # a card that needs to sit on top of a grey one
+FILL      = "#F5F5F7"   # the normal card. Grey lives here only, never under the page.
+FILL2     = "#EDEDF0"   # a card's own footer strip
+FILL3     = "#DEDEE3"   # a quiet block INSIDE a grey card, where FILL would vanish
+LINE      = "#EFEFF1"   # the hairline round a bordered card
+LINE2     = "#DFDFE4"   # a dashed edge or a drag handle
 
-INK       = "#0F1216"   # 18.8 on white
-INK2      = "#4E535C"   #  7.7 on white
-INK3      = "#6B7178"   #  4.9 on white, 4.6 on FILL. Nothing lighter carries text.
+INK       = "#000000"   # every title and every figure
+INK2      = "#8E8E93"   # a label above a figure, a section heading
+INK3      = "#A9A9AE"   # the line under a title, a row's second line
+INK4      = "#C4C4C9"   # the decimal half of a money figure
 
-BTN       = "#0F1216"   # the one action you are meant to take
+BTN       = "#000000"   # the one action you are meant to take
 BTN_INK   = "#FFFFFF"
 
-IN        = "#15803D"   # money coming in. 37 degrees of hue from the accent, so the two never blur.
-WARN      = "#C2361F"   # a bill nobody is covering
+IN        = "#34C759"   # money coming in, as an icon or a fill
+WARN      = "#FF3B30"   # trouble, as an icon or a fill
+# The reference never sets green or red as text, so there is nothing to copy
+# and no reason not to use a shade that reads. These two are text only.
+IN_TEXT   = "#12833C"
+WARN_TEXT = "#CC2A20"
 
-# The accent. It marks the key thing on a screen: the badge the model speaks
-# from, the panel its words sit in, a selected state, a highlighted bar, and
-# the model's own links. Black stays the one action you are meant to take.
+# The accent. It carries a contextual action, a selected state, a highlighted
+# bar, and the model's own panel. Black stays the main action on a screen.
 ACC       = "{{accent}}"
-ACC_HEX   = "#0E7C7A"                                        # deep teal. 5.0 on white both ways.
-ACC_TEXT  = ACC                                              # the accent already clears AA as text
-ACC_SOFT  = "color-mix(in srgb, " + ACC + " 8%, #FFFFFF)"    # the panel the model speaks from
-ACC_EDGE  = "color-mix(in srgb, " + ACC + " 24%, transparent)"
-ACC_INK   = ACC_TEXT                                         # the name the screens already use
+ACC_HEX   = "#2A6AF5"                                        # the reference blue
+ACC_TEXT  = "color-mix(in srgb, " + ACC + " 88%, #000000)"   # the accent, one step down, so small text on white reads
+ACC_SOFT  = "color-mix(in srgb, " + ACC + " 7%, #FFFFFF)"    # the panel the model speaks from
+ACC_EDGE  = "color-mix(in srgb, " + ACC + " 22%, transparent)"
+ACC_INK   = ACC_TEXT
 
-CARD_FACE = "linear-gradient(150deg, #16413F 0%, #0E2C2B 52%, #0A1A1C 100%)"
+CARD_FACE = "linear-gradient(155deg, #1E3A8A 0%, #12235C 48%, #0A0F24 100%)"
 ON_DARK   = "#FFFFFF"
 ON_DARK_2 = "rgba(255,255,255,0.66)"
 ON_DARK_3 = "rgba(255,255,255,0.44)"
 
-# Icon badges are all one neutral circle now. The function stays so the
-# screens keep calling it, but there is one tone.
+# The icon set. Every service gets a colour and keeps it everywhere it appears,
+# so you learn to find electricity by its colour before you read the word.
+IC = {
+    "blue":   "#2A6AF5",
+    "orange": "#FF8A4C",
+    "purple": "#8B5CF6",
+    "green":  "#34C759",
+    "pink":   "#FF3B8E",
+    "cyan":   "#22B8E8",
+    "red":    "#FF3B30",
+    "amber":  "#F5A524",
+    "black":  "#1C1C1E",
+}
+
+# Which colour each icon wears. One lookup, so a service cannot drift.
+PAINT = {
+    "airtime": "blue",   "data": "purple",  "power": "amber",  "tv": "pink",
+    "send": "blue",      "request": "green","card": "black",   "loan": "orange",
+    "pot": "green",      "bet": "purple",   "school": "cyan",  "water": "cyan",
+    "globe": "blue",     "shield": "green", "more": "black",   "search": "black",
+    "copy": "blue",      "check": "green",  "freeze": "cyan",  "plus": "blue",
+    "minus": "orange",   "lock": "purple",  "waste": "amber",  "list": "blue",
+    "clock": "purple",   "receipt": "orange","bell": "red",    "mic": "blue",
+    "bolt": "black",     "key": "purple",   "chat": "pink",    "star": "green",
+    "swap": "cyan",      "person": "orange","gift": "pink",    "bank": "purple",
+}
+
+def paint(ic):
+    """The colour an icon wears. Anything unnamed falls back to the accent blue."""
+    return IC.get(PAINT.get(ic, "blue"), IC["blue"])
+
+# Kept so older calls still resolve. There is one neutral tone.
 def tone(name=None):
     return (FILL, INK)
 def itone(ic=None):
     return "neutral"
 TONES = {"neutral": (FILL, INK)}
+
+WASH = FILL   # nothing washes the page any more, but page() still names it
 
 # ---------------------------------------------------------------- type
 FONT_UI = "'Plus Jakarta Sans', -apple-system, 'Helvetica Neue', Arial, sans-serif"
@@ -62,35 +108,40 @@ FONT_ITAL  = "PlusJakartaItalic-subset.woff2"
 FONT_NAME  = "Plus Jakarta Sans"
 FONT_WGHT  = "400 800"
 
-# Nine steps, and nothing between them. 13 is the floor, which also keeps
+# Eight steps, and nothing between them. 13 is the floor, which also keeps
 # every money figure above the size where the Naira sign loses its crossbars.
-TYPE = [13, 15, 17, 20, 24, 30, 36, 44]
-# Three weights. Regular for body, medium for anything named, bold for money.
-WEIGHT = {400: 500, 500: 500, 600: 600, 700: 700, 800: 700}
+#   13 a caption          19 a row title        40 a balance on its own page
+#   15 a second line      22 a section heading  60 the balance on the home screen
+#   17 body and a card title
+#   28 a page title
+TYPE = [13, 15, 17, 19, 22, 28, 40, 60]
+# Three weights, which is all the reference uses. Regular for anything grey,
+# bold for anything named, heavy for money.
+WEIGHT = {400: 400, 500: 400, 600: 700, 700: 700, 800: 800}
 MONEY_MIN_PX = 13
 
 # ---------------------------------------------------------------- shape
 # A 4px rhythm, with 2 and 6 kept for the gap between an icon and its label.
-# 54 and 98 are structural, not rhythm. 54 clears the status bar and 98 also
-# clears the nav bar, so a screen with a title starts below it.
-SPACE = [2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 54, 98]
-# Five radii. Anything round is written as PILL and never snapped.
-RADII = [8, 12, 16, 20, 28]
+# 56 and 72 are structural, not rhythm. 72 is where a page starts, which
+# clears the status bar and leaves the breathing room the reference has.
+SPACE = [2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 56, 72]
+# Seven radii. Anything round is written as PILL and never snapped.
+RADII = [10, 12, 14, 16, 20, 24, 28]
 PILL  = "999px"
 
-R_CARD   = "20px"   # a card the model wrote, or a draft it prepared
-R_CARDLG = "20px"   # the payment card object
-R_CARDXL = "20px"   # the answer card
-R_PANEL  = "20px"   # a list of rows
+R_CARD   = "24px"   # the normal card, a flat grey fill
+R_CARDLG = "28px"   # the payment card object
+R_CARDXL = "28px"   # the answer card
+R_PANEL  = "24px"   # a list of rows
 R_INNER  = "16px"   # a panel inside a card, including the model's own
-R_TILE   = PILL     # the circle behind a service icon
+R_TILE   = "14px"   # the rounded square behind a 48px service icon
 R_ACT    = PILL     # a round action button
 R_BUNDLE = "16px"   # a bundle or amount chip
 R_FIELD  = "16px"   # a field the model filled in, and grouped plain rows
 R_CHIP   = PILL     # a chip that edits the question
-R_ICON   = PILL     # the circle behind a merchant or row icon
+R_ICON   = "12px"   # the rounded square behind a 40px row icon
 R_TAG    = PILL     # a status tag
-R_SHEET  = "28px"   # the top corners of the voice sheet
+R_SHEET  = "28px"   # the top corners of a sheet
 R_BAR    = "6px"    # a bar in a chart, too small to snap
 R_TRACK  = "4px"    # a progress track, too small to snap
 
@@ -98,10 +149,17 @@ def pill(h=None):
     return PILL
 
 # ---------------------------------------------------------------- depth
-# On a white page a card needs a hairline as well as a shadow, or it floats
-# with nothing holding its edge.
-CARD_EDGE = "border: 1px solid #EBECEF"
-SHADOW   = "box-shadow: 0 1px 2px rgba(15,18,22,0.04), 0 6px 18px rgba(15,18,22,0.05)"
-SH_RAISE = "box-shadow: 0 2px 6px rgba(15,18,22,0.06), 0 14px 36px rgba(15,18,22,0.10)"
-SH_BTN   = "box-shadow: 0 6px 18px rgba(15,18,22,0.22)"
-SH_SHEET = "box-shadow: 0 -14px 44px rgba(15,18,22,0.14)"
+# The reference is flat. A card is told apart by its fill or its dashed
+# outline, not by a shadow. Only three things lift off the page: the button
+# you press, the bar you type into, and a sheet.
+CARD_EDGE = "border: 1px solid " + LINE
+DASH      = "border: 1.5px dashed " + LINE2
+SHADOW    = ""
+SH_RAISE  = "box-shadow: 0 2px 10px rgba(0,0,0,0.05), 0 8px 30px rgba(0,0,0,0.06)"
+SH_BTN    = "box-shadow: 0 8px 24px rgba(0,0,0,0.24)"
+SH_SHEET  = "box-shadow: 0 -10px 50px rgba(0,0,0,0.14)"
+SH_FAB    = "box-shadow: 0 6px 18px rgba(0,0,0,0.22), 0 0 34px rgba(0,0,0,0.10)"
+
+# The blur behind a sheet, and behind the action popup.
+SCRIM     = "rgba(120,120,124,0.42)"
+BLUR      = "backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px)"

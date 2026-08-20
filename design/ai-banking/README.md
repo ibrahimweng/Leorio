@@ -1,167 +1,194 @@
 # AI banking screens
 
-Thirteen iPhone screens for a Nigerian personal banking app built around a
+Eighteen iPhone screens for a Nigerian personal banking app built around a
 language model. They are a design brainstorm, not code for the Leorio app.
 
-There are two things to build.
+There are three things to build.
 
-- `tokens.py` holds every colour, typeface, corner radius and shadow. The
-  screens never write one directly, so the look is changed in that one file.
+- `tokens.py` holds every colour, size, corner radius and shadow. The screens
+  never write one directly, so the look is changed in that one file.
 - `python3 build.py` writes the `.dc.html` screens for the review canvas.
   `canvas.json` places them and holds the notes.
 - `python3 prototype.py` writes `prototype.html`, a walkable version of the
   same screens with working navigation. It reads the screen markup out of
   `build.py`, so there is one source of truth.
 
-Neither built page is tracked, since together they are about 3.5 MB and both
-can be made again from the sources here.
+Neither built page is tracked, since together they are about 4 MB and both can
+be made again from the sources here.
+
+## The design system
+
+Taken from the Fuse wallet screens and applied to the whole product. Six rules
+carry it.
+
+1. The page is white. Grey only ever appears as a card, never behind one.
+2. Titles are true black and heavy. Everything supporting them is a light grey.
+3. Money splits in two. The whole number is black and heavy, the decimal is two
+   thirds the size and pale.
+4. An icon is a rounded square in its own saturated colour with a white glyph.
+   A service keeps its colour everywhere it appears.
+5. A card is either a flat grey fill or a dashed outline. Nothing casts a
+   shadow except a button, the ask bar and a sheet.
+6. A sheet rises over a page that is dimmed and blurred, and floats clear of
+   all four edges.
+
+The accent is a vivid blue. Black stays the action you are meant to take, and
+blue is the action that belongs to the thing you are looking at.
+
+## The bar at the bottom
+
+The reference puts three tab icons on the left and a black circle on the right,
+with nothing drawn behind them. This product replaces the tabs with the model.
+
+- On home: the cog, then the ask bar, then the black circle.
+- On every other screen: back, then the ask bar, then the black circle.
+
+So back lives at the bottom left on every screen, which is where the reference
+puts it. The black circle opens send, receive, activity and pay a bill over a
+blurred page. That is the only place those four live, so no screen has to carry
+them, and the grid stays free for services.
+
+Screens that are a task rather than a place drop the ask bar and the circle.
+They show back and one slide to confirm, because a payment screen should offer
+exactly one action.
 
 ## The screens
 
-Core:
+Home and what opens on top of it:
 
-- `Main.dc.html` is the home screen, made of cards written for today
+- `Main.dc.html` is the home screen
+- `Actions.dc.html` is the black circle open
+- `Receive.dc.html` is the add money sheet
 - `Ask.dc.html` is asking by voice
-- `Answer.dc.html` is an answer rendered as a card instead of a paragraph
+
+The model at work:
+
+- `Answer.dc.html` is an answer rendered as a screen instead of a paragraph
 - `Pay.dc.html` is a transfer the model filled in for you to confirm
 - `Done.dc.html` is the end of any purchase, and where it offers to repeat it
 - `Rules.dc.html` is the standing instructions it may run on its own
-- `Goal.dc.html` is a savings goal, and the record of what is feeding it
 
-Services:
+The service stack:
 
-- `Services.dc.html` is the full catalogue
-- `Airtime.dc.html` is buying a data bundle for someone else
-- `PowerPay.dc.html` is an electricity bill before you pay it
-- `Power.dc.html` is the same bill after, with its meter token
-- `Bills.dc.html` is everything that repeats, and what is covered
-- `Loan.dc.html` is a loan offer with the whole cost on one screen
+- `Services.dc.html` is the whole catalogue
+- `Airtime.dc.html` is a data bundle, prepared from four spoken words
+- `PowerPay.dc.html` is electricity before paying
+- `Power.dc.html` is electricity after paying, with the meter token
+- `Bills.dc.html` is everything that repeats each month
+- `Loan.dc.html` is borrowing, with the whole cost on one screen
 - `Card.dc.html` is a virtual card made for one merchant
+- `Goal.dc.html` is a savings goal, and what is feeding it
 
-## How the prototype is wired
+The rest:
 
-Screens carry two attributes that the canvas ignores and the prototype reads.
+- `Activity.dc.html` is every movement, newest first
+- `Settings.dc.html` is the account
 
-- `data-go` moves you somewhere. The value is a screen name, or `back`, or
-  `ask` to raise the voice sheet, or `done|Pay` to finish a purchase.
-- `data-act` runs something in place, e.g. picking a bundle, stepping the loan
-  amount, flipping a switch or revealing a card number.
+## The three ways to reach a service
 
-`hook()` in `build.py` writes both. Anything that answers `soon` is a screen
-the walkthrough does not include.
+A bank with forty services cannot put forty tiles on a screen.
 
-## How the services fit in
+1. **The grid** is for browsing. Four dashed tiles on home, the full catalogue
+   on Services.
+2. **The sentence** is for speed. Say what you want and the model prepares it.
+   The ask bar is on every screen, so this is always the shortest route.
+3. **The card** is for confirming. Recurring things are offered before you go
+   looking, so the bill you always pay comes to you.
 
-The usual answer is a grid of sixteen coloured tiles, and it breaks as soon as
-you add the seventeenth. These screens split the job across three surfaces.
+## The scales
 
-1. The grid is for finding things. Only the handful you use get a tile. The
-   rest are grouped rows, which still work at forty services.
-2. The sentence is for speed. Buying airtime by hand is five steps. Said out
-   loud it is one line, and the model fills the five steps in.
-3. The card is for confirming. Every service ends in the same card with the
-   same slide, so there is one thing to learn instead of forty.
+Enforced when the files are generated. `snap()` in `build.py` pulls every size,
+weight, gap, padding and radius onto the nearest step, so nothing can drift.
 
-On top of that, anything that repeats is offered to you rather than waited for.
-A bill that is due and a data bundle about to run out both arrive as cards on
-the home screen, so the common case never touches the grid at all. Each of
-those offers can become a standing instruction, which is how a task turns into
-something that just happens.
+- **Type**: 13, 15, 17, 19, 22, 28, 40, 60. Thirteen is the floor, which is
+  also the size below which the Naira sign loses its crossbars.
+- **Weight**: 400 for anything grey, 700 for anything named, 800 for money.
+- **Space**: 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, plus 56 and 72 which are
+  structural rather than rhythm. A page starts 72 from the top.
+- **Radius**: 10, 12, 14, 16, 20, 24, 28, plus a pill.
 
-## The rules the design follows
+## Contrast, and what it cost
 
-1. An answer is a card, not a paragraph.
-2. One input bar sits on every screen, and it doubles as the service search.
-3. The model prepares an action and the person confirms it. Nothing moves on
-   its own unless a rule was switched on by hand.
-4. Every answer links back to the payments it was added up from.
-5. The model always speaks from a soft peach panel with its badge beside it,
-   and nothing from your bank ever sits in one. That is how you tell a fact
-   from a summary at a glance.
-6. Orange is the brand and the model. Black is the one action you are meant to
-   take, so a suggestion never looks like a confirmation.
-7. You speak to ask and you read the answer. There is no spoken reply.
-8. You change an answer by tapping the chips in it, not by asking again.
-9. Home is already full, so nobody faces an empty box.
-10. Autonomy is handed over one rule at a time, and each rule keeps a log.
-11. A loan is never offered unprompted, and its whole cost is on one screen.
+The reference greys are lighter than the accessibility standard allows for
+small text. Matching them exactly was a deliberate decision, taken knowing the
+cost. Measured across all eighteen screens, 569 pieces of text:
 
-## The look
+- 360 pass.
+- 209 do not, and every one of them is one of the three greys or the pale
+  decimal half of a money figure.
 
-The page is white everywhere. Grey survives only as a fill inside a card, so
-it groups things rather than sitting under the whole product. Cards carry a
-hairline as well as a shadow, because on a white page a shadow alone leaves
-their edges floating.
+Nothing that carries meaning on its own fails. Titles, figures, amounts, row
+names and buttons are black on white. What fails is the second line under a
+title, which repeats what the icon and the title already said, and the kobo.
 
-Every screen after the home screen opens with a large title and a line of
-subtext. In the walkthrough that title folds into a small one in the bar as
-you scroll, which is also what makes the scrolling obvious.
+Three things were darkened, because the reference has no equivalent to copy.
 
-The accent is a deep teal. It marks the key thing on a screen: the badge the
-model speaks from, the panel its words sit in, a selected state, the
-highlighted bar in a chart and the model's own links. Black stays the one
-action you are meant to take, so a suggestion is never mistaken for a
-confirmation. Green is money coming in, and it sits 37 degrees of hue from the
-teal so the two never blur. Red is a bill nobody is covering.
+- Green as text, for money coming in.
+- Red as text, for a bill nobody is covering.
+- The accent as small text, one step towards black.
+
+`IN` and `WARN` stay at the reference brightness where they are an icon or a
+fill. `IN_TEXT` and `WARN_TEXT` are for words.
+
+To measure it again, render the screens with `{{accent}}` replaced by the hex
+value and walk the DOM computing the ratio of each text node against its
+resolved background.
 
 ## Motion
 
-`prototype.py` builds the walkthrough with anime.js, which rides inside the
-file because a published page cannot load a script from anywhere else.
+anime.js v3, which rides inside the built files because a published page cannot
+load a script from anywhere else. `vendor/anime.min.js`, MIT, credited in
+`vendor/LICENSE-anime.txt`.
 
-Screens slide, cards arrive in a stagger, the balance counts up, the waveform
-breathes and the slide knob springs back. Every one of those has a fall back.
-If the frame loop is throttled, a timer stops the animation and snaps the
-screen to its finished state, so nothing is left blank or stuck half way. It
-all switches off when the phone asks for reduced motion.
+What moves, and why:
 
-## Gamification, and what was left out
+- Screens slide in and out, and the content above the fold staggers up behind
+  them.
+- The balance counts up once, on arrival.
+- The four actions stagger up out of the black circle, and the circle turns
+  into a cross.
+- A sheet rises from the bottom while the page behind it blurs.
+- The savings ring draws from empty to where you actually are.
+- The slide to confirm is a real drag, and a tap also works.
 
-The mechanics here follow one rule taken from a systematic review of
-gamification in financial products. A mechanic may only reward a behaviour
-that is good for the person, never one that is good for the product.
+Every animation has a callback that runs once and a timer that forces it. If
+the frame loop is throttled, anime has already set opacity to zero, and a
+screen must never be left blank because of that.
 
-Three things changed because of it.
+Everything is skipped under `prefers-reduced-motion`.
 
-1. The money back on a top up used to be cash, which pays somebody to
-   transact more. It goes into the savings goal now, so the reward for
-   spending is saving.
-2. Borrowing no longer gets a celebration. Every other purchase ends with a
-   tick and a cheerful line. A loan ends with what you owe and when.
-3. Bills gained a coverage meter, because being covered is the behaviour
-   worth showing progress on.
+## Type
 
-Four things were deliberately not built: points, badges, a leaderboard, and a
-streak. The long term evidence for those is thin, and a streak in particular
-punishes the irregular income this product is for.
+Plus Jakarta Sans, subset and embedded as a data URI in every built file.
 
-Lending apps in this market commonly show progress towards a larger credit
-limit. That is the one mechanic here that would reliably lift borrowing, and
-it is not in the product.
+It is here for one reason. Google's webfont subsets deliberately leave out the
+Naira sign at U+20A6, and Figtree and Manrope have no Naira glyph at all. Plus
+Jakarta Sans has one, and subsetting the full variable font from source keeps
+it.
 
-## The three scales
+The glyph needs help. Its crossbars run to the edges of the letterform and read
+as a strikethrough against a digit, so every Naira sign is wrapped in a span
+with a small margin on both sides. Below about twelve and a half pixels the
+crossbars stop rendering at all, which is why thirteen is the type floor and
+every money figure clears it.
 
-`tokens.py` holds a type ramp of eight sizes, a spacing rhythm of four pixels
-and five corner radii. `snap()` in `build.py` pulls every value in the built
-screens onto those scales, so nothing can drift off them.
+Files and licence are in `fonts/`.
 
-Before this was enforced there were 31 type sizes, five weights, 18 gap values
-and 23 radii, and two of the type sizes were arithmetic accidents nobody had
-chosen.
+## Gamification
 
-## Contrast
+One mechanic, and it is progress towards a goal you set yourself.
 
-Every text pair was measured against WCAG AA at the size it is used. Fourteen
-failed before the clean up and none fail now. No text is set in anything
-lighter than the mid grey, which clears 4.5 to 1 on white, on the page and on
-a filled panel.
+The research this was drawn from is clear that points, badges and leaderboards
+move engagement in the short run and move behaviour very little, and that
+visible progress towards your own goal is what holds up. So the savings ring is
+the only score in the product, and it counts money you actually put aside.
 
-## Fonts and the Naira sign
+- Cashback goes to the goal rather than back as cash. Same money, better place.
+- The standing instruction log counts times and amounts, not points.
+- Bills use segments, not a percentage, because a percentage is a number you
+  can farm.
+- Taking a loan gets no tick and no cheer.
 
-The screens carry their own font. See `fonts/README.md` for why, and for why
-the typeface choice was narrower than it looks.
-
-The Naira sign needs two more things. It gets a hair of space on each side,
-because its two crossbars stick out past the N and otherwise read as a line
-drawn through the number. And no money is set below about 12.5px, because
-below that the crossbars stop rendering and the sign turns into a plain N.
+There is no credit limit progress bar. That is the single mechanic here that
+would reliably lift borrowing, and every competitor uses it. It is left out on
+purpose, and that is a decision worth taking knowingly rather than by default.

@@ -9,12 +9,20 @@ ACC = build.ACC_HEX
 ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
 ORDER = ["Main", "Ask", "Services", "Airtime", "PowerPay", "Power", "Bills",
-         "Loan", "Card", "Answer", "Pay", "Rules", "Goal", "Done"]
+         "Loan", "Card", "Answer", "Pay", "Rules", "Goal", "Done",
+         "Settings", "Activity"]
+
+def acc(html):
+    return html.replace("{{accent}}", "var(--acc)")
 
 screens = ""
 for name in ORDER:
-    inner = build.SCREENS[name].replace("{{accent}}", "var(--acc)")
-    screens += '<section class="screen" data-screen="' + name + '">\n' + inner + '\n</section>\n'
+    screens += '<section class="screen" data-screen="' + name + '">\n' + acc(build.SCREENS[name]) + '\n</section>\n'
+
+# Two things are not screens. They open on top of whichever screen you are on,
+# so they are mounted once and shown over everything.
+overlays = ('<div class="ovl" id="ovlActions">' + acc(build.FAB_SHEET) + '</div>\n'
+            '<div class="ovl" id="ovlReceive">' + acc(build.RECEIVE_SHEET) + '</div>\n')
 
 CSS = """
 :root{
@@ -22,6 +30,7 @@ CSS = """
   --ink:""" + build.INK + """;
   --ink2:""" + build.INK2 + """;
   --ink3:""" + build.INK3 + """;
+  --ink4:""" + build.INK4 + """;
   --fill:""" + build.FILL + """;
   --line:""" + build.LINE + """;
   --page:""" + build.BG + """;
@@ -61,19 +70,21 @@ body.desk .device{border-radius:44px;
   right:0 !important; bottom:0 !important; overflow-y:auto; overflow-x:hidden;
   -webkit-overflow-scrolling:touch; overscroll-behavior:contain; scrollbar-width:none}
 .screen .pg::-webkit-scrollbar{width:0;height:0}
-.screen[data-screen="Ask"] .fauxbg{
-  position:absolute; inset:0; opacity:1 !important; padding:0 !important;
-  background:rgba(15,18,22,.34); overflow:hidden}
-.screen[data-screen="Ask"] .fauxbg > *{display:none !important}
+/* The Ask screen paints a copy of the home screen behind its sheet so the
+   artboard reads on its own. In here the real screen is already behind it. */
+.behind{display:none !important}
+.screen[data-screen="Ask"]{background:transparent}
+
+/* What the black circle opens, and the add money sheet. */
+.ovl{position:absolute; inset:0; z-index:20; display:none}
+.ovl.open{display:block}
+.ovl .fabwrap,.ovl .fauxbg,.ovl .sheet{z-index:auto}
 
 [data-go],[data-act],.slide{cursor:pointer; -webkit-tap-highlight-color:transparent;
   transition:transform .14s cubic-bezier(.22,1,.36,1), opacity .14s ease}
 [data-go]:active,[data-act]:active{transform:scale(.972); opacity:.92}
 .slide [data-go]:active,.knob{transform:none}
 .knob{touch-action:none}
-.nav{pointer-events:none}
-.nav > *{pointer-events:auto}
-.nav .navbg{pointer-events:none}
 
 .legend{max-width:560px; color:var(--sur-mid); font-size:13.5px; line-height:1.6;
   text-align:center; display:none; margin:0}
@@ -127,31 +138,16 @@ function layout(){
 function padDocks(){
   [].forEach.call(document.querySelectorAll('.screen.live'), function(sc){
     var pg = sc.querySelector('.pg'), dock = sc.querySelector('.dock');
-    if(pg) pg.style.paddingBottom = (dock ? dock.offsetHeight + 18 : 34) + 'px';
+    if(pg) pg.style.paddingBottom = (dock ? dock.offsetHeight + 20 : 36) + 'px';
   });
 }
 window.addEventListener('resize', layout);
 window.addEventListener('orientationchange', function(){ setTimeout(layout, 120); });
 
-/* ---------- the title collapsing into the bar ---------- */
-function clamp(v){ return v < 0 ? 0 : (v > 1 ? 1 : v); }
-[].forEach.call(document.querySelectorAll('.screen'), function(sc){
-  var pg = sc.querySelector('.pg'), nav = sc.querySelector('.nav');
-  if(!pg || !nav) return;
-  var bg = nav.querySelector('.navbg'), tt = nav.querySelector('.navtitle');
-  pg.addEventListener('scroll', function(){
-    var y = pg.scrollTop;
-    bg.style.opacity = String(clamp((y - 4) / 34));
-    tt.style.opacity = String(clamp((y - 24) / 26));
-  }, { passive: true });
-});
+/* ---------- scrolling ---------- */
 function resetScroll(sc){
-  var pg = sc.querySelector('.pg'), nav = sc.querySelector('.nav');
+  var pg = sc.querySelector('.pg:not(.behind .pg)');
   if(pg) pg.scrollTop = 0;
-  if(nav){
-    nav.querySelector('.navbg').style.opacity = '0';
-    nav.querySelector('.navtitle').style.opacity = '0';
-  }
 }
 
 /* ---------- money ---------- */
@@ -219,7 +215,7 @@ function push(name, mode){
   }
   setTimeout(done, D(460) + 320);          // never leave a screen stuck mid slide
   stack.push({ name:name, mode:mode||'push' });
-  if(name === 'Main'){ countBalance(); animateHomeGoal(); }
+  if(name === 'Main'){ countBalance(); }
   if(name === 'Ask') startWave();
   if(name === 'Goal') animateRing();
 }
@@ -258,7 +254,7 @@ function home(){
   screens.Main.classList.add('live');
   screens.Main.style.transform = ''; screens.Main.style.opacity = '';
   resetScroll(screens.Main);
-  padDocks(); enter(screens.Main); countBalance(); animateHomeGoal();
+  padDocks(); enter(screens.Main); countBalance();
 }
 
 var toastTimer;
@@ -285,10 +281,10 @@ function countBalance(){
       update: function(){
         var whole = Math.floor(o.v), dec = Math.round((o.v - whole) * 100);
         el.innerHTML =
-          '<div style="display:flex;align-items:baseline;gap:1px">' +
-          '<span class="num" style="font-size:44px;font-weight:700;letter-spacing:-.04em;line-height:1;color:var(--ink)">' +
+          '<div style="display:flex;align-items:baseline;gap:0px">' +
+          '<span class="num" style="font-size:60px;font-weight:800;letter-spacing:-.04em;line-height:1.05;color:var(--ink)">' +
           ng(whole) + '</span>' +
-          '<span class="num" style="font-size:22px;font-weight:700;letter-spacing:-.025em;color:var(--ink3)">.' +
+          '<span class="num" style="font-size:40px;font-weight:800;letter-spacing:-.03em;color:var(--ink4)">.' +
           (dec < 10 ? '0' : '') + dec + '</span></div>';
       } });
 }
@@ -308,14 +304,6 @@ function animateRing(){
   A({ targets: o, v: 33, duration: 1100, easing: 'easeOutExpo', round: 1,
       update: function(){ if(pct) pct.textContent = o.v + '%'; } });
   setTimeout(land, 1500);
-}
-function animateHomeGoal(){
-  var bar = document.getElementById('mGoalBar');
-  if(!bar) return;
-  if(REDUCED){ bar.style.width = '33%'; return; }
-  A.remove(bar);
-  A({ targets: bar, width: ['0%', '33%'], duration: 900, delay: 260, easing: 'easeOutExpo' });
-  setTimeout(function(){ A.remove(bar); bar.style.width = '33%'; }, 1400);
 }
 
 /* ---------- the voice waveform ---------- */
@@ -466,8 +454,84 @@ var ACTIONS = {
     st.loanAmt = Math.min(250000, Math.max(10000, st.loanAmt + (a[1] === '+' ? 10000 : -10000)));
     renderLoan(); pop(document.getElementById('lnAmt'));
   },
-  term: function(el, a){ st.loanMonths = Number(a[1]); renderLoan(); pop(el); }
+  term: function(el, a){ st.loanMonths = Number(a[1]); renderLoan(); pop(el); },
+  actions: function(){ if(openOvl === ovlActions) ovlClose(); else ovlOpen(ovlActions); },
+  receive: function(){ ovlOpen(ovlReceive); },
+  seg: function(el){
+    var track = el.parentNode;
+    [].forEach.call(track.children, function(c){
+      var on = (c === el), sp = c.querySelector('span');
+      c.style.background = on ? '#FFFFFF' : 'transparent';
+      c.style.boxShadow = on ? '0 2px 10px rgba(0,0,0,0.05), 0 8px 30px rgba(0,0,0,0.06)' : 'none';
+      if(sp) sp.style.color = on ? 'var(--ink)' : 'var(--ink2)';
+    });
+  }
 };
+
+
+/* ---------- the two things that open on top of a screen ---------- */
+var ovlActions = document.getElementById('ovlActions');
+var ovlReceive = document.getElementById('ovlReceive');
+var openOvl = null;
+
+function ovlOpen(el){
+  if(openOvl) ovlClose(true);
+  openOvl = el;
+  el.classList.add('open');
+  var scrim = el.querySelector('.fabscrim') || el.querySelector('.fauxbg');
+  var rows  = el.querySelectorAll('.fabrow');
+  var panel = el.querySelector('.sheet');
+  var fab   = el.querySelector('.fabclose');
+  if(REDUCED) return;
+  if(scrim){ A.remove(scrim); A({ targets: scrim, opacity: [0, 1], duration: 200, easing: 'linear',
+    complete: function(){ scrim.style.opacity = ''; } }); }
+  if(rows.length){
+    A.remove(rows);
+    A({ targets: rows, translateY: [30, 0], opacity: [0, 1], scale: [0.88, 1],
+        delay: A.stagger(50, { from: 'last' }), duration: 420, easing: EASE,
+        complete: function(){ clearInline(rows); } });
+    clearTimeout(el.__fix);
+    el.__fix = setTimeout(function(){ A.remove(rows); clearInline(rows); }, 1200);
+  }
+  if(fab){ A.remove(fab); A({ targets: fab, rotate: [-90, 0], scale: [0.7, 1], duration: 340, easing: EASE,
+    complete: function(){ fab.style.transform = ''; } }); }
+  if(panel){
+    A.remove(panel);
+    A({ targets: panel, translateY: [380, 0], duration: 460, easing: EASE,
+        complete: function(){ panel.style.transform = ''; } });
+    clearTimeout(el.__fix2);
+    el.__fix2 = setTimeout(function(){ A.remove(panel); panel.style.transform = ''; }, 1200);
+  }
+}
+
+function ovlClose(instant){
+  var el = openOvl;
+  if(!el) return;
+  openOvl = null;
+  function hide(){
+    el.classList.remove('open');
+    var scrim = el.querySelector('.fabscrim') || el.querySelector('.fauxbg');
+    var panel = el.querySelector('.sheet');
+    var rows  = el.querySelectorAll('.fabrow');
+    var fab   = el.querySelector('.fabclose');
+    A.remove(scrim); A.remove(panel); A.remove(rows); A.remove(fab);
+    if(scrim) scrim.style.opacity = '';
+    if(panel) panel.style.transform = '';
+    if(fab) fab.style.transform = '';
+    clearInline(rows);
+  }
+  if(instant || REDUCED){ hide(); return; }
+  var scrim = el.querySelector('.fabscrim') || el.querySelector('.fauxbg');
+  var panel = el.querySelector('.sheet');
+  var rows  = el.querySelectorAll('.fabrow');
+  var settled = false;
+  function done(){ if(settled) return; settled = true; hide(); }
+  if(rows.length){ A.remove(rows); A({ targets: rows, translateY: 18, opacity: 0, scale: 0.9,
+    delay: A.stagger(26), duration: 180, easing: 'easeInQuad' }); }
+  if(panel){ A.remove(panel); A({ targets: panel, translateY: 380, duration: 260, easing: 'easeInQuad' }); }
+  if(scrim){ A.remove(scrim); A({ targets: scrim, opacity: 0, duration: 240, easing: 'linear', complete: done }); }
+  setTimeout(done, 420);
+}
 
 function dropSheet(){
   var top = stack[stack.length-1];
@@ -478,7 +542,8 @@ function dropSheet(){
 }
 
 function navigate(target){
-  if(target === 'back') return back();
+  if(target === 'back'){ if(openOvl){ ovlClose(); return; } return back(); }
+  if(openOvl) ovlClose();
   if(target === 'ask'){
     if(stack[stack.length-1].name === 'Ask') return back();
     return push('Ask', 'sheet');
@@ -504,7 +569,10 @@ document.addEventListener('click', function(e){
   if(g) navigate(g.dataset.go);
 });
 
-document.addEventListener('keydown', function(e){ if(e.key === 'Escape') back(); });
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Escape') return;
+  if(openOvl) ovlClose(); else back();
+});
 
 (function(){
   var x0 = null, y0 = null;
@@ -564,19 +632,29 @@ document.addEventListener('keydown', function(e){ if(e.key === 'Escape') back();
   knob.addEventListener('pointercancel', end);
 });
 
+function popFab(){
+  if(REDUCED) return;
+  var f = current().querySelector('.dock .fab');
+  if(!f) return;
+  A.remove(f);
+  A({ targets: f, scale: [0.4, 1], opacity: [0, 1], duration: 520, delay: 260, easing: 'spring(1, 78, 11, 0)',
+      complete: function(){ f.style.transform = ''; f.style.opacity = ''; } });
+  setTimeout(function(){ A.remove(f); f.style.transform = ''; f.style.opacity = ''; }, 1200);
+}
+
 renderAirtime(); renderPower(); renderLoan(); renderCard();
 layout();
-setTimeout(function(){ layout(); enter(screens.Main); countBalance(); }, 60);
+setTimeout(function(){ layout(); enter(screens.Main); countBalance(); popFab(); }, 60);
 """
 
 HTML = ("<title>Banking Flow Prototype</title>\n<style>\n" + build.faces(True) + CSS + "\n</style>\n"
   '<div class="wrap">\n'
   '  <div class="device" id="device">\n'
-  '    <div class="stage" id="stage">\n' + screens + '    </div>\n  </div>\n'
-  '  <p class="legend" id="legend">Tap through it. <b>Airtime</b>, <b>Data</b> and <b>Power</b> on the home screen open a prepared purchase. '
-  'The <b>ask bar</b> at the bottom of any screen opens the voice sheet. Drag the black knob to confirm a payment, or just tap it. '
-  '<b>Scroll any screen</b> and the big title folds into the bar. The <b>bundle chips</b>, the <b>loan stepper</b> and the '
-  '<b>switches</b> all really change. Anything that answers <em>not wired up</em> is a screen this walkthrough does not include.</p>\n'
+  '    <div class="stage" id="stage">\n' + screens + overlays + '    </div>\n  </div>\n'
+  '  <p class="legend" id="legend">Tap through it. The <b>black circle</b> at the bottom right opens send, receive, activity and bills over a blurred page. '
+  'The <b>ask bar</b> beside it opens the voice sheet, and the <b>cog</b> opens settings. <b>Back</b> is the chevron at the bottom left, on every screen. '
+  'Drag the black knob to confirm a payment, or just tap it. Every screen <b>scrolls</b>. The <b>bundle chips</b>, the <b>loan stepper</b>, the '
+  '<b>switches</b> and the <b>All, In, Out</b> tabs all really change. Anything that answers <em>not wired up</em> is a screen this walkthrough does not include.</p>\n'
   '</div>\n<div id="toast"></div>\n'
   '<script>\n' + ANIME + '\n</script>\n'
   '<script>\n' + JS + '\n</script>\n')

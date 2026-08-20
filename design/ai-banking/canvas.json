@@ -9,8 +9,24 @@
       "title": "Home"
     },
     {
-      "file": "Ask.dc.html",
+      "file": "Actions.dc.html",
       "x": 523,
+      "y": 0,
+      "w": 393,
+      "h": 852,
+      "title": "The black circle"
+    },
+    {
+      "file": "Receive.dc.html",
+      "x": 1046,
+      "y": 0,
+      "w": 393,
+      "h": 852,
+      "title": "Add money"
+    },
+    {
+      "file": "Ask.dc.html",
+      "x": 1569,
       "y": 0,
       "w": 393,
       "h": 852,
@@ -18,7 +34,7 @@
     },
     {
       "file": "Answer.dc.html",
-      "x": 1046,
+      "x": 2092,
       "y": 0,
       "w": 393,
       "h": 852,
@@ -26,7 +42,7 @@
     },
     {
       "file": "Pay.dc.html",
-      "x": 1569,
+      "x": 2615,
       "y": 0,
       "w": 393,
       "h": 852,
@@ -34,24 +50,32 @@
     },
     {
       "file": "Done.dc.html",
-      "x": 2092,
+      "x": 3138,
       "y": 0,
       "w": 393,
       "h": 852,
       "title": "Done"
     },
     {
-      "file": "Rules.dc.html",
-      "x": 2615,
+      "file": "Activity.dc.html",
+      "x": 3661,
       "y": 0,
       "w": 393,
       "h": 852,
-      "title": "Standing instructions"
+      "title": "Activity"
+    },
+    {
+      "file": "Settings.dc.html",
+      "x": 4184,
+      "y": 0,
+      "w": 393,
+      "h": 852,
+      "title": "Settings"
     },
     {
       "file": "Services.dc.html",
       "x": 0,
-      "y": 1200,
+      "y": 1240,
       "w": 393,
       "h": 852,
       "title": "All services"
@@ -59,7 +83,7 @@
     {
       "file": "Airtime.dc.html",
       "x": 523,
-      "y": 1200,
+      "y": 1240,
       "w": 393,
       "h": 852,
       "title": "Buying data"
@@ -67,23 +91,23 @@
     {
       "file": "PowerPay.dc.html",
       "x": 1046,
-      "y": 1200,
+      "y": 1240,
       "w": 393,
       "h": 852,
-      "title": "A bill, before"
+      "title": "Before you pay"
     },
     {
       "file": "Power.dc.html",
       "x": 1569,
-      "y": 1200,
+      "y": 1240,
       "w": 393,
       "h": 852,
-      "title": "A bill, after"
+      "title": "After you pay"
     },
     {
       "file": "Bills.dc.html",
       "x": 2092,
-      "y": 1200,
+      "y": 1240,
       "w": 393,
       "h": 852,
       "title": "Bills"
@@ -91,182 +115,190 @@
     {
       "file": "Loan.dc.html",
       "x": 2615,
-      "y": 1200,
+      "y": 1240,
       "w": 393,
       "h": 852,
-      "title": "A loan"
+      "title": "Borrowing"
     },
     {
       "file": "Card.dc.html",
       "x": 3138,
-      "y": 1200,
+      "y": 1240,
       "w": 393,
       "h": 852,
       "title": "Virtual card"
     },
     {
       "file": "Goal.dc.html",
-      "x": 3138,
-      "y": 0,
+      "x": 3661,
+      "y": 1240,
       "w": 393,
       "h": 852,
       "title": "A goal"
+    },
+    {
+      "file": "Rules.dc.html",
+      "x": 4184,
+      "y": 1240,
+      "w": 393,
+      "h": 852,
+      "title": "Standing instructions"
     }
   ],
   "annotations": [
     {
-      "id": "note-home",
+      "id": "note-system",
+      "x": 0,
+      "y": -1020,
+      "w": 1100,
+      "text": "THE DESIGN SYSTEM\n\nTaken from the Fuse wallet screens and applied to the whole product. Six rules carry it.\n\n1. The page is white. Grey only ever appears as a card, never behind one.\n2. Titles are true black and heavy. Everything supporting them is a light grey.\n3. Money splits in two. The whole number is black and heavy, the decimal is two thirds the size and pale.\n4. An icon is a rounded square in its own saturated colour with a white glyph.\n5. A card is either a flat grey fill or a dashed outline. Nothing casts a shadow except a button, the ask bar and a sheet.\n6. A sheet rises over a page that is dimmed and blurred, and floats clear of all four edges."
+    },
+    {
+      "id": "note-scales",
+      "x": 1046,
+      "y": -1020,
+      "w": 1100,
+      "text": "THE SCALES\n\nEight type sizes and nothing between them. 13, 15, 17, 19, 22, 28, 40 and 60. Thirteen is the floor, which is also where the Naira sign keeps its crossbars.\n\nThree weights. Regular for anything grey, bold for anything named, heavy for money.\n\nA four point spacing rhythm, plus 56 and 72 which are structural. Seven corner radii and one pill.\n\nAll three are enforced when the files are generated. A size that is not on a scale is pulled onto the nearest one, so nothing can drift."
+    },
+    {
+      "id": "note-contrast",
+      "x": 2092,
+      "y": -1020,
+      "w": 1100,
+      "text": "CONTRAST, AND WHAT IT COST\n\nThe reference greys are lighter than the accessibility standard allows for small text, and matching them exactly was a deliberate decision.\n\nMeasured across all eighteen screens, 569 pieces of text: 360 pass, 209 do not. Every failure is one of the three greys or the pale decimal.\n\nNothing that carries meaning on its own fails. Titles, figures and amounts are black. What fails is the second line under a title, which repeats what the icon and the title already say.\n\nGreen and red text and the small blue captions were darkened, because the reference has no green or red text to copy."
+    },
+    {
+      "id": "note-bottom",
+      "x": 3138,
+      "y": -1020,
+      "w": 1100,
+      "text": "THE BAR AT THE BOTTOM\n\nThe reference puts three tab icons on the left and a black circle on the right, with no bar behind them.\n\nThis product replaces the tabs with the model. The cog stays, then the ask bar takes the width, then the black circle keeps its corner.\n\nOn every screen except home, the cog is replaced by back, so back lives at the bottom left where the reference puts it.\n\nThe black circle opens send, receive, activity and bills over a blurred page. That is the only place those four live, so no screen has to carry them."
+    },
+    {
+      "id": "note-main",
       "x": 0,
       "y": -300,
       "w": 393,
-      "text": "1. Home\n\nFour services, not sixteen tiles. These are the four you actually use, and the row reorders itself as that changes. Everything else is behind More.\n\nUnder them are the cards written for today, and two of the three are services. The bill you have to pay and the data you are about to run out of come to you, so you never tap through the grid for them at all."
+      "text": "1. Home\n\nThe reference order, applied to a bank account. A title, the balance, one button, then a grid.\n\nThe balance is the biggest thing on the screen at sixty pixels, with the kobo pale behind it. One button under it and nothing competing.\n\nThen the model's most useful card, because on a screen this size the first thing you read decides what the app is. Then four dashed tiles for the services."
     },
     {
-      "id": "note-ask",
+      "id": "note-actions",
       "x": 523,
       "y": -300,
       "w": 393,
-      "text": "2. Asking\n\nSaying what you want skips the whole form. Buying airtime by hand is five steps: pick the service, pick the network, type the number, type the amount, confirm.\n\nSaid out loud it is one sentence, and the app fills the five steps in for you."
+      "text": "2. The black circle\n\nSend money, receive, activity and pay a bill. Four things you do most, over the page blurred and dimmed.\n\nThey stagger up from the circle and the circle turns into a cross. Tapping the cross, the blur, or pressing escape puts them away.\n\nThis is where money movement lives. It keeps the grid free for services and the ask bar free for the model."
     },
     {
-      "id": "note-answer",
+      "id": "note-receive",
       "x": 1046,
       "y": -300,
       "w": 393,
-      "text": "3. An answer\n\nThe answer is a card, not a paragraph. The chips under the chart are the question itself, so you tap to change it instead of asking again.\n\nAt the bottom the app does the arithmetic you would not have done, and offers a plan that costs less than what you are doing now."
+      "text": "3. Add money\n\nThe reference's sheet, with our content. A big coloured icon, a title, a grey line under it, a cross in the corner and three rows.\n\nThe sheet floats ten pixels clear of every edge rather than sitting on the bottom. That is what makes it read as a sheet and not a screen."
     },
     {
-      "id": "note-pay",
+      "id": "note-ask",
       "x": 1569,
       "y": -300,
       "w": 393,
-      "text": "4. Sending money\n\nThis is the one card the whole app is built on. Everything it prepares looks like this, whether it is a transfer, airtime, a bill or a loan.\n\nEvery field it guessed is tinted and says where it came from. Tap any tinted field to correct it. Nothing moves until you slide."
+      "text": "4. Asking\n\nYou hold the ask bar and talk. The words appear as you say them, and the part the model is still deciding on stays grey.\n\nIt uses the same blur as the other two overlays, so all three feel like one behaviour rather than three.\n\nNothing here is a chat log. Speech turns into a screen."
     },
     {
-      "id": "note-done",
+      "id": "note-answer",
       "x": 2092,
       "y": -300,
       "w": 393,
-      "text": "5. Done\n\nOne end screen for every service. What changes is the amount, the line under it and the two rows of receipt.\n\nThe card at the bottom is where a one off turns into something standing. It is the same offer that appears after a bill and on the bills screen."
+      "text": "5. An answer\n\nA question about money gets a screen, not a paragraph. The figure, the trend, the chart and the breakdown.\n\nThe chips under the chart show what the model understood. Tap one and you change the question rather than typing it again.\n\nThe line at the bottom says where the number came from, so you can check it."
     },
     {
-      "id": "note-rules",
+      "id": "note-pay",
       "x": 2615,
       "y": -300,
       "w": 393,
-      "text": "6. Standing instructions\n\nThis is where a service stops being a task. The first two rules started life as the offers you saw after paying a bill and on the bills screen.\n\nOne rule per card, each with a switch and a record of what it did. The list underneath says what it will never do on its own."
+      "text": "6. Sending money\n\nThe model prepares, you confirm. Every part it filled in sits in a pale blue panel with a line saying where it got it.\n\nSo you check three small things instead of typing four fields. Blue means the model wrote it. Black means you have to press it."
+    },
+    {
+      "id": "note-done",
+      "x": 3138,
+      "y": -300,
+      "w": 393,
+      "text": "7. Done\n\nA green tick, the amount, the receipt, then one offer to make it automatic.\n\nThe offer only appears after something worked. That is the moment it is worth asking.\n\nTaking a loan ends here too, and it gets no tick and no cheer."
+    },
+    {
+      "id": "note-activity",
+      "x": 3661,
+      "y": -300,
+      "w": 393,
+      "text": "8. Activity\n\nThe reference list style, with amounts. No dividers, no card, just height and colour doing the separating.\n\nMoney coming in is green with a plus, money going out is black with a minus. All, In and Out at the top really switch."
+    },
+    {
+      "id": "note-settings",
+      "x": 4184,
+      "y": -300,
+      "w": 393,
+      "text": "9. Settings\n\nThis is the reference screen copied most closely, because it is the clearest statement of their list style.\n\nA bordered promotion row with a filled black chevron, then grey group headings, then rows with coloured icons and pale chevrons. Nothing between the rows."
     },
     {
       "id": "note-services",
       "x": 0,
-      "y": 900,
+      "y": 940,
       "w": 393,
-      "text": "7. All services\n\nThe grid stays, because people learn where things are and tapping is faster than talking when you already know what you want. But only eight tiles get one, and they are the eight you use.\n\nEverything else is grouped rows, which keep working at forty services when a grid has long since stopped. The field at the top is the same input as everywhere else, so searching and asking are one thing."
+      "text": "10. All services\n\nForty things without an icon wall. The eight you use are a grid, everything else is a list under a plain heading.\n\nThere is no search bar on the page any more. The ask bar at the bottom is the search bar, on every screen."
     },
     {
       "id": "note-airtime",
       "x": 523,
-      "y": 900,
+      "y": 940,
       "w": 393,
-      "text": "8. Buying data\n\nThe same card as sending money. That is the whole point. Forty services, one thing to learn.\n\nThe bundles underneath let you change your mind without saying anything again, and the faces are the people you top up, since most airtime in Nigeria is bought for somebody else."
+      "text": "11. Buying data\n\nYou said four words. The model filled in who, what and how much, and each one says where it came from.\n\nThe money you get back goes to your savings goal instead of coming back as cash. Same money, better place."
     },
     {
       "id": "note-powerpay",
       "x": 1046,
-      "y": 900,
+      "y": 940,
       "w": 393,
-      "text": "9. A bill, before\n\nThe amount is tinted like the rest, because the app picked it from what you used last month rather than reading it off your message.\n\nThe row of amounts underneath is the same idea as the bundles. You change the number by tapping, not by saying it again."
+      "text": "12. Before you pay\n\nThe same prepared card, for electricity. The meter you always use, and about what you spent last month.\n\nThree amounts underneath with what they buy in units, because nobody thinks in Naira for electricity."
     },
     {
       "id": "note-power",
       "x": 1569,
-      "y": 900,
+      "y": 940,
       "w": 393,
-      "text": "10. A bill, after\n\nWhat comes out of a service matters as much as what goes in. A prepaid meter token is twenty digits you have to type into a box on your wall, so it gets the biggest text on the screen and a copy button.\n\nThen the app offers to do it every month, which is how a one off becomes a standing instruction."
+      "text": "13. After you pay\n\nThe token is the point of this screen, so it is the biggest thing on it with a copy button under it.\n\nThen the receipt, then one offer to make it monthly."
     },
     {
       "id": "note-bills",
       "x": 2092,
-      "y": 900,
+      "y": 940,
       "w": 393,
-      "text": "11. Bills\n\nOne place for everything that repeats, with what is covered and what is not. The app watches the dates so you do not have to.\n\nThe card at the bottom is the same offer again, aimed at the two nobody is watching."
+      "text": "14. Bills\n\nEverything that repeats, and which of them are covered. The bar is segments, not a percentage, because a percentage is a number you can farm.\n\nPaid bills go grey and stay in place, so the list is the whole month rather than only what is left."
     },
     {
       "id": "note-loan",
       "x": 2615,
-      "y": 900,
+      "y": 940,
       "w": 393,
-      "text": "12. A loan\n\nA loan is not a purchase, so it does not get the purchase card. It gets the whole cost on one screen: what you get, what it costs, what you pay back and when.\n\nThe app never brings a loan up on its own. It only appears when you ask, and the late fee is on the same screen as the money, not buried in terms you have to open."
+      "text": "15. Borrowing\n\nThe whole cost before you decide. What you get, the interest, the fee, what you pay back and when.\n\nThe late fee and the credit bureau are on the screen, not in terms and conditions.\n\nThere is no progress bar towards a bigger limit. That is the one mechanic that would reliably lift borrowing, and it is left out on purpose."
     },
     {
       "id": "note-card",
       "x": 3138,
-      "y": 900,
+      "y": 940,
       "w": 393,
-      "text": "13. Virtual card\n\nA card for one thing, with a limit and a switch to freeze it. Naming it after what it is for is what makes it useful.\n\nThe line in the middle is the app telling you what the card has actually done, which is the sort of thing you would otherwise have to go and count."
-    },
-    {
-      "id": "note-idea",
-      "x": -500,
-      "y": 0,
-      "w": 420,
-      "text": "The problem with adding services\n\nEvery app in this market ends up with sixteen coloured tiles on the home screen, and it breaks the moment you add the seventeenth.\n\nSo the services sit on three surfaces doing three different jobs.\n\nThe grid is for finding things. It shows only the handful you use, and the rest are grouped rows behind it.\n\nThe sentence is for speed. Saying what you want collapses a five step form into one line, which is where the app earns its keep.\n\nThe card is for confirming. Every service, all forty of them, ends in the same card with the same black slide. One thing to learn, not forty."
-    },
-    {
-      "id": "note-type",
-      "x": -500,
-      "y": 600,
-      "w": 420,
-      "text": "Type, spacing and shape\n\nEvery screen after the home screen opens with a large title and a line of subtext. In the walkthrough it folds into a small title in the bar as you scroll, which is also what makes the scrolling obvious.\n\nThat title is 30px against 15px body and 13px captions, which is the contrast that was missing before. There were 31 type sizes across the screens once, and two of them were arithmetic accidents nobody chose. There are eight now, and three weights.\n\nGaps run on a four pixel rhythm, seven values instead of eighteen. Corner radii went from 23 values to five, plus fully round. All three scales are enforced when the screens are built, so nothing can drift off them."
-    },
-    {
-      "id": "note-colour",
-      "x": -500,
-      "y": 880,
-      "w": 420,
-      "text": "Colour\n\nThe page is white everywhere. Grey survives only as a fill inside a card, so it groups things rather than sitting under the whole product.\n\nThe accent is a deep teal. It marks the key thing on a screen: the badge the model speaks from, the panel its words sit in, a selected state, the highlighted bar in a chart and the model's own links.\n\nBlack stays the one action you are meant to take, so a suggestion is never mistaken for a confirmation. Green is money coming in, and it sits 37 degrees of hue away from the teal so the two never blur. Red is a bill nobody is covering."
-    },
-    {
-      "id": "note-naira",
-      "x": -500,
-      "y": 1220,
-      "w": 420,
-      "text": "On the Naira sign\n\nGoogle serves fonts in pieces and none of the pieces contain the Naira sign, so loading a font the normal way puts every Naira sign in a different typeface from the digits next to it. The screens carry their own cut down copy of the font instead.\n\nThis also narrowed the typeface choice. Figtree and Manrope both suit these references and neither has a Naira sign at all. Plus Jakarta Sans does.\n\nThe sign gets a hair of space on each side, or its two crossbars read as a line through the number. And the type scale starts at 13px, which keeps every money figure above the size where those crossbars stop rendering."
-    },
-    {
-      "id": "note-placeholder",
-      "x": -500,
-      "y": 2560,
-      "w": 420,
-      "text": "The name, the account numbers, the meter number and the amounts are all made up. Merchant tiles are grey squares on purpose, since real logos would come from your own data.\n\nTell me what the real ones should be and I will change them."
-    },
-    {
-      "id": "note-contrast",
-      "x": -500,
-      "y": 880,
-      "w": 420,
-      "text": "Contrast\n\nEvery text pair on these screens was measured against WCAG AA at the size it is actually used. Fourteen pairs failed before this pass and none fail now.\n\nThe worst was the thing you looked at first. The balance used to be white on an orange wash at 2.0 to 1, where 3.0 is the floor. The account number under it was 1.46 to 1. The wash is gone and the balance is near black on the page at 17.3 to 1.\n\nNo text is set in anything lighter than the mid grey, which clears 4.5 to 1 on white, on the page and on a filled panel."
-    },
-    {
-      "id": "note-motion",
-      "x": -500,
-      "y": 1560,
-      "w": 420,
-      "text": "Motion\n\nThe walkthrough moves with anime.js, which rides inside the file because a published page cannot load a script from anywhere else.\n\nScreens slide in and the one behind slides back. Cards arrive in a stagger. The balance counts up. The waveform breathes while the model listens. The knob on a slide to confirm springs back if you let go early.\n\nEvery one of those has a fall back. If the frame loop is throttled, a timer stops the animation and snaps the screen to its finished state, so nothing can be left blank or stuck half way. It all switches off if the phone is set to reduce motion.\n\nThe artboards here are still pictures. The motion is in the walkthrough."
+      "text": "16. Virtual card\n\nA card made for one merchant, with its own limit. Reveal, freeze, fund and rules, each in its own colour.\n\nThe limit bar is the real control here. When it fills, the card stops working, which is the whole reason to make one."
     },
     {
       "id": "note-goal",
-      "x": 3138,
-      "y": -300,
+      "x": 3661,
+      "y": 940,
       "w": 393,
-      "text": "7. A goal\n\nProgress needs somewhere honest to point. The ring only moves when money is actually put aside, never when you spend or transact.\n\nUnderneath it is the record of what is feeding it, so the number is auditable rather than a score. The payday rule, the round ups, and the money that used to come back as cash on top ups.\n\nThe last line matters as much as the ring. Nothing here is locked, so the goal is a plan you are keeping rather than a trap the product has set."
+      "text": "17. A goal\n\nThe one piece of gamification in the product, and it is progress towards something you chose.\n\nThe research is clear that points and badges move engagement and not behaviour, and that visible progress towards your own goal is what holds up.\n\nSo the ring is the only score, and it counts money you actually put aside. Nothing is locked."
     },
     {
-      "id": "note-gamify",
-      "x": -500,
-      "y": 1980,
-      "w": 420,
-      "text": "What the gamification research changed\n\nThe review this came from says the same thing twice. Game mechanics do lift engagement, and engagement is not the same as a better financial outcome. So the rule here is that a mechanic may only reward a behaviour that is good for the person, never one that is good for the product.\n\nThree things changed because of that.\n\nThe money back on a top up used to be cash, which pays you to transact more. It now goes into the goal, so the reward for spending is saving.\n\nBorrowing no longer gets a celebration. Every other purchase ends with a tick and a cheerful line. A loan ends with what you owe and when, and nothing invites you back.\n\nBills gained a coverage meter, because being covered is the behaviour worth showing progress on.\n\nFour things were deliberately not built. No points, no badges, no leaderboard, and no streak you can break. The review is clear that the long term evidence for those is thin, and a streak in particular punishes the irregular income this product is for.\n\nOne more decision worth knowing. Lending apps in this market commonly show progress towards a bigger credit limit. That is the one mechanic here that would reliably lift borrowing, and it is not in the product."
+      "id": "note-rules",
+      "x": 4184,
+      "y": 940,
+      "w": 393,
+      "text": "18. Standing instructions\n\nWhat the model may do without asking. Three switches, each with a log of what it has already done.\n\nUnder them, in plain words, the three things it will always ask about first. That list is what makes the switches above it safe to turn on."
     }
   ],
   "launch": {
