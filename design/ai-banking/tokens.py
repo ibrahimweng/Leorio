@@ -12,33 +12,34 @@ in build.py.
 
 # ---------------------------------------------------------------- colour
 # Every text pair below clears WCAG AA at the size it is used.
-BG        = "#F5F5F6"   # the page
+BG        = "#FFFFFF"   # the page, white everywhere
 SURF      = "#FFFFFF"   # a card
-FILL      = "#F1F1F3"   # a quiet panel, and the circle behind a row icon
-FILL2     = "#DEDEE3"   # a firmer quiet block, e.g. a chart bar
-LINE      = "#EAEAEC"   # a hairline, used sparingly
-LINE2     = "#DDDDE1"   # a drag handle or a dashed edge
+FILL      = "#F5F6F7"   # grey lives here only, inside a card. Never under the page.
+FILL2     = "#DFE2E5"   # a firmer quiet block, e.g. a chart bar
+LINE      = "#EBECEF"   # the hairline round a card, which is what separates it from a white page
+LINE2     = "#DCDEE2"   # a drag handle or a dashed edge
 
-INK       = "#111113"   # 18.9 on white
-INK2      = "#52525B"   #  7.7 on white
-INK3      = "#6A6A73"   #  5.3 on white, 4.7 on FILL. Nothing lighter carries text.
+INK       = "#0F1216"   # 18.8 on white
+INK2      = "#4E535C"   #  7.7 on white
+INK3      = "#6B7178"   #  4.9 on white, 4.6 on FILL. Nothing lighter carries text.
 
-BTN       = "#111113"   # the one action you are meant to take
+BTN       = "#0F1216"   # the one action you are meant to take
 BTN_INK   = "#FFFFFF"
 
-IN        = "#0F7A55"   # money coming in, and anything free
+IN        = "#15803D"   # money coming in. 37 degrees of hue from the accent, so the two never blur.
 WARN      = "#C2361F"   # a bill nobody is covering
 
-# The model, and the only colour in the app that is not a grey. It marks the
-# badge the model speaks from and the panel its words sit in. Nothing else.
+# The accent. It marks the key thing on a screen: the badge the model speaks
+# from, the panel its words sit in, a selected state, a highlighted bar, and
+# the model's own links. Black stays the one action you are meant to take.
 ACC       = "{{accent}}"
-ACC_HEX   = "#E86A00"                                        # badge fill, white glyph on it
-ACC_TEXT  = "color-mix(in srgb, " + ACC + " 62%, #111113)"   # the model's links and small print
-ACC_SOFT  = "color-mix(in srgb, " + ACC + " 5%, #FFFFFF)"    # the panel the model speaks from
+ACC_HEX   = "#0E7C7A"                                        # deep teal. 5.0 on white both ways.
+ACC_TEXT  = ACC                                              # the accent already clears AA as text
+ACC_SOFT  = "color-mix(in srgb, " + ACC + " 8%, #FFFFFF)"    # the panel the model speaks from
 ACC_EDGE  = "color-mix(in srgb, " + ACC + " 24%, transparent)"
 ACC_INK   = ACC_TEXT                                         # the name the screens already use
 
-CARD_FACE = "linear-gradient(150deg, #2A2A2E 0%, #17171A 55%, #0E0E11 100%)"
+CARD_FACE = "linear-gradient(150deg, #16413F 0%, #0E2C2B 52%, #0A1A1C 100%)"
 ON_DARK   = "#FFFFFF"
 ON_DARK_2 = "rgba(255,255,255,0.66)"
 ON_DARK_3 = "rgba(255,255,255,0.44)"
@@ -63,14 +64,16 @@ FONT_WGHT  = "400 800"
 
 # Nine steps, and nothing between them. 13 is the floor, which also keeps
 # every money figure above the size where the Naira sign loses its crossbars.
-TYPE = [13, 14, 15, 17, 20, 24, 30, 36, 44]
+TYPE = [13, 15, 17, 20, 24, 30, 36, 44]
 # Three weights. Regular for body, medium for anything named, bold for money.
 WEIGHT = {400: 500, 500: 500, 600: 600, 700: 700, 800: 700}
 MONEY_MIN_PX = 13
 
 # ---------------------------------------------------------------- shape
 # A 4px rhythm, with 2 and 6 kept for the gap between an icon and its label.
-SPACE = [2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 54]
+# 54 and 98 are structural, not rhythm. 54 clears the status bar and 98 also
+# clears the nav bar, so a screen with a title starts below it.
+SPACE = [2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 54, 98]
 # Five radii. Anything round is written as PILL and never snapped.
 RADII = [8, 12, 16, 20, 28]
 PILL  = "999px"
@@ -95,7 +98,10 @@ def pill(h=None):
     return PILL
 
 # ---------------------------------------------------------------- depth
-SHADOW   = "box-shadow: 0 1px 2px rgba(17,17,19,0.04), 0 4px 16px rgba(17,17,19,0.045)"
-SH_RAISE = "box-shadow: 0 2px 4px rgba(17,17,19,0.05), 0 12px 32px rgba(17,17,19,0.09)"
-SH_BTN   = "box-shadow: 0 4px 14px rgba(17,17,19,0.20)"
-SH_SHEET = "box-shadow: 0 -12px 40px rgba(17,17,19,0.13)"
+# On a white page a card needs a hairline as well as a shadow, or it floats
+# with nothing holding its edge.
+CARD_EDGE = "border: 1px solid #EBECEF"
+SHADOW   = "box-shadow: 0 1px 2px rgba(15,18,22,0.04), 0 6px 18px rgba(15,18,22,0.05)"
+SH_RAISE = "box-shadow: 0 2px 6px rgba(15,18,22,0.06), 0 14px 36px rgba(15,18,22,0.10)"
+SH_BTN   = "box-shadow: 0 6px 18px rgba(15,18,22,0.22)"
+SH_SHEET = "box-shadow: 0 -14px 44px rgba(15,18,22,0.14)"

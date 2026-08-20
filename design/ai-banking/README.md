@@ -87,19 +87,36 @@ something that just happens.
 
 ## The look
 
-Monochrome structure on a near white page. White cards separated by soft
-shadow rather than hairlines. A circle behind every icon, grey for a list and
-black for a main action. A black pill for the one thing you are meant to do on
-a screen. Sentence case section headings.
+The page is white everywhere. Grey survives only as a fill inside a card, so
+it groups things rather than sitting under the whole product. Cards carry a
+hairline as well as a shadow, because on a white page a shadow alone leaves
+their edges floating.
 
-The only colour that is not a grey belongs to the model. Its badge is orange
-and the panel its words sit in is a five percent tint of that orange. Nothing
-else may use it. Green and red are kept for meaning alone, which is money
-coming in and a bill nobody is covering.
+Every screen after the home screen opens with a large title and a line of
+subtext. In the walkthrough that title folds into a small one in the bar as
+you scroll, which is also what makes the scrolling obvious.
+
+The accent is a deep teal. It marks the key thing on a screen: the badge the
+model speaks from, the panel its words sit in, a selected state, the
+highlighted bar in a chart and the model's own links. Black stays the one
+action you are meant to take, so a suggestion is never mistaken for a
+confirmation. Green is money coming in, and it sits 37 degrees of hue from the
+teal so the two never blur. Red is a bill nobody is covering.
+
+## Motion
+
+`prototype.py` builds the walkthrough with anime.js, which rides inside the
+file because a published page cannot load a script from anywhere else.
+
+Screens slide, cards arrive in a stagger, the balance counts up, the waveform
+breathes and the slide knob springs back. Every one of those has a fall back.
+If the frame loop is throttled, a timer stops the animation and snaps the
+screen to its finished state, so nothing is left blank or stuck half way. It
+all switches off when the phone asks for reduced motion.
 
 ## The three scales
 
-`tokens.py` holds a type ramp of nine sizes, a spacing rhythm of four pixels
+`tokens.py` holds a type ramp of eight sizes, a spacing rhythm of four pixels
 and five corner radii. `snap()` in `build.py` pulls every value in the built
 screens onto those scales, so nothing can drift off them.
 

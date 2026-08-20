@@ -195,7 +195,8 @@ def askbar(placeholder, height=106, tabbar=False):
         + inner + '</div></div>')
 
 def cardstyle(pad="18px", radius=R_CARD, bg=SURF, extra=""):
-    return ('background: ' + bg + '; border-radius: ' + radius + '; padding: ' + pad + '; ' + SHADOW + extra)
+    return ('background: ' + bg + '; ' + CARD_EDGE + '; border-radius: ' + radius
+            + '; padding: ' + pad + '; ' + SHADOW + extra)
 
 def tinted(inner, note, pad="14px 16px"):
     """A field the model filled in. It speaks from its own soft panel."""
@@ -233,7 +234,7 @@ def aicard(text, head="", size="15.5px", aid=""):
 def label(t, color=INK):
     """A section heading. Sentence case, because a shouted label is noise."""
     txt = t if t[:1].islower() else t[:1].upper() + t[1:].lower()
-    return ('<div style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: ' + color + '">' + txt + '</div>')
+    return ('<div style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + color + '">' + txt + '</div>')
 
 def caption(t, color=INK3):
     """A quiet line above something, e.g. what you said."""
@@ -245,14 +246,48 @@ def money(whole, dec, size=50, dsize=24, color=INK, dcolor=None):
         + color + '">' + whole + '</span><span class="num" style="font-size: ' + str(dsize)
         + 'px; font-weight: 700; letter-spacing: -0.025em; color: ' + (dcolor or INK3) + '">' + dec + '</span></div>')
 
+def navbar(title):
+    """Holds the back button. Its own title and background only appear once
+    you have scrolled the big title away."""
+    return ('<div class="nav" style="position: absolute; left: 0; right: 0; top: 0; z-index: 4; height: 98px; '
+      'padding: 54px 20px 0 20px; display: flex; align-items: center; gap: 10px">'
+      '<div class="navbg" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SURF
+      + '; border-bottom: 1px solid ' + LINE + '; opacity: 0"></div>'
+      + '<div style="position: relative">' + back() + '</div>'
+      + '<span class="navtitle" style="position: relative; flex-grow: 1; text-align: center; font-size: 17px; '
+        'font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '; opacity: 0">' + title + '</span>'
+      '<div style="width: 40px; flex-shrink: 0"></div></div>')
+
+def pagehead(title, sub=""):
+    p = ''
+    if sub:
+        p = ('<div style="font-size: 15px; font-weight: 500; line-height: 1.45; color: ' + INK3
+             + '; text-wrap: pretty">' + sub + '</div>')
+    return ('<div class="phead" style="display: flex; flex-direction: column; gap: 6px">'
+      '<div style="font-size: 30px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.12; color: '
+      + INK + '; text-wrap: balance">' + title + '</div>' + p + '</div>')
+
+def T(title, sub=""):
+    """Marks a screen's title. page() turns it into the bar and the big head."""
+    return "\x00T\x01" + title + "\x01" + sub + "\x02"
+
+_TMARK = re.compile("\x00T\x01(.*?)\x01(.*?)\x02", re.S)
+
 def page(inner, gap=14, top=54, center=False, wash_h=0):
+    nav = ""
+    m = _TMARK.search(inner)
+    if m:
+        nav = navbar(m.group(1))
+        inner = inner[:m.start()] + pagehead(m.group(1), m.group(2)) + inner[m.end():]
+        top = 98
+        gap = max(gap, 20)
     w = ''
     if wash_h:
         w = ('<div style="position: absolute; left: 0; right: 0; top: 0; height: ' + str(wash_h)
              + 'px; background: ' + WASH + '; pointer-events: none; z-index: 0"></div>')
-    return ('<div class="pg" style="position: relative; ' + ('justify-content: center; ' if center else '')
+    return (nav + '<div class="pg" style="position: relative; ' + ('justify-content: center; ' if center else '')
             + 'padding: ' + str(top) + 'px 20px 0 20px; display: flex; flex-direction: column; gap: '
-            + str(gap) + 'px">\n' + w + '<div style="position: relative; display: flex; flex-direction: column; gap: '
+            + str(gap) + 'px">\n' + w + '<div class="pgin" style="position: relative; display: flex; flex-direction: column; gap: '
             + str(gap) + 'px">' + inner + '</div>\n</div>')
 
 # ================= HOME =================
@@ -271,7 +306,7 @@ home = page(
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("bell", 20, INK, 1.8) + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 8px; padding-top: 4px">'
     + caption("Total balance")
-    + money("&#8358;248,320", ".75", 44, 22, INK, INK3)
+    + '<div id="mBal">' + money("&#8358;248,320", ".75", 44, 22, INK, INK3) + '</div>'
     + '<div style="display: flex; gap: 20px; align-items: center; padding-top: 4px">'
       '<div style="display: flex; align-items: center; gap: 6px">'
         '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2.5v9M3.6 8.1 7 11.5l3.4-3.4" stroke="' + IN + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
@@ -328,7 +363,7 @@ def listrow(name, ic, sub="", last=False, go="", act="soon"):
       + chevbtn() + '</div>')
 
 services = page(
-  topbar("All services")
+  T("All services", "Everything you can pay for from here")
   + '<div' + hook("ask") + ' style="height: 52px; border-radius: 26px; background: ' + FILL + '; ' + SHADOW
     + '; display: flex; align-items: center; gap: 11px; padding: 0 17px">' + icon("search", 19, INK3, 1.6)
     + '<span style="flex-grow: 1; font-size: 15.5px; font-weight: 500; color: ' + INK3 + '">Search, or say what you need</span>'
@@ -337,17 +372,17 @@ services = page(
     + '<div style="display: flex; gap: 10px">' + grid_tile("Airtime","airtime","Airtime") + grid_tile("Data","data","Airtime") + grid_tile("Power","power","PowerPay") + grid_tile("Send","send","Pay") + '</div>'
     + '<div style="display: flex; gap: 10px">' + grid_tile("Cable TV","tv","","soon") + grid_tile("Betting","bet","","soon") + grid_tile("Loan","loan","Loan") + grid_tile("Cards","card","Card") + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("BILLS")
-    + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+    + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
       + listrow("Internet", "globe", "Spectranet, Smile, Starlink")
       + listrow("Water", "water", "State water boards")
       + listrow("Waste", "waste", "LAWMA and others")
       + listrow("School fees", "school", "WAEC, JAMB, tuition", True) + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("SAVE AND BORROW")
-    + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+    + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
       + listrow("Savings pot", "pot", "Put money aside")
       + listrow("Fixed savings", "clock", "Lock it for a set time", True) + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("MONEY")
-    + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+    + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
       + listrow("Request money", "request", "Ask someone to pay you")
       + listrow("Send abroad", "globe", "Pounds, dollars and euros", True) + '</div></div>', 15)
 services += ('<div style="position: absolute; left: 0; right: 0; bottom: 0; height: 90px; background: linear-gradient(180deg, rgba(244,245,247,0) 0%, '
@@ -382,7 +417,7 @@ def bundle(size, price, act=""):
 
 # ================= BUY AIRTIME / DATA =================
 airtime = page(
-  topbar()
+  T("Buy data", "Check the parts I filled in before it goes")
   + quote("2k data for mum")
   + aline("5GB for 30 days, on Mum&#8217;s MTN line.", "17.5px", "aLine")
   + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 10px">'
@@ -413,7 +448,7 @@ write("Airtime", airtime, "", True)
 
 # ================= ELECTRICITY, PAID =================
 power = page(
-  topbar()
+  T("Bill paid", "Ikeja Electric, a moment ago")
   + '<div style="display: flex; flex-direction: column; gap: 14px; align-items: flex-start">'
     '<div style="width: 52px; height: 52px; border-radius: ' + PILL + '; background: color-mix(in srgb, ' + ACC
       + ' 10%, ' + SURF + '); border: 1px solid color-mix(in srgb, ' + ACC + ' 26%, transparent); display: flex; align-items: center; justify-content: center">'
@@ -426,7 +461,7 @@ power = page(
     + '<span class="num" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
     + '<div' + hook("", "copy") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 46px; border-radius: 23px; background: ' + FILL + '">'
       + icon("copy", 17, INK, 1.8) + '<span style="font-size: 14px; font-weight: 600; color: ' + INK + '">Copy the token</span></div></div>'
-  + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+  + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
     + plainrow("Meter", "0102 4457 8891")
     + plainrow("Units", "38.4 kWh")
     + plainrow("Reference", "IKJ-90441-2286", True) + '</div>'
@@ -457,10 +492,10 @@ def bill(name, ic, sub, amount, chp, last=False, dim=False, go="", act="soon"):
       '<span class="num" style="font-size: 15px; font-weight: 700; color: ' + nc + '">' + amount + '</span></div>')
 
 bills = page(
-  topbar("Bills")
+  T("Bills", "Everything that repeats each month")
   + '<div style="' + cardstyle("14px") + '">' + aline("&#8358;34,500 of bills this month. Two of them are not covered.", "16px") + '</div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("THIS MONTH")
-    + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+    + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
       + bill("Ikeja Electric", "power", "Due Thursday", "&#8358;8,000", chip("I pay it", ACC_TEXT), False, False, "PowerPay")
       + bill("DStv Compact", "tv", "Due 24 August", "&#8358;12,500", chip("Not covered", WARN))
       + bill("Spectranet", "globe", "Due 27 August", "&#8358;15,000", chip("Not covered", WARN))
@@ -493,7 +528,7 @@ def dchip(t, on, act=""):
       + INK2 + '">' + t + '</div>')
 
 loan = page(
-  topbar("Loan")
+  T("Borrow", "The whole cost, before you decide")
   + aline("You asked what you could borrow. Here is the whole cost.", "16px")
   + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 14px">'
     + label("HOW MUCH YOU WANT")
@@ -508,7 +543,7 @@ loan = page(
       '<div style="display: flex; justify-content: space-between"><span class="num" style="font-size: 12.5px; color: ' + INK3 + '">&#8358;10,000</span>'
       '<span class="num" style="font-size: 12.5px; color: ' + INK3 + '">&#8358;250,000 is your limit</span></div></div>'
     + '<div style="display: flex; gap: 9px">' + dchip("30 days", False, "term|1") + dchip("60 days", False, "term|2") + dchip("90 days", True, "term|3") + '</div></div>'
-  + '<div style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+  + '<div style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
     + rowline("You get today", "&#8358;150,000", False, False, INK, "lnGet")
     + rowline("Interest, 4% a month", "&#8358;18,000", False, False, INK, "lnInt")
     + rowline("One off fee", "&#8358;1,500")
@@ -529,7 +564,7 @@ def act(name, ic, go="", action="soon"):
       + '<span style="font-size: 11.5px; font-weight: 600; color: ' + INK2 + '">' + name + '</span></div>')
 
 vcard = page(
-  topbar("Virtual card")
+  T("Virtual card", "Made for one merchant, with its own limit")
   + '<div id="cdFace" style="height: 194px; border-radius: ' + R_CARDLG + '; background: ' + CARD_FACE + '; ' + SH_RAISE + '; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; '
     + SHADOW + '">'
     '<div style="display: flex; align-items: flex-start; justify-content: space-between">'
@@ -569,8 +604,8 @@ def wave():
     ops = [0.3,0.5,0.7,0.5,1,0.8,1,0.7,0.85,0.4,0.7,1,0.5,0.75,0.3,0.6,0.85,0.35,0.25,0.4,0.22,0.18]
     out = '<div style="display: flex; align-items: center; gap: 3px; height: 44px">'
     for h, o in zip(hs, ops):
-        out += ('<div style="width: 3px; height: ' + str(h) + 'px; border-radius: 2px; background: ' + ACC
-                + '; opacity: ' + str(o) + '"></div>')
+        out += ('<div class="wv" style="width: 3px; height: ' + str(h) + 'px; border-radius: 2px; background: ' + ACC
+                + '; opacity: ' + str(o) + '; transform-origin: center"></div>')
     return out + '</div>'
 
 def sugg(t, go=""):
@@ -632,9 +667,7 @@ def qchip(t):
       + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
 
 answer = page(
-  '<div style="display: flex; align-items: center; justify-content: space-between; height: 44px; gap: 12px">' + back()
-    + '<div style="display: flex; flex-direction: column; align-items: flex-end; gap: 3px">' + caption("You asked")
-    + '<span style="font-size: 13px; color: ' + INK2 + '">how much do I spend on airtime and data</span></div></div>'
+  T("Airtime and data", "You asked how much you spend on staying connected")
   + aline("&#8358;18,900 on airtime and data last month. That is your highest month this year.")
   + '<div style="' + cardstyle("18px 16px 8px 16px") + '; display: flex; flex-direction: column; gap: 18px">'
     + '<div style="display: flex; align-items: flex-end; justify-content: space-between">' + money("&#8358;18,900", "", 40, 20)
@@ -657,7 +690,7 @@ write("Answer", answer)
 
 # ================= SEND MONEY =================
 pay = page(
-  topbar()
+  T("Send money", "To Sarah Adeyemi")
   + quote("send Sarah 50k for the flat deposit")
   + aline("Here it is, ready to go. Check the three parts I filled in.")
   + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 10px">'
@@ -711,10 +744,7 @@ def never(t):
       + '<span style="font-size: 14.5px; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
 
 rules = page(
-  topbar()
-  + '<div style="display: flex; flex-direction: column; gap: 8px">'
-    '<span style="font-size: 25px; font-weight: 600; letter-spacing: -0.02em">Standing instructions</span>'
-    '<span style="font-size: 15.5px; font-weight: 500; color: ' + INK2 + '">What I can do without asking you first.</span></div>'
+  T("Standing instructions", "What I can do without asking you first")
   + '<div style="display: flex; flex-direction: column; gap: 10px">'
     + rule("Pay the Ikeja Electric bill", "When it lands, up to &#8358;10,000.", "Paid 3 times &#183; &#8358;22,400", "See log", True)
     + rule("Buy 5GB when my data runs out", "Once a month at most.", "Bought twice &#183; &#8358;5,000", "See log", True)
@@ -731,7 +761,7 @@ write("Rules", rules)
 
 # ================= ELECTRICITY, BEFORE PAYING =================
 powerpay = page(
-  topbar()
+  T("Pay a bill", "Ikeja Electric, on your saved meter")
   + quote("pay my light bill")
   + aline("Ikeja Electric, the meter you always use.")
   + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 10px">'
@@ -757,7 +787,7 @@ write("PowerPay", powerpay, "", True)
 
 # ================= DONE =================
 done = page(
-  '<div style="display: flex; align-items: center; height: 44px"></div>'
+  T("All done", "Your receipt is below, and in your messages")
   + '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
     '<div style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: color-mix(in srgb, ' + ACC
       + ' 10%, ' + SURF + '); border: 1px solid color-mix(in srgb, ' + ACC + ' 26%, transparent); display: flex; align-items: center; justify-content: center">'
@@ -765,10 +795,10 @@ done = page(
     '<div style="display: flex; flex-direction: column; gap: 6px">'
       '<div id="dnAmt">' + money("&#8358;2,500", "", 40, 20) + '</div>'
       '<span id="dnWhat" style="font-size: 15px; color: ' + INK2 + '">5GB sent to Mum</span></div></div>'
-  + '<div id="dnCard" style="background: ' + SURF + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
+  + '<div id="dnCard" style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_PANEL + '; ' + SHADOW + '; overflow: hidden">'
     + plainrow("From", "Everyday &#183; 0102 4457 88")
     + plainrow("Reference", "MTN-88231-4471", True) + '</div>'
-  + '<div id="dnOffer">' + offer("Want me to do this every month without asking?", "Set it up", "Rules") + '</div>', 16, 54, True)
+  + '<div id="dnOffer">' + offer("Want me to do this every month without asking?", "Set it up", "Rules") + '</div>', 16)
 done += ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 30px 20px 30px 20px; display: flex; gap: 10px; background: linear-gradient(180deg, rgba(244,245,247,0) 0%, '
   + BG + ' 40%)">'
   '<div' + hook("", "soon") + ' style="flex-grow: 1; height: 52px; border-radius: 26px; background: ' + FILL

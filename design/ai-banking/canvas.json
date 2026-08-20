@@ -209,14 +209,14 @@
       "x": -500,
       "y": 600,
       "w": 420,
-      "text": "Type, spacing and shape\n\nThis pass pulled everything onto a scale. There were 31 different type sizes across the screens, and two of them were arithmetic accidents nobody chose. There are nine now, and only three weights.\n\nGaps went from 18 different values to seven, on a four pixel rhythm. Corner radii went from 23 to five, plus fully round.\n\nThe scales are enforced when the screens are built, so nothing can drift off them again.\n\nSection headings are sentence case now. A shouted label in tiny tracked capitals is noise, and there were 31 of them."
+      "text": "Type, spacing and shape\n\nEvery screen after the home screen opens with a large title and a line of subtext. In the walkthrough it folds into a small title in the bar as you scroll, which is also what makes the scrolling obvious.\n\nThat title is 30px against 15px body and 13px captions, which is the contrast that was missing before. There were 31 type sizes across the screens once, and two of them were arithmetic accidents nobody chose. There are eight now, and three weights.\n\nGaps run on a four pixel rhythm, seven values instead of eighteen. Corner radii went from 23 values to five, plus fully round. All three scales are enforced when the screens are built, so nothing can drift off them."
     },
     {
       "id": "note-colour",
       "x": -500,
       "y": 880,
       "w": 420,
-      "text": "Colour\n\nThe structure is monochrome. Greys and near black, on a near white page. A black circle marks a main action and a black pill marks the one thing you are meant to do on a screen.\n\nThe only colour that is not a grey belongs to the model. Its badge is orange, and the panel its words sit in is five percent of that orange. Nothing else in the app may use it.\n\nGreen and red are kept for meaning alone. Green is money coming in. Red is a bill nobody is covering."
+      "text": "Colour\n\nThe page is white everywhere. Grey survives only as a fill inside a card, so it groups things rather than sitting under the whole product.\n\nThe accent is a deep teal. It marks the key thing on a screen: the badge the model speaks from, the panel its words sit in, a selected state, the highlighted bar in a chart and the model's own links.\n\nBlack stays the one action you are meant to take, so a suggestion is never mistaken for a confirmation. Green is money coming in, and it sits 37 degrees of hue away from the teal so the two never blur. Red is a bill nobody is covering."
     },
     {
       "id": "note-naira",
@@ -228,7 +228,7 @@
     {
       "id": "note-placeholder",
       "x": -500,
-      "y": 1600,
+      "y": 1980,
       "w": 420,
       "text": "The name, the account numbers, the meter number and the amounts are all made up. Merchant tiles are grey squares on purpose, since real logos would come from your own data.\n\nTell me what the real ones should be and I will change them."
     },
@@ -238,6 +238,13 @@
       "y": 880,
       "w": 420,
       "text": "Contrast\n\nEvery text pair on these screens was measured against WCAG AA at the size it is actually used. Fourteen pairs failed before this pass and none fail now.\n\nThe worst was the thing you looked at first. The balance used to be white on an orange wash at 2.0 to 1, where 3.0 is the floor. The account number under it was 1.46 to 1. The wash is gone and the balance is near black on the page at 17.3 to 1.\n\nNo text is set in anything lighter than the mid grey, which clears 4.5 to 1 on white, on the page and on a filled panel."
+    },
+    {
+      "id": "note-motion",
+      "x": -500,
+      "y": 1560,
+      "w": 420,
+      "text": "Motion\n\nThe walkthrough moves with anime.js, which rides inside the file because a published page cannot load a script from anywhere else.\n\nScreens slide in and the one behind slides back. Cards arrive in a stagger. The balance counts up. The waveform breathes while the model listens. The knob on a slide to confirm springs back if you let go early.\n\nEvery one of those has a fall back. If the frame loop is throttled, a timer stops the animation and snaps the screen to its finished state, so nothing can be left blank or stuck half way. It all switches off if the phone is set to reduce motion.\n\nThe artboards here are still pictures. The motion is in the walkthrough."
     }
   ],
   "launch": {
