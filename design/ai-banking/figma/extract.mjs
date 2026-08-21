@@ -13,8 +13,9 @@ const REV = SP + '/rev';
 const OUT = SP + '/figma';
 fs.mkdirSync(OUT, { recursive: true });
 
-const ORDER = ['Main','Actions','Receive','Ask','Answer','Pay','Done','History','Settings',
-               'Services','Airtime','PowerPay','Power','Bills','Loan','Card','Goal','Rules'];
+// Whatever build.py wrote is what gets extracted. A second hand written list
+// here would go stale the moment a screen is added, and it did.
+const ORDER = fs.readdirSync(REV).filter(f => f.endsWith('.html')).map(f => f.slice(0, -5)).sort();
 
 const EXTRACT = () => {
   const root = document.querySelector('x-dc > div');
