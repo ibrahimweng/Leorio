@@ -10,7 +10,7 @@ ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
 ORDER = ["Main", "Ask", "Services", "Airtime", "PowerPay", "Power", "Bills",
          "Loan", "Card", "Answer", "Pay", "Rules", "Goal", "Done",
-         "Settings", "History"]
+         "Settings", "History", "Paused"]
 
 def acc(html):
     return html.replace("{{accent}}", "var(--acc)")
@@ -445,6 +445,14 @@ var ACTIONS = {
   },
   copy: function(){ toast('Token copied'); },
   toggle: function(el){ toggleSwitch(el); },
+  // Saying the month is tight is the one place the model changes how it behaves,
+  // so the walkthrough takes you straight to what changed.
+  tight: function(el){
+    toggleSwitch(el);
+    var on = el.classList.contains('on');
+    toast(on ? 'Noted. I have stopped moving money out.' : 'Back to normal.');
+    if(on) setTimeout(function(){ push('Paused', 'push'); }, 560);
+  },
   reveal: function(){ st.revealed = !st.revealed; renderCard(); pop(document.getElementById('cdNum')); },
   freeze: function(){ st.frozen = !st.frozen; renderCard(); toast(st.frozen ? 'Card frozen' : 'Card unfrozen'); },
   gb: function(el, a){ st.bundle = a[1]; st.bundlePrice = Number(a[2].replace(/,/g,'')); renderAirtime(); pop(el); },

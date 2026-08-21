@@ -639,13 +639,19 @@ home_inner = (
       '<div' + hook("Airtime") + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + FILL
       + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
         '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">Buy it again</span>' + chev(12, INK, 2.2) + '</div>')
-        + tx("Holiday goal", "pot", "Round ups &#183; 07:30", "&#8358;280"))
+        + tx("Holiday goal", "pot", "Round ups &#183; 07:30", "&#8358;280")
+        + aisay("Three changes you made", "They save you &#8358;1,800 every month. The data plan, the DStv package, and the transfer you moved off your card.",
+            '<div' + hook("", "soon") + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + FILL
+            + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
+              '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">See the three</span>' + chev(12, INK, 2.2) + '</div>'))
     + daygroup("Yesterday",
         promorow("Your card is ready", "Spend online anywhere", "card", "Card")
         + txgroup(tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True)
                 + tx("Ikeja Electric", "power", "Meter 4457 8891 &#183; 11:22", "&#8358;8,000"))
-        + '<div' + hook("Answer") + ' style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
-          + aicard("You spent &#8358;18,900 on airtime and data last month. That is your highest month this year.", "Where your money went") + '</div>'
+        + aisay("Where your money went", "You spent &#8358;18,900 on airtime and data last month. That is your highest month this year.",
+            '<div' + hook("Answer") + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + FILL
+            + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
+              '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">Show me what would help</span>' + chev(12, INK, 2.2) + '</div>')
         + tx("Netflix", "card", "Virtual card &#183; 09:00", "&#8358;5,200"))
   + '</div>')
 
@@ -1039,8 +1045,21 @@ def never(t):
     return ('<div style="display: flex; align-items: center; gap: 12px">' + badge("lock", "neutral", 32, "11px", 16)
       + '<span style="font-size: 14.5px; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
 
+TIGHT = ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
+  '<div style="display: flex; align-items: flex-start; gap: 14px">'
+  '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 6px">'
+  '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">Money is tight this month</span>'
+  '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2 + '; text-wrap: pretty">'
+  'Turn this on and I stop moving money into savings, and I stop asking you to. '
+  'Your goals wait where they are. Nothing is lost and nothing is charged.</span></div>'
+  + switch(False, "tight") + '</div>'
+  '<div style="display: flex; align-items: center; height: 32px; border-top: 1px solid ' + LINE + '; padding-top: 6px">'
+  '<span style="flex-grow: 1; font-size: 12px; font-weight: 400; color: ' + INK3 + '">'
+  'You can also just tell me, any time.</span></div></div>')
+
 rules = page(
   T("Standing instructions", "What I can do without asking you first")
+  + TIGHT
   + '<div style="display: flex; flex-direction: column; gap: 10px">'
     + rule("Move &#8358;20,000 to Holiday on payday", "The day your salary lands.", "Moved 4 times &#183; &#8358;80,000 put aside", "See log", True)
     + rule("Pay the Ikeja Electric bill", "When it lands, up to &#8358;10,000.", "Paid 3 times &#183; &#8358;22,400", "See log", True)
@@ -1096,13 +1115,15 @@ done += dockback("Ask about this")
 write("Done", done)
 
 # ================= A GOAL =================
-def feeder(name, ic, sub, amount, last=False):
-    return ('<div style="display: flex; align-items: center; gap: 14px; height: 68px">'
+def feeder(name, ic, sub, amount, last=False, off=False):
+    """A thing putting money into the goal. When the month is tight it is drawn
+    stopped rather than removed, because the person has not given it up."""
+    return ('<div style="display: flex; align-items: center; gap: 14px; height: 68px' + ('; opacity: 0.5' if off else '') + '">'
       + badge(ic, None, 40, R_ICON, 20)
       + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
       '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
       '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
-      '<span class="num" style="font-size: 17px; font-weight: 700; color: ' + ACC_TEXT + '">' + amount + '</span></div>')
+      '<span class="num" style="font-size: 17px; font-weight: 700; color: ' + (INK3 if off else ACC_TEXT) + '">' + amount + '</span></div>')
 
 goal = page(
   T("Holiday", "&#8358;250,000 by 12 March")
@@ -1129,6 +1150,36 @@ goal = page(
 goal += dockback("Ask about this goal")
 write("Goal", goal)
 
+# ================= THE SAME GOAL, WITH THE MONTH DECLARED TIGHT =================
+# The one place the product shows the model behaving differently for one person
+# than for another. Nothing is deleted, nothing is charged, and the cost of the
+# pause is stated plainly instead of being hidden or scolded about.
+paused = page(
+  T("Holiday", "Paused while things are tight")
+  + '<div style="' + cardstyle("20px") + '; display: flex; flex-direction: column; align-items: center; gap: 16px">'
+    + ring(33)
+    + '<div style="display: flex; flex-direction: column; align-items: center; gap: 4px">'
+      + '<div style="display: flex; align-items: baseline; gap: 1px">'
+        '<span class="num" style="font-size: 30px; font-weight: 700; letter-spacing: -0.04em; color: ' + INK + '">&#8358;82,400</span></div>'
+      + '<span class="num" style="font-size: 15px; font-weight: 500; color: ' + INK3 + '">of &#8358;250,000, holding steady</span></div></div>'
+  + aline("You told me money is tight, so I have stopped moving it. Your date moves from 12 March to 9 April. "
+          "Nothing has been taken and nothing has been charged.", "16px")
+  + '<div style="display: flex; flex-direction: column; gap: 12px">' + label("Waiting for you")
+    + '<div style="display: flex; flex-direction: column">'
+      + feeder("Payday transfer", "pot", "Paused since 3 August", "Paused", False, True)
+      + feeder("Round ups", "swap", "Paused since 3 August", "Paused", False, True)
+      + feeder("Money back on top ups", "airtime", "Still going in", "&#8358;120", True) + '</div></div>'
+  + '<div style="display: flex; gap: 10px">'
+    '<div' + hook("", "soon") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + FILL
+    + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + INK + '">Add money anyway</div>'
+    '<div' + hook("Goal") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
+    + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + BTN_INK + '">Start again</div></div>'
+  + '<div style="display: flex; gap: 10px; align-items: flex-start">' + icon("lock", 16, INK3, 1.8, "; margin-top: 2px")
+    + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
+    + '; text-wrap: pretty">I will not ask you about this again until you tell me to.</span></div>', 20)
+paused += dockback("Ask about this goal")
+write("Paused", paused)
+
 
 # ================= SETTINGS =================
 def setrow(name, ic, go="", act="soon", color=None, last=False):
@@ -1144,7 +1195,7 @@ def setgroup(title, rows):
 settings = page(
   '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.035em; color: ' + INK + '">Settings</div>'
   + '<div style="padding-top: 16px">'
-  + promorow("Get Leorio Plus", "Higher limits and no fees", "star", "", "soon") + '</div>'
+  + promorow("Get Leorio Plus", "No transfer fees and instant settlement", "star", "", "soon") + '</div>'
   + setgroup("Security", setrow("Keys and recovery", "key") + setrow("Spending limits", "shield")
              + setrow("Standing instructions", "list", "Rules"))
   + setgroup("General", setrow("Your details", "person") + setrow("Notifications", "bell")

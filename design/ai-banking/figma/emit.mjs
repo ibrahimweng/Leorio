@@ -5,7 +5,8 @@
 import fs from 'fs';
 const SP = process.env.SP;
 const ORDER = ['Main','Actions','Receive','Ask','Answer','Pay','Done','History','Settings',
-               'Services','Airtime','PowerPay','Power','Bills','Loan','Card','Goal','Rules'];
+               'Services','Airtime','PowerPay','Power','Bills','Loan','Card','Goal','Rules',
+               'Paused'];
 
 // How far a child may move when auto layout takes over, in pixels. Below one
 // pixel nothing is visible, and anything that drifts further gets placed by
