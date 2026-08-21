@@ -1,8 +1,19 @@
-// Turns one extracted screen into the JavaScript that use_figma runs.
+// Turns the extracted screens into the JavaScript that use_figma runs.
+//
+// Screens are packed several to a script, because the code that rebuilds them
+// is the same for all of them and the tool takes the script as one string.
 import fs from 'fs';
 const SP = process.env.SP;
 const ORDER = ['Main','Actions','Receive','Ask','Answer','Pay','Done','History','Settings',
                'Services','Airtime','PowerPay','Power','Bills','Loan','Card','Goal','Rules'];
+
+// How far a child may move when auto layout takes over, in pixels. Below one
+// pixel nothing is visible, and anything that drifts further gets placed by
+// hand instead, so the screen always looks like the screen.
+const TOL = 1;
+// The tool caps a script at 50,000 characters. This sits well under it so a
+// whole script can also be read in one go while working on it.
+const CAP = 27000;
 
 const RUNNER = `
 const F='Plus Jakarta Sans';
@@ -13,20 +24,41 @@ function C(h){const a=String(h).split('|'),v=a[0];
 function P(h){const x=C(h);return {type:'SOLID',color:x.c,opacity:x.o};}
 function GT(d){const r=(d-90)*Math.PI/180,cs=Math.cos(r),sn=Math.sin(r);
   return [[cs,sn,0.5-0.5*cs-0.5*sn],[-sn,cs,0.5+0.5*sn-0.5*cs]];}
-const page=figma.currentPage;
-const old=page.children.find(n=>n.name===NAME); if(old) old.remove();
-const fr=figma.createFrame();
-fr.name=NAME; fr.resize(D.w,D.h); fr.x=X; fr.y=Y;
-fr.fills=[P(D.bg)]; fr.clipsContent=true;
-fr.cornerRadius=0;
-page.appendChild(fr);
-let made=0, errs=[];
-for(const n of D.nodes){
+
+let errs=[], made=0, autos=0, kept=0, undone=0;
+
+// Paint, edge and depth. Everything a frame needs to look like the element it
+// came from.
+function dress(nd,n){
+  const fl=[];
+  if(n.bg) fl.push(P(n.bg));
+  if(n.g) fl.push({type:'GRADIENT_LINEAR',gradientTransform:GT(n.g.deg),
+    gradientStops:n.g.stops.map(s=>{const c=C(s.c);return {position:s.p,color:{r:c.c.r,g:c.c.g,b:c.c.b,a:c.o}};})});
+  nd.fills=fl;
+  if(n.r){nd.topLeftRadius=n.r[0];nd.topRightRadius=n.r[1];nd.bottomRightRadius=n.r[2];nd.bottomLeftRadius=n.r[3];}
+  if(n.sw){
+    nd.strokes=[P(n.sc)]; nd.strokeAlign='INSIDE';
+    const u=n.sw.every(v=>v===n.sw[0]);
+    if(u){ nd.strokeWeight=n.sw[0]||0.01; }
+    else { nd.strokeWeight=Math.max.apply(null,n.sw)||0.01;
+      nd.strokeTopWeight=n.sw[0];nd.strokeRightWeight=n.sw[1];nd.strokeBottomWeight=n.sw[2];nd.strokeLeftWeight=n.sw[3]; }
+    if(n.sd) nd.dashPattern=[4,4];
+  }
+  const ef=[];
+  if(n.sh) for(const s of n.sh){const c=C(s.c);
+    ef.push({type:'DROP_SHADOW',color:{r:c.c.r,g:c.c.g,b:c.c.b,a:c.o},offset:{x:s.x,y:s.y},radius:s.b,spread:s.s,visible:true,blendMode:'NORMAL'});}
+  if(n.bl) ef.push({type:'BACKGROUND_BLUR',radius:n.bl,visible:true});
+  if(ef.length) nd.effects=ef;
+}
+
+// Builds one node and everything under it, placed by hand. Nothing reflows
+// yet, so at the end of this the screen is exactly what the browser drew.
+function build(n,parent){
   let nd=null;
   try{
     if(n.t===2){
-      nd=figma.createNodeFromSvg(typeof n.s==='number'?V[n.s]:n.s);
-      nd.name='icon';
+      nd=figma.createNodeFromSvg(V[n.s]);
+      nd.name=n.n||'Glyph';
       if(Math.abs(nd.width-n.w)>0.5 && nd.width>0) nd.rescale(n.w/nd.width);
     } else if(n.t===1){
       nd=figma.createText();
@@ -38,62 +70,159 @@ for(const n of D.nodes){
       if(n.lh) nd.lineHeight={unit:'PIXELS',value:n.lh};
       if(n.ls) nd.letterSpacing={unit:'PIXELS',value:n.ls};
       nd.textAlignVertical='TOP';
+      // Figma sets type a hair wider than the browser, so a line pinned to a
+      // measured width would re-wrap. Only text that already wrapped is pinned.
       if(n.ml){ nd.textAutoResize='HEIGHT'; nd.resize(n.w+4,n.h); if(n.ta) nd.textAlignHorizontal=n.ta.toUpperCase(); }
       else { nd.textAutoResize='WIDTH_AND_HEIGHT'; }
-      nd.name=n.s.slice(0,30);
+      nd.name=n.n||n.s.slice(0,30);
     } else {
-      nd=figma.createRectangle();
+      nd=figma.createFrame();
+      nd.name=n.n||'Frame';
       nd.resize(n.w,n.h);
-      nd.name='shape';
-      const fl=[];
-      if(n.bg) fl.push(P(n.bg));
-      if(n.g) fl.push({type:'GRADIENT_LINEAR',gradientTransform:GT(n.g.deg),
-        gradientStops:n.g.stops.map(s=>{const c=C(s.c);return {position:s.p,color:{r:c.c.r,g:c.c.g,b:c.c.b,a:c.o}};})});
-      nd.fills=fl;
-      if(n.r){nd.topLeftRadius=n.r[0];nd.topRightRadius=n.r[1];nd.bottomRightRadius=n.r[2];nd.bottomLeftRadius=n.r[3];}
-      if(n.sw){
-        nd.strokes=[P(n.sc)]; nd.strokeAlign='INSIDE';
-        const u=n.sw.every(v=>v===n.sw[0]);
-        if(u){ nd.strokeWeight=n.sw[0]||0.01; }
-        else { nd.strokeWeight=Math.max(...n.sw)||0.01;
-          nd.strokeTopWeight=n.sw[0];nd.strokeRightWeight=n.sw[1];nd.strokeBottomWeight=n.sw[2];nd.strokeLeftWeight=n.sw[3]; }
-        if(n.sd) nd.dashPattern=[4,4];
-      }
-      const ef=[];
-      if(n.sh) for(const s of n.sh){const c=C(s.c);
-        ef.push({type:'DROP_SHADOW',color:{r:c.c.r,g:c.c.g,b:c.c.b,a:c.o},offset:{x:s.x,y:s.y},radius:s.b,spread:s.s,visible:true,blendMode:'NORMAL'});}
-      if(n.bl) ef.push({type:'BACKGROUND_BLUR',radius:n.bl,visible:true});
-      if(ef.length) nd.effects=ef;
+      nd.fills=[];
+      // A frame clips by default and CSS does not, so only the ones that said
+      // overflow hidden clip. The artboard itself is handled by the caller.
+      nd.clipsContent=!!n.clip;
+      dress(nd,n);
+      parent.appendChild(nd);
+      nd.x=n.x; nd.y=n.y;
+      if(n.o!==undefined&&n.o<1) nd.opacity=n.o;
+      made++;
+      for(const k of (n.k||[])) build(k,nd);
+      return nd;
     }
     if(n.o!==undefined&&n.o<1) nd.opacity=n.o;
-    fr.appendChild(nd);
+    parent.appendChild(nd);
     nd.x=n.x; nd.y=n.y;
     made++;
-  }catch(e){ if(nd&&nd.parent) nd.remove(); errs.push(String(e.message||e).slice(0,120)); }
+  }catch(e){ if(nd&&nd.parent) nd.remove(); errs.push(String(e.message||e).slice(0,110)); }
+  return nd;
 }
-return {frame:fr.id, name:NAME, made, of:D.nodes.length, errs:errs.slice(0,6)};
+
+// Then the layout pass. A flex container becomes an auto layout frame, and
+// every child is checked against where the browser put it. If anything moved,
+// that one frame goes back to placing its children by hand. So the file gets
+// auto layout wherever auto layout is honest, and never at the cost of the
+// design.
+function tune(nd,n){
+  const kids=n.k||[];
+  for(let i=0;i<kids.length;i++){
+    if(kids[i].t===0 && nd.children[i]) tune(nd.children[i],kids[i]);
+  }
+  if(!n.L || nd.children.length!==kids.length || !nd.children.length) return;
+  autos++;
+  const save=nd.children.map(c=>({x:c.x,y:c.y,w:c.width,h:c.height}));
+  try{
+    nd.layoutMode = n.L.d==='V' ? 'VERTICAL' : 'HORIZONTAL';
+    nd.itemSpacing=n.L.gap||0;
+    nd.paddingTop=n.L.p?n.L.p[0]:0; nd.paddingRight=n.L.p?n.L.p[1]:0;
+    nd.paddingBottom=n.L.p?n.L.p[2]:0; nd.paddingLeft=n.L.p?n.L.p[3]:0;
+    nd.primaryAxisAlignItems=n.L.ji;
+    // BASELINE is only a thing on a row.
+    nd.counterAxisAlignItems=(n.L.ai==='BASELINE'&&nd.layoutMode!=='HORIZONTAL')?'MIN':n.L.ai;
+    // resize first: it resets both sizing modes, so setting them after is what
+    // makes the frame hold the size the browser gave it.
+    nd.resize(n.w,n.h);
+    nd.primaryAxisSizingMode='FIXED';
+    nd.counterAxisSizingMode='FIXED';
+    // Every child holds the size it measured. Text is left hugging, because a
+    // pinned width is what makes it wrap.
+    for(let i=0;i<nd.children.length;i++){
+      const c=nd.children[i], g=kids[i].gr;
+      if(c.type!=='TEXT'){ c.layoutSizingHorizontal='FIXED'; c.layoutSizingVertical='FIXED'; }
+      // The one child that grows takes the slack, which is what puts the
+      // chevron against the right edge instead of beside the label.
+      if(g){ try{ c[nd.layoutMode==='HORIZONTAL'?'layoutSizingHorizontal':'layoutSizingVertical']='FILL'; }catch(_){} }
+    }
+    let drift=0;
+    for(let i=0;i<nd.children.length;i++){
+      drift=Math.max(drift,Math.abs(nd.children[i].x-kids[i].x),Math.abs(nd.children[i].y-kids[i].y));
+    }
+    if(drift>TOL) throw new Error('drift');
+    kept++;
+  }catch(e){
+    nd.layoutMode='NONE';
+    for(let i=0;i<nd.children.length;i++){
+      const c=nd.children[i],s=save[i];
+      try{ if(Math.abs(c.width-s.w)>0.01||Math.abs(c.height-s.h)>0.01) c.resize(s.w,s.h); }catch(_){}
+      c.x=s.x; c.y=s.y;
+    }
+    undone++;
+  }
+}
+
+const page=figma.currentPage, out=[], ids=[];
+for(const S of SCREENS){
+  errs=[]; made=0; autos=0; kept=0; undone=0;
+  const old=page.children.find(n=>n.name===S.name); if(old) old.remove();
+  const fr=figma.createFrame();
+  fr.name=S.name; fr.resize(S.D.w,S.D.h); fr.x=S.X; fr.y=S.Y;
+  fr.fills=[P(S.D.bg)]; fr.clipsContent=true; fr.cornerRadius=0;
+  page.appendChild(fr);
+  for(const n of S.D.k) build(n,fr);
+  for(let i=0;i<S.D.k.length;i++) if(S.D.k[i].t===0 && fr.children[i]) tune(fr.children[i],S.D.k[i]);
+  ids.push(fr.id);
+  out.push({name:S.name, frame:fr.id, made, autoLayout:kept+'/'+autos, placedByHand:undone, errs:errs.slice(0,4)});
+}
+return {createdNodeIds:ids, screens:out};
 `;
 
 const STEP_X = 493, STEP_Y = 972, COLS = 9;
+
 const which = process.argv.slice(2);
 const list = which.length ? which : ORDER;
-for (const name of list) {
+
+// The comments are for whoever reads this file, not for the tool.
+const CODE = RUNNER.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n');
+
+const loaded = list.map(name => {
   const i = ORDER.indexOf(name);
   const data = JSON.parse(fs.readFileSync(SP + '/figma/' + name + '.json', 'utf8'));
-  const seen = new Map(), V = [];
-  for (const n of data.nodes) {
-    if (n.t !== 2) continue;
-    // the same glyph shows up four or five times a screen, so store it once
-    const svg = n.s.replace(/\s*style="[^"]*"/g, '');
-    if (!seen.has(svg)) { seen.set(svg, V.length); V.push(svg); }
-    n.s = seen.get(svg);
+  (function go(nodes) {
+    for (const n of nodes) {
+      for (const k of ['x','y','w','h']) if (typeof n[k] === 'number') n[k] = Math.round(n[k] * 10) / 10;
+      if (n.k) go(n.k);
+    }
+  })(data.k);
+  return { name, X: (i % COLS) * STEP_X, Y: Math.floor(i / COLS) * STEP_Y, D: data };
+});
+
+// One script. Every glyph in it is lifted into a lookup shared by the screens
+// in this script and no others, because a lookup covering all eighteen would
+// cost more than it saves.
+function render(group) {
+  const V = [], seen = new Map();
+  const screens = JSON.parse(JSON.stringify(group));
+  for (const s of screens) {
+    (function go(nodes) {
+      for (const n of nodes) {
+        if (n.t === 2) {
+          const svg = n.s.replace(/\s*style="[^"]*"/g, '');
+          if (!seen.has(svg)) { seen.set(svg, V.length); V.push(svg); }
+          n.s = seen.get(svg);
+        }
+        if (n.k) go(n.k);
+      }
+    })(s.D.k);
   }
-  const round = o => { for (const k of ['x','y','w','h']) if (typeof o[k] === 'number') o[k] = Math.round(o[k] * 10) / 10; };
-  data.nodes.forEach(round);
-  const code = 'const NAME=' + JSON.stringify(name)
-    + ';const X=' + ((i % COLS) * STEP_X) + ';const Y=' + (Math.floor(i / COLS) * STEP_Y) + ';'
-    + 'const V=' + JSON.stringify(V) + ';'
-    + 'const D=' + JSON.stringify(data) + ';' + RUNNER;
-  fs.writeFileSync(SP + '/figma/' + name + '.js', code);
-  console.log(name, code.length);
+  return 'const TOL=' + TOL + ';const V=' + JSON.stringify(V)
+       + ';const SCREENS=' + JSON.stringify(screens) + ';' + CODE;
 }
+
+// Grow a script one screen at a time and measure it each time, since how much
+// the lookup saves depends on which screens ended up together.
+const bundles = [];
+let group = [];
+for (const s of loaded) {
+  const tryIt = group.concat([s]);
+  if (group.length && render(tryIt).length > CAP) { bundles.push(group); group = [s]; }
+  else group = tryIt;
+}
+if (group.length) bundles.push(group);
+
+fs.mkdirSync(SP + '/figma/bundle', { recursive: true });
+bundles.forEach((b, i) => {
+  const js = render(b);
+  fs.writeFileSync(SP + '/figma/bundle/' + (i + 1) + '.js', js);
+  console.log((i + 1) + '  ' + String(js.length).padStart(6) + '  ' + b.map(s => s.name).join(' '));
+});

@@ -153,6 +153,7 @@ ICONS = {
  "bank": '<path d="M3.4 9.4 12 4.6l8.6 4.8M5.6 9.4v8.4M10 9.4v8.4M14 9.4v8.4M18.4 9.4v8.4M3.4 20.4h17.2"/>',
  "down": '<path d="M12 4.8v14.4M6.2 13.4 12 19.2l5.8-5.8"/>',
  "up": '<path d="M12 19.2V4.8M6.2 10.6 12 4.8l5.8 5.8"/>',
+ "sort": '<path d="M7.4 19.2V4.8M4 8.2l3.4-3.4 3.4 3.4"/><path d="M16.6 4.8v14.4M13.2 15.8l3.4 3.4 3.4-3.4"/>',
 }
 
 def icon(name, size=22, color=INK2, sw=1.7, extra=""):
@@ -544,6 +545,44 @@ def page(inner, gap=16, top=72, center=False, wash_h=0):
             + 'padding: ' + str(top) + 'px 20px 0 20px; display: flex; flex-direction: column; gap: '
             + str(gap) + 'px">\n<div class="pgin" style="position: relative; display: flex; flex-direction: column; gap: '
             + str(gap) + 'px">' + inner + '</div>\n</div>')
+def tx(name, ic, sub, amount, incoming=False, last=False):
+    col = IN_TEXT if incoming else INK
+    sign = "+" if incoming else "&#8722;"
+    return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 70px">'
+      + badge(ic, None, 40, R_ICON, 20)
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+      '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
+      '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
+      '<span class="num" style="font-size: 17px; font-weight: 700; color: ' + col + '">' + sign + amount + '</span></div>')
+
+def txgroup(rows):
+    """Consecutive money rows sit flush, the way a statement reads."""
+    return '<div style="display: flex; flex-direction: column">' + rows + '</div>'
+
+def fchip(t, on=False):
+    """A small tap chip. The feed is filtered by these, not by a hidden menu."""
+    return ('<div' + hook("", "soon") + ' class="fchip' + (' on' if on else '') + '" style="height: 34px; padding: 0 12px; border-radius: '
+      + PILL + '; background: ' + (BTN if on else FILL) + '; display: flex; align-items: center; justify-content: center">'
+      '<span style="font-size: 14px; font-weight: 700; color: ' + (BTN_INK if on else INK2) + '; white-space: nowrap">' + t + '</span></div>')
+
+def sortbtn():
+    """Sort lives at the right end of the filter row, where a control belongs
+    that changes the order rather than the contents."""
+    return ('<div' + hook("", "soon") + ' class="sortbtn" style="width: 36px; height: 36px; border-radius: ' + PILL
+      + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
+      + icon("sort", 18, INK2, 1.9) + '</div>')
+
+def seeall(go=""):
+    """The call to action, on the title line where the eye already is."""
+    return ('<div' + hook(go) + ' class="seeall" style="display: flex; align-items: center; gap: 4px">'
+      '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">See all</span>'
+      + chev(12, ACC_TEXT_HEX, 2.2) + '</div>')
+
+def daygroup(title, inner):
+    """A day of the feed. The grey date, then whatever happened under it."""
+    return ('<div style="display: flex; flex-direction: column; gap: 8px">' + sectionhead(title)
+      + '<div style="display: flex; flex-direction: column; gap: 12px">' + inner + '</div></div>')
+
 # ================= HOME =================
 def svc_tile(name, ic, go=""):
     return ('<div' + hook(go) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 8px">'
@@ -573,12 +612,24 @@ home_inner = (
   + '<div style="padding: 4px 0 8px 0">' + ctabtn("Receive", "", "receive", "down", "black", 44) + '</div>'
   + quickrow([("Airtime", "airtime", "Airtime"), ("Bills", "power", "Bills"),
               ("Savings", "pot", "Goal"), ("Services", "grid", "Services")])
-  + '<div style="padding-top: 8px">' + label("Activities") + '</div>'
-  + '<div style="display: flex; flex-direction: column; gap: 12px; margin-top: -4px">'
-    + LEAD
-    + promorow("Your card is ready", "Spend online anywhere", "card", "Card")
-
-    + aisay("Your data is nearly gone", "Your data usually runs out about now. The same 5GB is &#8358;2,500.",
+  # The section names itself, says in one line what it holds, and offers the
+  # way out. Then the filter and the sort, then the feed itself: what the model
+  # noticed and what the money did, in one column, newest first.
+  + '<div style="padding-top: 8px; display: flex; flex-direction: column; gap: 6px">'
+    + '<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">'
+      + label("Activities") + seeall("History") + '</div>'
+    + '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">What I noticed, and every naira that moved.</span>'
+  + '</div>'
+  + '<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">'
+    + '<div style="display: flex; align-items: center; gap: 6px">'
+      + fchip("All", True) + fchip("Insights") + fchip("In") + fchip("Out") + '</div>'
+    + sortbtn() + '</div>'
+  + '<div style="display: flex; flex-direction: column; gap: 20px">'
+    + daygroup("Today",
+        LEAD
+        + txgroup(tx("Sarah Adeyemi", "send", "Flat deposit &#183; 09:14", "&#8358;50,000")
+                + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500"))
+        + aisay("Your data is nearly gone", "Your data usually runs out about now. The same 5GB is &#8358;2,500.",
       '<div style="display: flex; align-items: center; gap: 12px; height: 64px; border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 14px">'
       + badge("data", None, 38, R_ICON, 19)
       + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px">'
@@ -588,9 +639,14 @@ home_inner = (
       '<div' + hook("Airtime") + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + FILL
       + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
         '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">Buy it again</span>' + chev(12, INK, 2.2) + '</div>')
-
-    + '<div' + hook("Answer") + ' style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
-      + aicard("You spent &#8358;18,900 on airtime and data last month. That is your highest month this year.", "Where your money went") + '</div>'
+        + tx("Holiday goal", "pot", "Round ups &#183; 07:30", "&#8358;280"))
+    + daygroup("Yesterday",
+        promorow("Your card is ready", "Spend online anywhere", "card", "Card")
+        + txgroup(tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True)
+                + tx("Ikeja Electric", "power", "Meter 4457 8891 &#183; 11:22", "&#8358;8,000"))
+        + '<div' + hook("Answer") + ' style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
+          + aicard("You spent &#8358;18,900 on airtime and data last month. That is your highest month this year.", "Where your money went") + '</div>'
+        + tx("Netflix", "card", "Virtual card &#183; 09:00", "&#8358;5,200"))
   + '</div>')
 
 home = page(home_inner, 16) + askbar("Ask, or just say what you need")
@@ -1103,16 +1159,6 @@ settings += dockback("Ask me to change something")
 write("Settings", settings)
 
 # ================= ACTIVITY =================
-def tx(name, ic, sub, amount, incoming=False, last=False):
-    col = IN_TEXT if incoming else INK
-    sign = "+" if incoming else "&#8722;"
-    return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 70px">'
-      + badge(ic, None, 40, R_ICON, 20)
-      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
-      '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
-      '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
-      '<span class="num" style="font-size: 17px; font-weight: 700; color: ' + col + '">' + sign + amount + '</span></div>')
-
 activity = page(
   T("History", "Everything that moved, newest first", "clock")
   + segment(["All", "In", "Out"], 0, "seg")

@@ -43,4 +43,4 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 .claude/settings.local.json
-design/ai-banking/node_modules/
+design/ai-banking/node_modules

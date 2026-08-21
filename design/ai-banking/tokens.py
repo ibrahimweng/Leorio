@@ -53,6 +53,16 @@ ACC_SOFT  = "color-mix(in srgb, " + ACC + " 7%, #FFFFFF)"    # the panel the mod
 ACC_EDGE  = "color-mix(in srgb, " + ACC + " 22%, transparent)"
 ACC_INK   = ACC_TEXT
 
+def _mix(top, pct, under="#000000"):
+    """The hex ACC_TEXT resolves to. An SVG paints through an attribute, not a
+    computed style, so color-mix() never reaches the renderer there. This keeps
+    a glyph and the words beside it the same blue, from the one accent."""
+    a, b, f = top.lstrip("#"), under.lstrip("#"), pct / 100.0
+    return "#%02X%02X%02X" % tuple(
+        round(int(a[i:i+2], 16) * f + int(b[i:i+2], 16) * (1 - f)) for i in (0, 2, 4))
+
+ACC_TEXT_HEX = _mix(ACC_HEX, 88)
+
 CARD_FACE = "linear-gradient(155deg, #1E3A8A 0%, #12235C 48%, #0A0F24 100%)"
 ON_DARK   = "#FFFFFF"
 ON_DARK_2 = "rgba(255,255,255,0.66)"
