@@ -33,6 +33,7 @@ const EXTRACT = () => {
     fauxbg: 'Scrim', pg: 'Page', pgin: 'Content', pbtn: 'Button',
     segcell: 'Segment item', backBtn: 'Back', qcell: 'Shortcut', dtile: 'Tile',
     slide: 'Slide to confirm', knob: 'Knob', phead: 'Page head',
+    mcp: 'MCP panel', pinkey: 'Key', pindot: 'Dot',
   };
 
   function col(s) {
@@ -140,8 +141,12 @@ const EXTRACT = () => {
       .map(v => Math.min(parseFloat(v) || 0, Math.min(b.width, b.height) / 2));
     if (rr.some(v => v > 0)) p.r = rr.map(v => Math.round(v * 100) / 100);
     if (bw.some(v => v > 0)) {
-      p.sw = bw; p.sc = col(cs.borderTopColor) || '000000';
-      if (cs.borderTopStyle === 'dashed') p.sd = 1;
+      // Take the colour and the style from a side that actually has width. A
+      // side with none computes its colour as currentColor, so a rule set only
+      // on the bottom would otherwise be read as black.
+      const side = ['Top', 'Right', 'Bottom', 'Left'][bw.findIndex(v => v > 0)];
+      p.sw = bw; p.sc = col(cs['border' + side + 'Color']) || '000000';
+      if (cs['border' + side + 'Style'] === 'dashed') p.sd = 1;
     }
     if (shRaw) p.sh = splitTop(shRaw).map(shadow);
     if (bfRaw) { const m = bfRaw.match(/blur\(([\d.]+)px\)/); if (m) p.bl = +m[1]; }

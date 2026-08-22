@@ -154,6 +154,11 @@ ICONS = {
  "down": '<path d="M12 4.8v14.4M6.2 13.4 12 19.2l5.8-5.8"/>',
  "up": '<path d="M12 19.2V4.8M6.2 10.6 12 4.8l5.8 5.8"/>',
  "sort": '<path d="M7.4 19.2V4.8M4 8.2l3.4-3.4 3.4 3.4"/><path d="M16.6 4.8v14.4M13.2 15.8l3.4 3.4 3.4-3.4"/>',
+ "faceid": '<path d="M3.6 8.8V6.2a2.6 2.6 0 0 1 2.6-2.6h2.6"/><path d="M15.2 3.6h2.6a2.6 2.6 0 0 1 2.6 2.6v2.6"/>'
+           '<path d="M20.4 15.2v2.6a2.6 2.6 0 0 1-2.6 2.6h-2.6"/><path d="M8.8 20.4H6.2a2.6 2.6 0 0 1-2.6-2.6v-2.6"/>'
+           '<path d="M8.6 9.4v2.4M15.4 9.4v2.4"/><path d="M12 9.4v4.4h-1.8"/><path d="M8.6 16.4a5 5 0 0 0 6.8 0"/>',
+ "del": '<path d="M20.2 5.6H9.8a2 2 0 0 0-1.5.7l-4.6 5.1a.9.9 0 0 0 0 1.2l4.6 5.1a2 2 0 0 0 1.5.7h10.4a1.6 1.6 0 0 0 1.6-1.6V7.2a1.6 1.6 0 0 0-1.6-1.6z"/>'
+        '<path d="M12.4 9.8 17 14.2M17 9.8l-4.6 4.4"/>',
 }
 
 def icon(name, size=22, color=INK2, sw=1.7, extra=""):
@@ -930,13 +935,13 @@ ask = ('<div class="behind">' + page(home_inner, 16) + askbar("Ask, or just say 
   '<div style="padding: 20px 20px 20px 20px; display: flex; flex-direction: column; gap: 20px">'
     '<div style="display: flex; align-items: center; gap: 9px">' + mark(24)
     + '<span style="font-size: 17px; font-weight: 700; color: ' + ACC_TEXT + '">Listening</span></div>'
-    '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.24; color: ' + INK + '; text-wrap: pretty">2k data for<span style="color: ' + INK3 + '"> mum</span></div>'
+    '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.24; color: ' + INK + '; text-wrap: pretty">Send 20k to<span style="color: ' + INK3 + '"> Sarah</span></div>'
     + wave()
     + '<div style="display: flex; flex-direction: column; gap: 10px">' + sectionhead("Or try one of these")
       + '<div style="display: flex; flex-direction: column; gap: 8px">'
       + sugg("Pay my light bill", "PowerPay") + sugg("How much did I spend on data?", "Answer") + sugg("What can I borrow?", "Loan") + '</div></div></div>'
   '<div style="padding: 0 20px 24px 20px; display: flex; gap: 10px; align-items: center">'
-    '<div' + hook("Airtime") + ' style="flex-grow: 1; height: 56px; border-radius: ' + PILL + '; background: ' + ACC + '; ' + SH_BTN
+    '<div' + hook("Chat") + ' style="flex-grow: 1; height: 56px; border-radius: ' + PILL + '; background: ' + ACC + '; ' + SH_BTN
     + '; display: flex; align-items: center; justify-content: center">'
     '<span style="font-size: 17px; font-weight: 700; color: #FFFFFF">Release to send</span></div>'
     '<div' + hook("back") + ' style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: ' + FILL
@@ -1016,6 +1021,150 @@ pay = page(
     + '; text-wrap: pretty">Nothing moves until you slide.</span></div>', 15)
 pay += confirmbar(slide("Slide to send &#8358;50,000", "done|Pay"))
 write("Pay", pay, "", True)
+
+# ================= THE SAME SEND, ASKED FOR IN CHAT =================
+# The voice sheet hands over to a conversation. What the model is doing is not
+# described in a paragraph, it is drawn: a panel belonging to the transfers
+# tool fills itself in a line at a time, inside the chat, where it can be
+# watched and stopped. It carries its own name and its own edge, because it is
+# not the app talking.
+
+def bubble(t):
+    """What the person said. It came off the voice sheet, so it keeps the
+    microphone beside it rather than pretending it was typed."""
+    return ('<div style="display: flex; justify-content: flex-end">'
+      '<div style="max-width: 74%; border-radius: 20px; background: ' + BTN
+      + '; padding: 12px 16px; display: flex; align-items: center; gap: 8px">'
+      '<div style="opacity: 0.6; display: flex">' + icon("mic", 16, "#FFFFFF", 1.9) + '</div>'
+      '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em; color: #FFFFFF">' + t + '</span></div></div>')
+
+def stepdot(state):
+    """Where a step has got to. Done, running, or not started yet. Drawn with
+    plain hexes, because an SVG paints through an attribute and a color-mix()
+    never reaches the renderer there."""
+    if state == "done":
+        return ('<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
+          '<circle cx="9" cy="9" r="9" fill="' + IN + '"/>'
+          '<path d="M5.3 9.2 7.9 11.8l4.8-5.2" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    if state == "work":
+        return ('<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
+          '<circle cx="9" cy="9" r="7.4" stroke="' + FILL3 + '" stroke-width="2.2"/>'
+          '<path d="M9 1.6a7.4 7.4 0 0 1 7.4 7.4" stroke="' + ACC_TEXT_HEX + '" stroke-width="2.2" stroke-linecap="round"/></svg>')
+    return ('<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
+      '<circle cx="9" cy="9" r="7.4" stroke="' + FILL3 + '" stroke-width="2.2"/></svg>')
+
+def toolrow(state, k, v, vcolor=INK, first=False, num=False):
+    edge = '' if first else 'border-top: 1px solid ' + LINE + '; '
+    cls = ' class="num"' if num else ''
+    return ('<div style="' + edge + 'display: flex; align-items: center; gap: 12px; height: 44px">' + stepdot(state)
+      + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>'
+      + '<span' + cls + ' style="flex-grow: 1; text-align: right; font-size: 14px; font-weight: 700; color: ' + vcolor + '">' + v + '</span></div>')
+
+def toolpanel(name, status, rows, cta="", go=""):
+    """The tool's own surface, running inside the chat."""
+    head = ('<div style="height: 48px; background: ' + FILL + '; border-bottom: 1px solid ' + LINE
+      + '; display: flex; align-items: center; gap: 10px; padding: 0 14px">' + badge("send", None, 26, "10px", 15)
+      + '<span style="flex-grow: 1; font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: ' + INK + '">' + name + '</span>'
+      '<div style="display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: ' + PILL
+      + '; background: ' + SURF + '">'
+      '<div style="width: 6px; height: 6px; border-radius: ' + PILL + '; background: ' + ACC + '"></div>'
+      '<span style="font-size: 12px; font-weight: 700; color: ' + INK2 + '">' + status + '</span></div></div>')
+    body = '<div style="padding: 4px 14px 12px 14px; display: flex; flex-direction: column">' + rows + '</div>'
+    foot = ('<div style="padding: 0 14px 14px 14px">' + pillbtn(cta, go, "", "", "black", True, 52) + '</div>') if cta else ''
+    return ('<div class="mcp" style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_CARD
+      + '; overflow: hidden">' + head + body + foot + '</div>')
+
+def chathead(title="Leorio"):
+    """Back goes to the top here. A conversation has no page title to centre,
+    so the model's own badge names the screen instead."""
+    return ('<div style="display: flex; align-items: center; gap: 10px; height: 44px">' + back()
+      + '<div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 8px">' + mark(24)
+      + '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + title + '</span></div>'
+      '<div style="width: 44px; flex-shrink: 0"></div></div>')
+
+def chatbar(placeholder="Reply, or just keep talking", height=104):
+    """The composer. The same bar as everywhere else, minus the left button,
+    because back has moved to the top."""
+    ask = ('<div' + hook("", "soon") + ' class="askpill" style="flex-grow: 1; min-width: 0; height: 48px; border-radius: ' + PILL
+      + '; background: ' + FILL + '; display: flex; align-items: center; gap: 9px; padding: 0 14px 0 8px">' + mark(32)
+      + '<span style="flex-grow: 1; font-size: 15px; font-weight: 400; color: ' + INK2
+      + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + placeholder + '</span>'
+      + icon("mic", 18, INK2, 1.8) + '</div>')
+    send = ('<div' + hook("", "soon") + ' class="fab" style="width: 56px; height: 56px; border-radius: ' + PILL
+      + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      + icon("up", 24, "#FFFFFF", 2.4) + '</div>')
+    return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: ' + str(height)
+      + 'px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, ' + BG
+      + ' 62%); display: flex; align-items: flex-end; padding: 0 18px 26px 18px">'
+      '<div style="display: flex; width: 100%; gap: 10px; align-items: center">' + ask + send + '</div></div>')
+
+chat = page(
+  chathead("Leorio")
+  + bubble("Send 20k to Sarah")
+  + aline("Sarah Adeyemi at GTBank, the same account the flat deposit went to. I am putting it together now.", "16px")
+  + toolpanel("Leorio Transfers", "Running",
+      toolrow("done", "Recipient", "Sarah Adeyemi", INK, True)
+      + toolrow("done", "Bank", "GTBank &#183; 0123 4457 8842", INK, False, True)
+      + toolrow("done", "Amount", "&#8358;20,000", INK, False, True)
+      + toolrow("done", "Fee", "Free", IN_TEXT)
+      + toolrow("work", "Arrives", "Checking with GTBank", INK3),
+      "Confirm &#8358;20,000", "Confirm")
+  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+    + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
+    + '; text-wrap: pretty">Face ID first. Nothing leaves your account until then.</span></div>', 16)
+chat += chatbar("Reply, or just keep talking")
+write("Chat", chat)
+
+# ================= CONFIRMING IT, FACE FIRST =================
+# Face ID is tried the moment this opens. The keypad is what you see when it
+# does not catch you, which is why the face keeps the corner of the pad it has
+# on a phone rather than becoming a screen of its own.
+
+def pindots(filled=2, total=4):
+    ds = ''
+    for i in range(total):
+        on = i < filled
+        ds += ('<div class="pindot" data-on="' + ("1" if on else "0") + '" style="width: 14px; height: 14px; border-radius: '
+          + PILL + '; background: ' + (INK if on else "transparent")
+          + ('' if on else '; border: 1.5px solid ' + LINE2) + '"></div>')
+    return '<div style="display: flex; justify-content: center; gap: 20px">' + ds + '</div>'
+
+def pinkey(t="", glyph="", act=""):
+    """One key. A digit sits in a filled circle and the two helpers do not,
+    the way a phone draws them."""
+    if glyph:
+        return ('<div' + hook("", act) + ' class="pinkey" style="width: 76px; height: 76px; border-radius: ' + PILL
+          + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + glyph + '</div>')
+    return ('<div' + hook("", "pin|" + t) + ' class="pinkey" style="width: 76px; height: 76px; border-radius: ' + PILL
+      + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      '<span class="num" style="font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + t + '</span></div>')
+
+def pinpad():
+    out = ''
+    for r in (["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]):
+        out += '<div style="display: flex; gap: 24px; justify-content: center">' + "".join(pinkey(k) for k in r) + '</div>'
+    out += ('<div style="display: flex; gap: 24px; justify-content: center">'
+      + pinkey("", icon("faceid", 34, ACC_TEXT_HEX, 1.7), "faceid") + pinkey("0")
+      + pinkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
+    return '<div style="display: flex; flex-direction: column; gap: 16px">' + out + '</div>'
+
+confirm = page(
+  topbar("Confirm")
+  + '<div style="display: flex; flex-direction: column; align-items: center; gap: 12px">'
+    + money("&#8358;20,000", "", 36)
+    + '<div style="display: flex; align-items: center; gap: 12px">' + avatar("SA", 40)
+      + '<div style="display: flex; flex-direction: column; gap: 2px">'
+      '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">Sarah Adeyemi</span>'
+      '<span class="num" style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">GTBank &#183; 0123 4457 8842</span>'
+      '</div></div></div>'
+  + '<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">'
+    '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em; color: ' + INK + '">Enter your passcode</span>'
+    '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">Face ID did not catch you. Tap the face to try again.</span></div>'
+  + pindots(2)
+  + pinpad()
+  + '<div style="display: flex; gap: 9px; align-items: center; justify-content: center">' + icon("lock", 16, INK3, 1.6)
+    + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">Nothing moves until the fourth number lands.</span></div>', 24)
+write("Confirm", confirm)
 
 # ================= STANDING INSTRUCTIONS =================
 def switch(on, act="toggle"):

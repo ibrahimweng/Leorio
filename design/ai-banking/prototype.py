@@ -8,9 +8,9 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 ACC = build.ACC_HEX
 ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
-ORDER = ["Main", "Ask", "Services", "Airtime", "PowerPay", "Power", "Bills",
-         "Loan", "Card", "Answer", "Pay", "Rules", "Goal", "Done",
-         "Settings", "History", "Paused"]
+ORDER = ["Main", "Ask", "Chat", "Confirm", "Services", "Airtime", "PowerPay",
+         "Power", "Bills", "Loan", "Card", "Answer", "Pay", "Rules", "Goal",
+         "Done", "Settings", "History", "Paused"]
 
 def acc(html):
     return html.replace("{{accent}}", "var(--acc)")
@@ -324,6 +324,12 @@ var st = {
   revealed:false, frozen:false
 };
 function setText(id, html){ var e = document.getElementById(id); if(e) e.innerHTML = html; }
+function setDot(el, on){
+  if(!el) return;
+  el.dataset.on = on ? '1' : '0';
+  el.style.background = on ? 'var(--ink)' : 'transparent';
+  el.style.border = on ? 'none' : '1.5px solid """ + build.LINE2 + """';
+}
 function pop(el){
   if(REDUCED || !el) return;
   A.remove(el);
@@ -390,6 +396,9 @@ var DONE = {
   Pay: function(){ return {
     amt: 50000, what: 'Sent to Sarah Adeyemi',
     rows: [['From','Everyday &#183; 0102 4457 88'], ['Reference','Flat deposit']], offer: false }; },
+  Chat: function(){ return {
+    amt: 20000, what: 'Sent to Sarah Adeyemi',
+    rows: [['From','Everyday &#183; 0102 4457 88'], ['Confirmed with','Your passcode']], offer: false }; },
   Loan: function(){
     var total = st.loanAmt + Math.round(st.loanAmt * 0.04 * st.loanMonths) + 1500;
     return { amt: st.loanAmt, what: 'In your Everyday account',
@@ -453,6 +462,22 @@ var ACTIONS = {
     toast(on ? 'Noted. I have stopped moving money out.' : 'Back to normal.');
     if(on) setTimeout(function(){ push('Paused', 'push'); }, 560);
   },
+  // Four numbers, and only the fourth one moves money, so it is the only key
+  // that navigates. Face ID is what was tried first, so it stays reachable.
+  pin: function(el, a){
+    var dots = screens.Confirm.querySelectorAll('.pindot');
+    var n = 0;
+    for(var i = 0; i < dots.length; i++) if(dots[i].dataset.on === '1') n++;
+    if(a[1] === 'del'){ if(n > 0) setDot(dots[n-1], false); return; }
+    if(n >= dots.length) return;
+    setDot(dots[n], true);
+    pop(el);
+    if(n + 1 >= dots.length){
+      fillDone('Chat');
+      setTimeout(function(){ for(var i = 0; i < dots.length; i++) setDot(dots[i], false); push('Done', 'push'); }, 340);
+    }
+  },
+  faceid: function(){ toast('Face ID is the quicker way through'); },
   reveal: function(){ st.revealed = !st.revealed; renderCard(); pop(document.getElementById('cdNum')); },
   freeze: function(){ st.frozen = !st.frozen; renderCard(); toast(st.frozen ? 'Card frozen' : 'Card unfrozen'); },
   gb: function(el, a){ st.bundle = a[1]; st.bundlePrice = Number(a[2].replace(/,/g,'')); renderAirtime(); pop(el); },
