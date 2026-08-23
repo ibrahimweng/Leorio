@@ -8,9 +8,9 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 ACC = build.ACC_HEX
 ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
-ORDER = ["Main", "Ask", "Chat", "Confirm", "Services", "Airtime", "PowerPay",
-         "Power", "Bills", "Loan", "Card", "Answer", "Pay", "Rules", "Goal",
-         "Done", "Settings", "History", "Paused"]
+ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
+         "Airtime", "PowerPay", "Power", "Bills", "Loan", "Card", "Answer",
+         "Pay", "Rules", "Goal", "Done", "Settings", "History", "Paused"]
 
 def acc(html):
     return html.replace("{{accent}}", "var(--acc)")
@@ -478,6 +478,24 @@ var ACTIONS = {
     }
   },
   faceid: function(){ toast('Face ID is the quicker way through'); },
+  // Two names that are not the same is the one thing a photograph cannot
+  // settle, so the button that moves money stays grey until it is answered.
+  fnwait: function(){ toast('Answer the name question first'); },
+  sure: function(el){
+    var go = document.getElementById('fnGo');
+    if(go){
+      go.removeAttribute('data-act');
+      go.dataset.go = 'Confirm';
+      go.style.background = 'var(--ink)';
+      go.style.boxShadow = '0 8px 24px rgba(0,0,0,0.24)';
+      var gs = go.querySelector('span'); if(gs) gs.style.color = '#FFFFFF';
+      pop(go);
+    }
+    el.style.background = 'var(--fill)';
+    el.style.boxShadow = 'none';
+    var es = el.querySelector('span'); if(es) es.style.color = 'var(--ink)';
+    toast('Noted. I will use the name GTBank gave.');
+  },
   reveal: function(){ st.revealed = !st.revealed; renderCard(); pop(document.getElementById('cdNum')); },
   freeze: function(){ st.frozen = !st.frozen; renderCard(); toast(st.frozen ? 'Card frozen' : 'Card unfrozen'); },
   gb: function(el, a){ st.bundle = a[1]; st.bundlePrice = Number(a[2].replace(/,/g,'')); renderAirtime(); pop(el); },

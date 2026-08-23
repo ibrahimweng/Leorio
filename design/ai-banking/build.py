@@ -159,6 +159,12 @@ ICONS = {
            '<path d="M8.6 9.4v2.4M15.4 9.4v2.4"/><path d="M12 9.4v4.4h-1.8"/><path d="M8.6 16.4a5 5 0 0 0 6.8 0"/>',
  "del": '<path d="M20.2 5.6H9.8a2 2 0 0 0-1.5.7l-4.6 5.1a.9.9 0 0 0 0 1.2l4.6 5.1a2 2 0 0 0 1.5.7h10.4a1.6 1.6 0 0 0 1.6-1.6V7.2a1.6 1.6 0 0 0-1.6-1.6z"/>'
         '<path d="M12.4 9.8 17 14.2M17 9.8l-4.6 4.4"/>',
+ "camera": '<path d="M3.4 8.8a2.4 2.4 0 0 1 2.4-2.4h1.9l1.3-2.2h6l1.3 2.2h1.9a2.4 2.4 0 0 1 2.4 2.4v8.4a2.4 2.4 0 0 1-2.4 2.4H5.8a2.4 2.4 0 0 1-2.4-2.4z"/>'
+           '<circle cx="12" cy="12.8" r="3.6"/>',
+ "alert": '<path d="M12 3.8 21.2 19.8H2.8z"/><path d="M12 9.8v4.2M12 16.8h.02"/>',
+ "close": '<path d="M6.4 6.4 17.6 17.6M17.6 6.4 6.4 17.6"/>',
+ "qr": '<rect x="3.4" y="3.4" width="7" height="7" rx="1.8"/><rect x="13.6" y="3.4" width="7" height="7" rx="1.8"/>'
+       '<rect x="3.4" y="13.6" width="7" height="7" rx="1.8"/><path d="M13.6 13.6h3.2v3.2h-3.2zM17.4 17.4h3.2v3.2h-3.2z"/>',
 }
 
 def icon(name, size=22, color=INK2, sw=1.7, extra=""):
@@ -463,6 +469,11 @@ def dock(placeholder, back_btn=False, height=104):
       + '; background: ' + FILL + '; display: flex; align-items: center; gap: 9px; padding: 0 14px 0 8px">'
       + mark(32) + '<span style="flex-grow: 1; font-size: 15px; font-weight: 400; color: ' + INK2
       + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + placeholder + '</span>'
+      # Type, talk, or show. An account number photographed off a wall is the
+      # same prompt as one spoken, so the camera belongs in the bar the other
+      # two live in, not in a button on one screen.
+      + '<div' + hook("Scan") + ' class="camtap" style="width: 22px; height: 22px; display: flex; align-items: center; '
+        'justify-content: center; flex-shrink: 0">' + icon("camera", 18, INK2, 1.8) + '</div>'
       + icon("mic", 18, INK2, 1.8) + '</div>')
     fab = ('<div class="fab"' + hook("", "actions") + ' style="width: 56px; height: 56px; border-radius: ' + PILL
       + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
@@ -1089,6 +1100,8 @@ def chatbar(placeholder="Reply, or just keep talking", height=104):
       + '; background: ' + FILL + '; display: flex; align-items: center; gap: 9px; padding: 0 14px 0 8px">' + mark(32)
       + '<span style="flex-grow: 1; font-size: 15px; font-weight: 400; color: ' + INK2
       + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + placeholder + '</span>'
+      + '<div' + hook("Scan") + ' class="camtap" style="width: 22px; height: 22px; display: flex; align-items: center; '
+        'justify-content: center; flex-shrink: 0">' + icon("camera", 18, INK2, 1.8) + '</div>'
       + icon("mic", 18, INK2, 1.8) + '</div>')
     send = ('<div' + hook("", "soon") + ' class="fab" style="width: 56px; height: 56px; border-radius: ' + PILL
       + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
@@ -1165,6 +1178,180 @@ confirm = page(
   + '<div style="display: flex; gap: 9px; align-items: center; justify-content: center">' + icon("lock", 16, INK3, 1.6)
     + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">Nothing moves until the fourth number lands.</span></div>', 24)
 write("Confirm", confirm)
+
+# ================= SENDING FROM A PICTURE =================
+# An account number does not usually arrive as something you type. It arrives
+# as a screenshot somebody sent you, a slip photographed off a counter, or a
+# flyer with three banks on it. So the model is shown the picture and reads it
+# back before anything moves, marking what it read and what it could not.
+
+def shotline(t, size=12):
+    return '<span style="font-size: ' + str(size) + 'px; font-weight: 400; color: ' + INK2 + '">' + t + '</span>'
+
+def readline(t, ok=True, num=False, tag=""):
+    """A run of words lifted out of the picture, boxed where it sits. A solid
+    blue edge is what the model read. A broken red one is what it could not,
+    and that difference is the whole safety of this flow."""
+    cls = ' class="num"' if num else ''
+    t8 = ('<span style="font-size: 12px; font-weight: 400; color: ' + (ACC_TEXT if ok else WARN_TEXT)
+          + '; margin-left: 8px">' + tag + '</span>') if tag else ''
+    return ('<div style="align-self: flex-start; display: flex; align-items: center; border-radius: 10px; '
+      'padding: 2px 8px; border: 1.5px ' + ('solid ' + ACC_EDGE if ok else 'dashed ' + WARN_EDGE)
+      + '; background: ' + (ACC_SOFT if ok else WARN_SOFT) + '">'
+      '<span' + cls + ' style="font-size: 12px; font-weight: 700; color: ' + INK + '">' + t + '</span>' + t8 + '</div>')
+
+def swatch(ok, t):
+    return ('<div style="display: flex; align-items: center; gap: 6px">'
+      '<div style="width: 14px; height: 14px; border-radius: 4px; border: 1.5px '
+      + ('solid ' + ACC_EDGE if ok else 'dashed ' + WARN_EDGE) + '; background: '
+      + (ACC_SOFT if ok else WARN_SOFT) + '"></div>'
+      '<span style="font-size: 12px; font-weight: 400; color: ' + INK2 + '">' + t + '</span></div>')
+
+def legend(unsure=True):
+    """Only claim an uncertainty when there is one. A key that lists a state
+    the picture does not contain teaches the wrong thing."""
+    return ('<div style="display: flex; gap: 20px; padding-left: 2px">' + swatch(True, "What I read")
+      + (swatch(False, "What I am unsure of") if unsure else '') + '</div>')
+
+def sender(initials, name, when, color):
+    return ('<div style="display: flex; align-items: center; gap: 8px">'
+      '<div style="width: 24px; height: 24px; border-radius: ' + PILL + '; background: ' + color
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      '<span style="font-size: 12px; font-weight: 700; color: #FFFFFF">' + initials + '</span></div>'
+      '<span style="flex-grow: 1; font-size: 12px; font-weight: 700; color: ' + INK + '">' + name + '</span>'
+      '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">' + when + '</span></div>')
+
+def photo(kind="one", legend_in=True):
+    """A stand in for the picture itself, kept in the design so the read back
+    can be checked against the thing it was read from."""
+    if kind == "one":
+        body = (shotline("Good afternoon sir. Rent part payment:")
+          + readline("&#8358;20,000", True, True)
+          + readline("GTBank", True)
+          + readline("0123 4457 8842", True, True)
+          + readline("Sarah A.", False, False, "not sure"))
+        head = sender("MA", "Musa &#183; Agent", "2:14 PM", IC["green"])
+    else:
+        body = (shotline("ACME PROPERTIES &#183; Rent 2026")
+          + readline("1 &#183; GTBank 0123 4457 8842", True, True)
+          + readline("2 &#183; Zenith 2087 6612 04", True, True)
+          + readline("3 &#183; Access 0691 3345 71", True, True)
+          + shotline("Part payment due &#8358;20,000"))
+        head = sender("AP", "Invoice photo", "2:14 PM", IC["orange"])
+    lg = ('<div style="padding-top: 4px">' + legend(kind == "one") + '</div>') if legend_in else ''
+    return ('<div style="' + cardstyle("12px", "20px", FILL) + ' display: flex; flex-direction: column; gap: 8px">'
+      + head + '<div style="' + cardstyle("12px", "14px", SURF)
+      + ' display: flex; flex-direction: column; gap: 6px; align-items: flex-start">' + body + '</div>' + lg + '</div>')
+
+# ---------- the viewfinder ----------
+SCAN_BG = "linear-gradient(180deg, #16161A 0%, #0C0C0E 44%, #08080A 100%)"
+GLASS   = "rgba(255,255,255,0.14)"
+
+def roundbtn(ic, go="", act="", size=44, isz=20):
+    return ('<div' + hook(go, act) + ' style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: '
+      + PILL + '; background: ' + GLASS + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      + icon(ic, isz, "#FFFFFF", 1.9) + '</div>')
+
+scan = ('<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCAN_BG
+  + '; display: flex; flex-direction: column; gap: 20px; padding: 60px 20px 32px 20px">'
+  '<div style="display: flex; align-items: center; height: 44px">'
+    + roundbtn("close", "back") + '<div style="flex-grow: 1"></div>' + roundbtn("power", "", "soon") + '</div>'
+  '<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">'
+    '<span style="font-size: 16px; font-weight: 700; color: #FFFFFF">Point at an account number</span>'
+    '<span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.62)">A QR code works too. So does a screenshot.</span></div>'
+  '<div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 16px; padding-top: 8px">'
+    '<div style="border: 2px solid rgba(255,255,255,0.34); border-radius: 24px; padding: 14px">'
+      + photo("one", False) + '</div>'
+    '<div style="align-self: center; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; '
+      'border-radius: ' + PILL + '; background: ' + GLASS + '">' + stepdot("done")
+      + '<span class="num" style="font-size: 14px; font-weight: 700; color: #FFFFFF">0123 4457 8842</span></div></div>'
+  '<div style="display: flex; align-items: center; height: 72px">'
+    # The last screenshot in the roll, because the commonest case is not a
+    # thing in front of you, it is a thing somebody already sent you.
+    + '<div' + hook("Found") + ' style="width: 52px; height: 52px; border-radius: 14px; overflow: hidden; background: '
+      + SURF + '; display: flex; flex-direction: column; gap: 4px; padding: 8px; flex-shrink: 0">'
+      '<div style="display: flex; align-items: center; gap: 4px">'
+        '<div style="width: 10px; height: 10px; border-radius: ' + PILL + '; background: ' + IC["green"] + '"></div>'
+        '<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+      '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
+      '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
+      '<div style="height: 4px; width: 62%; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+    + '<div style="flex-grow: 1; display: flex; justify-content: center">'
+      '<div' + hook("Found") + ' style="width: 72px; height: 72px; border-radius: ' + PILL
+      + '; border: 4px solid #FFFFFF; display: flex; align-items: center; justify-content: center">'
+      '<div style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: #FFFFFF"></div></div></div>'
+    + roundbtn("qr", "Pick", "", 52, 22) + '</div>'
+  '<span style="text-align: center; font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.5)">'
+    'Or send a screenshot straight to Leorio from WhatsApp.</span></div>')
+write("Scan", scan)
+
+# ---------- three accounts on one piece of paper ----------
+def acctrow(bank, num, who, color, last=False):
+    """Each bank keeps its own colour, the way every other icon here does, so
+    three accounts on one page are told apart before they are read."""
+    return ('<div' + hook("Found") + ' style="display: flex; align-items: center; gap: 14px; height: 72px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + badge("bank", None, 44, R_ICON, 22, False, color)
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+      '<span class="num" style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + num + '</span>'
+      '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + bank + ' &#183; ' + who + '</span></div>'
+      + chevbtn() + '</div>')
+
+pick = page(
+  T("Three accounts here", "I read them all and asked each bank who it belongs to")
+  + photo("many")
+  + '<div style="' + cardstyle("0 16px", R_CARD) + '">'
+    + acctrow("GTBank", "0123 4457 8842", "SARAH ADEYEMI", IC["orange"])
+    + acctrow("Zenith", "2087 6612 04", "ACME PROPERTIES LTD", IC["red"])
+    + acctrow("Access", "0691 3345 71", "M. IBRAHIM", IC["blue"], True) + '</div>'
+  + aline("The invoice is from Acme, so the middle one is most likely who you owe. Tap whichever you meant.", "16px"), 16)
+pick += dockback("Ask about this photo")
+write("Pick", pick)
+
+# ---------- what the model read, and the one question it must ask ----------
+def nrow(k, v, warn=False):
+    return ('<div style="display: flex; align-items: center; gap: 12px; height: 28px">'
+      '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>'
+      '<span style="flex-grow: 1; text-align: right; font-size: 14px; font-weight: 700; color: '
+      + (WARN_TEXT if warn else INK) + '">' + v + '</span></div>')
+
+def namecheck():
+    """The only place this flow stops you. Two names that are not the same is
+    the one thing a photograph cannot settle, so it is put to the person
+    rather than decided for them."""
+    return ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
+      '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 18, WARN_TEXT, 2.0)
+      + '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
+      + '">Is this the person you mean?</span></div>'
+      + '<div style="' + cardstyle("8px 14px", "16px") + ' display: flex; flex-direction: column">'
+        + nrow("On the photo", "Sarah A.", True) + nrow("At GTBank", "SARAH ADEYEMI") + '</div>'
+      '<div style="display: flex; gap: 8px">'
+        '<div' + hook("", "sure") + ' class="pbtn" style="flex-grow: 1; height: 48px; border-radius: ' + PILL
+        + '; background: ' + BTN + '; ' + SH_BTN + '; display: flex; align-items: center; justify-content: center">'
+        '<span style="font-size: 16px; font-weight: 700; color: #FFFFFF">Yes, that is them</span></div>'
+        '<div' + hook("back") + ' class="pbtn" style="height: 48px; padding: 0 20px; border-radius: ' + PILL
+        + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
+        '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">No</span></div></div></div>')
+
+def foundrow(k, v, num=False, last=False, tag=""):
+    t8 = ('<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '; margin-left: 8px">' + tag + '</span>') if tag else ''
+    return ('<div style="display: flex; align-items: center; gap: 12px; height: 48px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + stepdot("done")
+      + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>'
+      + '<div style="flex-grow: 1; display: flex; align-items: center; justify-content: flex-end">'
+      '<span' + (' class="num"' if num else '') + ' style="font-size: 16px; font-weight: 700; color: ' + INK + '">' + v + '</span>'
+      + t8 + '</div></div>')
+
+found = page(
+  T("What I found", "Read from your photo, 2:14 PM")
+  + photo("one")
+  + namecheck()
+  # The amount leads, because it is the number that costs you if it is wrong.
+  + '<div style="' + cardstyle("0 16px", R_CARD) + '">'
+    + foundrow("Amount", "&#8358;20,000", True, False, "from the photo")
+    + foundrow("Account", "0123 4457 8842", True)
+    + foundrow("Bank", "GTBank", False, True) + '</div>', 12)
+found += confirmbar(pillbtn("Continue", "", "fnwait", "", "grey", True, 56, "fnGo"))
+write("Found", found)
 
 # ================= STANDING INSTRUCTIONS =================
 def switch(on, act="toggle"):

@@ -43,6 +43,11 @@ WARN      = "#FF3B30"   # trouble, as an icon or a fill
 # and no reason not to use a shade that reads. These two are text only.
 IN_TEXT   = "#12833C"
 WARN_TEXT = "#CC2A20"
+# What the model read out of a picture is boxed where it sits. These two are
+# the boxes it is not sure about, written as flat hexes so they survive being
+# inlined into an SVG attribute as well as a stylesheet.
+WARN_SOFT = "#FBF0EF"
+WARN_EDGE = "#F0BFBC"
 
 # The accent. It carries a contextual action, a selected state, a highlighted
 # bar, and the model's own panel. Black stays the main action on a screen.
