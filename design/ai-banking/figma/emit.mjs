@@ -14,7 +14,7 @@ const ORDER = ['Main','Actions','Receive','Ask','Answer','Pay','Done','History',
 const TOL = 1;
 // The tool caps a script at 50,000 characters. This sits well under it so a
 // whole script can also be read in one go while working on it.
-const CAP = 27000;
+const CAP = 40000;
 
 const RUNNER = `
 const F='Plus Jakarta Sans';
@@ -73,7 +73,12 @@ function build(n,parent){
       nd.textAlignVertical='TOP';
       // Figma sets type a hair wider than the browser, so a line pinned to a
       // measured width would re-wrap. Only text that already wrapped is pinned.
-      if(n.ml){ nd.textAutoResize='HEIGHT'; nd.resize(n.w+4,n.h); if(n.ta) nd.textAlignHorizontal=n.ta.toUpperCase(); }
+      // A line the browser cut off keeps the width it was allowed, and Figma
+      // does the cutting, so it cannot run over what sits beside it.
+      if(n.tr){ nd.textAutoResize='NONE'; nd.resize(n.w,n.h);
+        try{ nd.textTruncation='ENDING'; }catch(_){}
+        if(n.ta) nd.textAlignHorizontal=n.ta.toUpperCase(); }
+      else if(n.ml){ nd.textAutoResize='HEIGHT'; nd.resize(n.w+4,n.h); if(n.ta) nd.textAlignHorizontal=n.ta.toUpperCase(); }
       else { nd.textAutoResize='WIDTH_AND_HEIGHT'; }
       nd.name=n.n||n.s.slice(0,30);
     } else {
@@ -152,20 +157,35 @@ function tune(nd,n){
   }
 }
 
-const page=figma.currentPage, out=[], ids=[];
+// Where the screens land. A file somebody has arranged by hand should keep
+// its arrangement, and a name is not a safe way to find a frame once there
+// are copies of it, so a caller may name the page and hand each screen the
+// exact node it replaces and the spot it sits in. Without that it falls back
+// to matching on name and to the grid.
+const PAGE_ID = (typeof PAGE !== 'undefined') ? PAGE : null;
+const AT = (typeof PLACE !== 'undefined') ? PLACE : {};
+const page = PAGE_ID ? await figma.getNodeByIdAsync(PAGE_ID) : figma.currentPage;
+if(PAGE_ID) await figma.setCurrentPageAsync(page);
+const out=[], ids=[];
 for(const S of SCREENS){
   errs=[]; made=0; autos=0; kept=0; undone=0;
-  const old=page.children.find(n=>n.name===S.name); if(old) old.remove();
+  const at=AT[S.name];
+  const old = (at && at.id) ? await figma.getNodeByIdAsync(at.id)
+                            : page.children.find(n=>n.name===S.name);
+  const took = old ? old.id : null;
+  if(old) old.remove();
   const fr=figma.createFrame();
-  fr.name=S.name; fr.resize(S.D.w,S.D.h); fr.x=S.X; fr.y=S.Y;
+  fr.name=S.name; fr.resize(S.D.w,S.D.h);
+  fr.x = at ? at.x : S.X; fr.y = at ? at.y : S.Y;
   fr.fills=[P(S.D.bg)]; fr.clipsContent=true; fr.cornerRadius=0;
   page.appendChild(fr);
   for(const n of S.D.k) build(n,fr);
   for(let i=0;i<S.D.k.length;i++) if(S.D.k[i].t===0 && fr.children[i]) tune(fr.children[i],S.D.k[i]);
   ids.push(fr.id);
-  out.push({name:S.name, frame:fr.id, made, autoLayout:kept+'/'+autos, placedByHand:undone, errs:errs.slice(0,4)});
+  out.push({name:S.name, frame:fr.id, replaced:took, at:[fr.x,fr.y], made,
+            autoLayout:kept+'/'+autos, placedByHand:undone, errs:errs.slice(0,4)});
 }
-return {createdNodeIds:ids, screens:out};
+return {createdNodeIds:ids, page:page.name, screens:out};
 `;
 
 const STEP_X = 493, STEP_Y = 972, COLS = 9;

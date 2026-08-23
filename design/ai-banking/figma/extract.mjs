@@ -104,10 +104,24 @@ const EXTRACT = () => {
   }
   const sameTypo = (a, b) => a.fs === b.fs && a.fw === b.fw && a.it === b.it && a.c === b.c;
 
-  function textNode(str, b, T, op) {
+  function textNode(str, b, T, op, clipW) {
     const s = str.replace(/\s+/g, ' ');
     if (!s.trim()) return null;
     if (!(b.width > 0) || !(b.height > 0)) return null;
+    // A line the browser cuts off with an ellipsis measures its full length,
+    // which would then overlap whatever sits beside it. Pin it to the box it
+    // is actually allowed and let Figma do the cutting.
+    if (clipW && b.width > clipW + 0.5) {
+      const n = { t: 1, n: s.slice(0, 28), x: rx(b.left), y: ry(b.top),
+                  w: Math.ceil(clipW), h: Math.ceil(b.height), tr: 1,
+                  s, fs: T.fs, fw: T.fw, c: T.c || '000000' };
+      if (T.it) n.i = 1;
+      if (T.lh) n.lh = T.lh;
+      if (T.ls) n.ls = T.ls;
+      if (T.ta === 'center' || T.ta === 'right') n.ta = T.ta;
+      if (op < 1) n.o = r2(op);
+      return n;
+    }
     // Figma's metrics run a hair wider than the browser's, so a single line
     // pinned to a measured width re-wraps. Only text that already wrapped
     // gets a fixed width; everything else is left to size itself.
@@ -220,7 +234,10 @@ const EXTRACT = () => {
       });
       if (elKids.length === 0 || mergeable) {
         const rg = document.createRange(); rg.selectNodeContents(el);
-        const tn = textNode(el.textContent, rg.getBoundingClientRect(), T, 1);
+        const clipped = cs.textOverflow === 'ellipsis'
+          && (cs.overflow === 'hidden' || cs.overflowX === 'hidden');
+        const tn = textNode(el.textContent, rg.getBoundingClientRect(), T, 1,
+                            clipped ? b.width - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) : 0);
         if (!tn) return [];
         if (!paint) { if (op < 1) tn.o = r2(op); return [tn]; }
         kids = [tn];

@@ -467,7 +467,7 @@ def dock(placeholder, back_btn=False, height=104):
       + icon("gear", 22, INK, 1.8) + '</div>')
     ask = ('<div' + hook("ask") + ' class="askpill" style="flex-grow: 1; min-width: 0; height: 48px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; gap: 9px; padding: 0 14px 0 8px">'
-      + mark(32) + '<span style="flex-grow: 1; font-size: 15px; font-weight: 400; color: ' + INK2
+      + mark(32) + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK2
       + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + placeholder + '</span>'
       # Type, talk, or show. An account number photographed off a wall is the
       # same prompt as one spoken, so the camera belongs in the bar the other
@@ -1098,7 +1098,7 @@ def chatbar(placeholder="Reply, or just keep talking", height=104):
     because back has moved to the top."""
     ask = ('<div' + hook("", "soon") + ' class="askpill" style="flex-grow: 1; min-width: 0; height: 48px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; gap: 9px; padding: 0 14px 0 8px">' + mark(32)
-      + '<span style="flex-grow: 1; font-size: 15px; font-weight: 400; color: ' + INK2
+      + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK2
       + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + placeholder + '</span>'
       + '<div' + hook("Scan") + ' class="camtap" style="width: 22px; height: 22px; display: flex; align-items: center; '
         'justify-content: center; flex-shrink: 0">' + icon("camera", 18, INK2, 1.8) + '</div>'
