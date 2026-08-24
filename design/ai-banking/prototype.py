@@ -20,7 +20,10 @@ ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
          # rather than at somebody's transfer message.
          "Draft", "ScanBill", "Amend", "Ways", "Rule",
          # The half of a bank that is not the happy path.
-         "Short", "Pending", "Failed", "Reversed", "Wrong", "Recall"]
+         "Short", "Pending", "Failed", "Reversed", "Wrong", "Recall",
+         # One number for the habits, and the settings that build them: what
+         # opens the app, what stops a transfer, and where else you are open.
+         "Health", "Lock", "Limits", "LimitStop", "Devices", "SaveRule"]
 
 def acc(html):
     return html.replace("{{accent}}", "var(--acc)")
