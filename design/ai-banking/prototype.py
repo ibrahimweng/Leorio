@@ -10,7 +10,12 @@ ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
 ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
          "Airtime", "PowerPay", "Power", "Bills", "Loan", "Card", "Answer",
-         "Pay", "Rules", "Goal", "Done", "Settings", "History", "Paused"]
+         "Pay", "Rules", "Goal", "Done", "Settings", "History", "Paused",
+         # The nine flows. The same three destinations reached three ways,
+         # so most of these are the second step of one of them.
+         "Typed", "TypedAsk", "TypedBuy", "ChatTyped", "RequestTyped", "BuyTyped",
+         "AskReq", "AskSvc", "Request", "Sent", "MyCode",
+         "Buy", "ConfirmBuy", "Meter", "ConfirmMeter", "DoneSend", "Receive"]
 
 def acc(html):
     return html.replace("{{accent}}", "var(--acc)")
@@ -388,6 +393,14 @@ function renderCard(){
   A({ targets: face, opacity: st.frozen ? 0.42 : 1, duration: D(280), easing: EASE });
 }
 
+// Which receipt each passcode screen fills in, and where it goes. A null
+// first entry means the screen it lands on writes itself.
+var PINGO = {
+  Confirm:      ['Chat', 'Done'],
+  ConfirmBuy:   ['Buy', 'Done'],
+  ConfirmMeter: [null, 'Power']
+};
+
 var DONE = {
   Airtime: function(){ return {
     amt: st.bundlePrice, what: st.bundle.split(' for ')[0] + ' sent to ' + st.who,
@@ -399,6 +412,9 @@ var DONE = {
   Chat: function(){ return {
     amt: 20000, what: 'Sent to Sarah Adeyemi',
     rows: [['From','Everyday &#183; 0102 4457 88'], ['Confirmed with','Your passcode']], offer: false }; },
+  Buy: function(){ return {
+    amt: 2500, what: '5GB sent to Mum',
+    rows: [['From','Everyday &#183; 0102 4457 88'], ['Reference','MTN-88231-4471']], offer: true }; },
   Loan: function(){
     var total = st.loanAmt + Math.round(st.loanAmt * 0.04 * st.loanMonths) + 1500;
     return { amt: st.loanAmt, what: 'In your Everyday account',
@@ -465,7 +481,12 @@ var ACTIONS = {
   // Four numbers, and only the fourth one moves money, so it is the only key
   // that navigates. Face ID is what was tried first, so it stays reachable.
   pin: function(el, a){
-    var dots = screens.Confirm.querySelectorAll('.pindot');
+    // Three different things now end at a passcode, so the keypad reads its
+    // own screen rather than always driving the transfer one, and each says
+    // where the fourth number lands.
+    var sc = el.closest('.screen');
+    var dots = sc.querySelectorAll('.pindot');
+    var after = PINGO[sc.dataset.screen] || PINGO.Confirm;
     var n = 0;
     for(var i = 0; i < dots.length; i++) if(dots[i].dataset.on === '1') n++;
     if(a[1] === 'del'){ if(n > 0) setDot(dots[n-1], false); return; }
@@ -473,8 +494,8 @@ var ACTIONS = {
     setDot(dots[n], true);
     pop(el);
     if(n + 1 >= dots.length){
-      fillDone('Chat');
-      setTimeout(function(){ for(var i = 0; i < dots.length; i++) setDot(dots[i], false); push('Done', 'push'); }, 340);
+      if(after[0]) fillDone(after[0]);
+      setTimeout(function(){ for(var i = 0; i < dots.length; i++) setDot(dots[i], false); push(after[1], 'push'); }, 340);
     }
   },
   faceid: function(){ toast('Face ID is the quicker way through'); },

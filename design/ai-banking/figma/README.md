@@ -4,27 +4,55 @@ This turns the built screens into real Figma layers. Not a screenshot: every
 frame comes out as text, vectors, rectangles, gradients, shadows and background
 blurs that can be selected and edited.
 
-The file is **AI Banking Screens**, key `BKwjYfTZbP7HzKeGyQr5ba`. Eighteen
-frames at 393x852, laid out in two rows of nine, in the same order as the
-review canvas.
+The file is **AI Banking Screens**, key `BKwjYfTZbP7HzKeGyQr5ba`. Every frame
+is 393x852.
+
+Two pages matter. **test** holds the screens on their own, in the order of the
+review canvas. **Flows** holds nine sections, one per way of doing a thing:
+send, receive and services, each reached by voice, by camera and by typing at
+the model. A screen that appears in more than one flow is a separate copy in
+each, so a section can be read straight through without jumping pages.
 
 ## Running it
 
     cd design/ai-banking
-    python3 build.py                      # writes the 18 .dc.html screens
+    python3 build.py                      # writes every .dc.html screen
     npm i playwright-core                 # only dependency
 
     export SP=/some/work/dir
     sh figma/rev.sh $SP                   # resolve {{accent}} into a real hex
     CHROME=/opt/pw-browsers/chromium \
       node figma/extract.mjs              # $SP/figma/<Name>.json
-    node figma/emit.mjs                   # $SP/figma/<Name>.js
+    node figma/emit.mjs                   # $SP/figma/bundle/<n>.js
 
-Then paste each `<Name>.js` whole into the Figma MCP `use_figma` tool as its
-`code`, with the file key above. Each script is self contained and removes any
-frame of the same name first, so sending a screen again replaces it rather than
-stacking a second copy. `emit.mjs` takes screen names as arguments if only some
-of them changed.
+Then paste each bundle whole into the Figma MCP `use_figma` tool as its `code`,
+with the file key above. Each script is self contained and removes any frame of
+the same name first, so sending a screen again replaces it rather than stacking
+a second copy. `emit.mjs` takes screen names as arguments if only some of them
+changed, and packs as many as fit under the tool's character limit.
+
+Prefix a bundle with `PAGE` and `PLACE` to aim it. `PAGE` is a page id; `PLACE`
+gives each screen its x and y, and optionally the `id` of the exact node it
+replaces, which is what to use on a file where two pages hold a frame of the
+same name:
+
+    const PAGE='127:2';
+    const PLACE={Meter:{x:9860,y:-2000},DoneSend:{x:10846,y:-2000}};
+
+### Sending less than a whole screen
+
+Two smaller tools exist for the common case where a screen is nearly one that
+is already in the file.
+
+`repatch.mjs <base> <next> <node-id>` compares the two extracted trees with the
+words and colours stripped out. If the shapes match it writes a script that
+walks the text nodes in order and sets the new words, carrying each line's
+sizing mode and measured box with it. Use it for a screen that differs only in
+what it says.
+
+`graft.mjs` adds selected top-level subtrees to a frame that already exists,
+with an optional list of indices to strip first. Use it when a screen gains or
+loses a section rather than changing its words.
 
 ## How it works
 
