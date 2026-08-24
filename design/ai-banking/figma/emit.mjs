@@ -168,6 +168,12 @@ function tune(nd,n){
 // are copies of it, so a caller may name the page and hand each screen the
 // exact node it replaces and the spot it sits in. Without that it falls back
 // to matching on name and to the grid.
+//
+// A PLACE entry may also name a parent and an index. A section is a
+// container, and appending to the page instead would lift the screen out of
+// the flow it belongs to; the index is what keeps it in the same place in
+// the row. When a parent is given, x and y are read as the section's own
+// coordinates, because that is how a section places its children.
 const PAGE_ID = (typeof PAGE !== 'undefined') ? PAGE : null;
 const AT = (typeof PLACE !== 'undefined') ? PLACE : {};
 const page = PAGE_ID ? await figma.getNodeByIdAsync(PAGE_ID) : figma.currentPage;
@@ -182,9 +188,11 @@ for(const S of SCREENS){
   if(old) old.remove();
   const fr=figma.createFrame();
   fr.name=S.name; fr.resize(S.D.w,S.D.h);
-  fr.x = at ? at.x : S.X; fr.y = at ? at.y : S.Y;
   fr.fills=[P(S.D.bg)]; fr.clipsContent=true; fr.cornerRadius=0;
-  page.appendChild(fr);
+  const host = (at && at.parent) ? await figma.getNodeByIdAsync(at.parent) : page;
+  if(at && at.index !== undefined && host.insertChild) host.insertChild(Math.min(at.index, host.children.length), fr);
+  else host.appendChild(fr);
+  fr.x = at ? at.x : S.X; fr.y = at ? at.y : S.Y;
   binds=[]; bound=0; unstyled=0;
   for(const n of S.D.k) build(n,fr);
   // Bind before tune(), so auto layout measures the type the style gives and

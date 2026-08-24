@@ -67,6 +67,21 @@ what it says.
 with an optional list of indices to strip first. Use it when a screen gains or
 loses a section rather than changing its words.
 
+When a screen has to go back in whole, a PLACE entry may name a `parent` and
+an `index` as well as the node it replaces:
+
+```
+const PAGE='127:2';
+const PLACE={Settings:{id:'219:145',parent:'225:4738',index:1,x:573,y:80}};
+```
+
+The parent matters because the Flows page is sections, and appending to the
+page would lift the screen out of the flow it belongs to. The index is what
+keeps it in the same place in the row. And x and y are then read as the
+section's own coordinates, per the rule further down. Check for instances
+inside the frame before doing this: whatever was bound to a component is a
+plain frame again afterwards, and has to be put back.
+
 `recolor.mjs` is for a change that is only colour, where re-sending forty
 screens would throw away every instance, backdrop and component binding in the
 file to repaint a few hundred squares. Build the old design into a second
