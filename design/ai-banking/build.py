@@ -288,15 +288,25 @@ def chevdark(size=34):
     return ('<div style="width: ' + s + 'px; height: ' + s + 'px; border-radius: ' + PILL + '; background: ' + BTN
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + chev(13, "#FFFFFF", 2.3) + '</div>')
 
-def badge(ic, t=None, size=44, radius=None, isz=None, dark=False, color=None):
-    """An icon in its own colour, inside a rounded square. This is the single
-    most repeated shape in the reference, so it is the one to get right."""
+def badge(ic, t=None, size=44, radius=None, isz=None, dark=False, color=None, on=BG):
+    """An icon in a quiet square. The square used to carry the service's own
+    colour, so you found electricity before you read the word. On a page with
+    eighteen of them that was not finding, it was the page shouting, and a
+    thing that shouts everywhere cannot point at anything. So the square is
+    grey and the glyph is black, and the colour is saved for the one item on a
+    screen that is actually worth a look.
+
+    `color` now paints the glyph and not the square, so a red padlock or a blue
+    suggestion still reads without the square joining in. `on` is the surface
+    underneath: a badge standing on a grey card takes a white square, because
+    grey on grey is not a square at all."""
     r = radius or (R_TILE if size >= 46 else R_ICON)
-    bg = IC["black"] if dark else (color or paint(ic))
+    box = IC["black"] if dark else (SURF if on == FILL else FILL)
+    glyph = "#FFFFFF" if dark else (color or INK)
     isz = isz or int(round(size * 0.5))
     return ('<div style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: ' + r
-      + '; background: ' + bg + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon(ic, isz, "#FFFFFF", 2.0) + '</div>')
+      + '; background: ' + box + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      + icon(ic, isz, glyph, 1.8) + '</div>')
 
 def circicon(ic, ring="#FFFFFF", glyph=BTN, size=26, isz=None):
     """The small filled circle that rides inside a pill button."""
@@ -373,14 +383,12 @@ def dashedcard(pad="18px", radius=R_CARD, bg=SURF, extra=""):
 
 def quickrow(items, card=True):
     """A row of shortcuts. An action is drawn as a bare line glyph with no tile
-    behind it, which is the rule the reference follows: the filled colour
-    square is kept for a thing that exists, like a bill or a service in the
-    catalogue. The colour stays, so you still find electricity by its colour,
-    but it stops shouting."""
+    behind it, which is the rule the reference follows: the square is kept
+    for a thing that exists, like a bill or a service in the catalogue."""
     cells = ''
     for name, ic, go in items:
         cells += ('<div' + hook(go) + ' class="qcell" style="flex-grow: 1; flex-basis: 0; min-width: 0; display: flex; '
-          'flex-direction: column; align-items: center; gap: 10px; padding: 2px 0">' + icon(ic, 22, paint(ic), 1.9)
+          'flex-direction: column; align-items: center; gap: 10px; padding: 2px 0">' + icon(ic, 22, INK, 1.9)
           + '<span style="font-size: 12px; font-weight: 400; color: ' + INK + '; white-space: nowrap; '
             'overflow: hidden; text-overflow: ellipsis; max-width: 100%">' + name + '</span></div>')
     inner = '<div style="display: flex; gap: 4px">' + cells + '</div>'
@@ -446,12 +454,19 @@ def ghost(head, sub, btn, go="", act="", kind="blue", ic="down", height=250):
       + '<span style="position: relative; font-size: 17px; font-weight: 400; color: ' + INK3 + '; text-align: center; margin-bottom: 12px">' + sub + '</span>'
       + '<div style="position: relative">' + pillbtn(btn, go, act, ic, kind, False, 52) + '</div></div>')
 
-def tinted(inner, note, pad="14px 16px"):
-    """A field the model filled in. It speaks from its own soft panel."""
-    return ('<div style="border-radius: ' + R_INNER + '; background: ' + ACC_SOFT
+def tinted(inner, note, pad="14px 16px", on=BG):
+    """A field the model filled in. On a white page it speaks from its own soft
+    blue panel, which is the one place that wash belongs. Stood inside a grey
+    card it takes a white panel instead: a seven per cent blue over grey is
+    neither white nor blue, it is a smudge, and three of them stacked up is the
+    card looking dirty rather than the model looking careful. The note under it
+    goes grey there too, so the only blue left inside the card is the one
+    figure worth reading twice."""
+    grey = (on == FILL)
+    return ('<div style="border-radius: ' + R_INNER + '; background: ' + (SURF if grey else ACC_SOFT)
         + '; padding: ' + pad + '; display: flex; flex-direction: column; gap: 7px">' + inner
         + '<span style="font-size: 12px; font-weight: 400; color: '
-        + ACC_INK + '">' + note + '</span></div>')
+        + (INK3 if grey else ACC_INK) + '">' + note + '</span></div>')
 
 def slide(label, go="", lid=""):
     return ('<div class="slide"' + hook(go) + ' style="position: relative; height: 60px; border-radius: ' + PILL
@@ -823,7 +838,7 @@ home_inner = (
                 + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500"))
         + aisay("Your data is nearly gone", "Your data usually runs out about now. The same 5GB is &#8358;2,500.",
       '<div style="display: flex; align-items: center; gap: 12px; height: 64px; border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 14px">'
-      + badge("data", None, 38, R_ICON, 19)
+      + badge("data", None, 38, R_ICON, 19, on=FILL)
       + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px">'
         '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em">5GB for 30 days</span>'
         '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">MTN &#183; your line</span></div>'
@@ -948,13 +963,13 @@ airtime = page(
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
           '<span id="bWho" style="font-size: 15px; font-weight: 600">Mum</span>'
           '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">0803 214 4471 &#183; MTN</span></div>' + chev() + '</div>',
-        "The number you top up most")
+        "The number you top up most", on=FILL)
     + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("data", 21, INK2, 1.6)
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
           '<span id="bSize" style="font-size: 15px; font-weight: 600">5GB for 30 days</span>'
           '<span style="font-size: 12.5px; color: ' + INK2 + '">It will not renew on its own</span></div>'
         '<span id="bPrice" class="num" style="font-size: 16px; font-weight: 600">&#8358;2,500</span></div>',
-        "The bundle you bought last month")
+        "The bundle you bought last month", on=FILL)
     + '<div style="background: ' + SURF + '; border-radius: ' + R_FIELD + '; overflow: hidden; padding: 0 16px">'
       + plainrow("From", "Everyday &#183; 0102 4457 88", False, INK, True)
       + plainrow("Goes to your Holiday goal", "&#8358;25", True, ACC_TEXT, False, "bBack") + '</div></div>'
@@ -1078,7 +1093,7 @@ write("Loan", loan)
 def act(name, ic, go="", action="soon", col=None):
     """An action on a detail screen. Same rule as quickrow, so no tile."""
     return ('<div' + hook(go, "" if go else action) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 2px 0">'
-      + icon(ic, 22, col or paint(ic), 1.9)
+      + icon(ic, 22, col or INK, 1.9)
       + '<span style="font-size: 12px; font-weight: 400; color: ' + INK + '">' + name + '</span></div>')
 
 vcard = page(
@@ -1211,16 +1226,16 @@ pay = page(
   + quote("send Sarah 50k for the flat deposit")
   + aline("Here it is, ready to go. Check the three parts I filled in.")
   + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 10px">'
-    + tinted(money("&#8358;50,000", "", 40), "I took this from your message", "14px 15px 12px 15px")
+    + tinted(money("&#8358;50,000", "", 40), "I took this from your message", "14px 15px 12px 15px", FILL)
     + tinted('<div style="display: flex; align-items: center; gap: 12px">' + avatar("SA")
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
           '<span style="font-size: 15px; font-weight: 600">Sarah Adeyemi</span>'
           '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">GTBank &#183; 0123 4457 8842</span></div>' + chev() + '</div>',
-        "The only Sarah you have paid before")
+        "The only Sarah you have paid before", on=FILL)
     + tinted('<div style="display: flex; align-items: center; height: 22px">'
         '<span style="flex-grow: 1; font-size: 13.5px; color: ' + INK2 + '">Reference</span>'
         '<span style="font-size: 15px; font-weight: 500">Flat deposit</span></div>',
-        "I took this from your message")
+        "I took this from your message", on=FILL)
     + '<div style="background: ' + SURF + '; border-radius: ' + R_FIELD + '; overflow: hidden; padding: 0 16px">'
       + plainrow("From", "Everyday &#183; 0102 4457 88", False, INK, True)
       + plainrow("Arrives", "In a few seconds", False, INK, True)
@@ -1278,7 +1293,7 @@ def toolrow(state, k, v, vcolor=INK, first=False, num=False, go=""):
 def toolpanel(name, status, rows, cta="", go=""):
     """The tool's own surface, running inside the chat."""
     head = ('<div style="height: 48px; background: ' + FILL + '; border-bottom: 1px solid ' + LINE
-      + '; display: flex; align-items: center; gap: 10px; padding: 0 14px">' + badge("send", None, 26, "10px", 15)
+      + '; display: flex; align-items: center; gap: 10px; padding: 0 14px">' + badge("send", None, 26, "10px", 15, on=FILL)
       + '<span style="flex-grow: 1; font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: ' + INK + '">' + name + '</span>'
       '<div style="display: flex; align-items: center; gap: 6px; height: 24px; padding: 0 10px; border-radius: ' + PILL
       + '; background: ' + SURF + '">'
@@ -1380,7 +1395,7 @@ def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves un
     when it does not catch you. A slide says you meant it; a face says it is
     you, and only one of those is worth anything if the phone is not yours."""
     lead = (avatar(initials, 40) if len(initials) <= 2
-            else badge(initials, None, 40, R_ICON, 20, False, tone))
+            else badge(initials, None, 40, R_ICON, 20))
     return page(
       topbar("Confirm")
       + '<div style="display: flex; flex-direction: column; align-items: center; gap: 12px">'
@@ -1515,11 +1530,12 @@ scan = ('<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; b
 write("Scan", scan)
 
 # ---------- three accounts on one piece of paper ----------
-def acctrow(bank, num, who, color, last=False):
-    """Each bank keeps its own colour, the way every other icon here does, so
-    three accounts on one page are told apart before they are read."""
+def acctrow(bank, num, who, color=None, last=False):
+    """Three accounts a photograph turned up. They were told apart by three
+    colours; they are told apart by the number, which is the thing being
+    checked, and the colours were only ever decorating the check."""
     return ('<div' + hook("Found") + ' style="display: flex; align-items: center; gap: 14px; height: 72px'
-      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + badge("bank", None, 44, R_ICON, 22, False, color)
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + badge("bank", None, 44, R_ICON, 22)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
       '<span class="num" style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + num + '</span>'
       '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + bank + ' &#183; ' + who + '</span></div>'
@@ -1649,10 +1665,10 @@ powerpay = page(
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
           '<span style="font-size: 15px; font-weight: 600">Ikeja Electric</span>'
           '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">Prepaid &#183; 0102 4457 8891</span></div>' + chev() + '</div>',
-        "The meter you paid last month")
+        "The meter you paid last month", on=FILL)
     + tinted('<div style="display: flex; align-items: baseline; gap: 1px">'
         '<span id="pwAmt" class="num" style="font-size: 36px; font-weight: 600; letter-spacing: -0.035em; line-height: 1; color: ' + INK + '">&#8358;8,000</span></div>',
-        "About what you used last month", "14px 15px 12px 15px")
+        "About what you used last month", "14px 15px 12px 15px", FILL)
     + '<div style="background: ' + SURF + '; border-radius: ' + R_FIELD + '; overflow: hidden; padding: 0 16px">'
       + plainrow("From", "Everyday &#183; 0102 4457 88", False, INK, True)
       + plainrow("Token arrives", "In a few seconds", True) + '</div></div>'
@@ -1851,7 +1867,7 @@ def sheetrow(name, ic, sub, last=False, go=""):
 # can be thrown back down by the handle. A back arrow would be a second way to
 # do what the handle and the word at the bottom already do.
 receive_inner = ('<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 20px 0">'
-  + badge("down", None, 64, "20px", 30, False, IC["blue"])
+  + badge("down", None, 64, "20px", 30)
   + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '; margin-top: 8px">Receive</span>'
   + '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
     'Pick how you want the money to reach you</span></div>'
@@ -2118,7 +2134,7 @@ def limitrow(ic, col, t):
     """What the model did, and what it cannot do, told apart by their marks.
     The same padlock on all three would say it failed at all three."""
     return ('<div style="display: flex; align-items: flex-start; gap: 12px">'
-      + badge(ic, None, 30, "10px", 16, False, IC[col])
+      + badge(ic, None, 30, "10px", 16)
       + '<span style="flex-grow: 1; font-size: 14px; font-weight: 400; line-height: 1.45; color: '
       + INK2 + '; text-wrap: pretty">' + t + '</span></div>')
 
@@ -2145,7 +2161,7 @@ def waylist(items):
     for i, (name, sub, ic, col, go) in enumerate(items):
         out += ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 72px'
           + ('' if i == 0 else '; border-top: 1px solid ' + LINE) + '">'
-          + badge(ic, None, 44, R_ICON, 22, False, IC[col])
+          + badge(ic, None, 44, R_ICON, 22, on=FILL)
           + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
           '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
           '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
@@ -2317,7 +2333,7 @@ write("Amend", amend)
 def waycard(head, big, sub, action, ic, col, go="", act="soon"):
     return ('<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 14px">'
       '<div style="display: flex; align-items: center; gap: 12px">'
-      + badge(ic, None, 40, R_ICON, 20, False, IC[col])
+      + badge(ic, None, 40, R_ICON, 20, on=FILL)
       + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px">'
         '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + head + '</span>'
         '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div></div>'
@@ -2495,7 +2511,7 @@ limitstop = page(
                + '">Five letters to go. Exactly those three words, nothing shorter.</span></div>') + '</div>'
   + '<div' + hook("Confirm") + ' style="display: flex; align-items: center; gap: 12px; height: 62px; '
     'border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 16px">'
-    + badge("send", None, 34, "11px", 18, False, IC["blue"])
+    + badge("send", None, 34, "11px", 18, color=ACC_TEXT_HEX, on=FILL)
     + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">'
       '<span style="font-size: 15px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">Send &#8358;100,000 instead</span>'
       '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">The rest tomorrow, no typing</span></div>'
@@ -2513,12 +2529,12 @@ def devrow(name, where, ic, col, tag="", tcol=None, first=False):
     t = ''
     if tag:
         t = ('<div style="height: 24px; padding: 0 10px; border-radius: ' + PILL + '; background: '
-          + (tcol or FILL) + '; display: flex; align-items: center; flex-shrink: 0">'
+          + (tcol or FILL3) + '; display: flex; align-items: center; flex-shrink: 0">'
           '<span style="font-size: 12px; font-weight: 700; color: '
           + ("#FFFFFF" if tcol else INK2) + '">' + tag + '</span></div>')
     return ('<div' + hook("", "soon") + ' style="' + ('' if first else 'border-top: 1px solid ' + LINE + '; ')
       + 'display: flex; align-items: center; gap: 13px; height: 74px">'
-      + badge(ic, None, 42, R_ICON, 21, False, IC[col])
+      + badge(ic, None, 42, R_ICON, 21, on=FILL)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
       '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
       '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + where + '</span></div>' + t + '</div>')
@@ -2526,7 +2542,7 @@ def devrow(name, where, ic, col, tag="", tcol=None, first=False):
 devices = page(
   T("Devices", "Everywhere this account is open")
   + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
-    + devrow("iPhone 13", "Lagos &#183; open now", "airtime", "green", "This one", IC["green"], True)
+    + devrow("iPhone 13", "Lagos &#183; open now", "airtime", "green", "This one", None, True)
     + devrow("Tecno Spark 10", "Lagos &#183; 3 days ago", "airtime", "blue")
     + devrow("Chrome on Windows", "Abuja &#183; 12 August", "laptop", "amber", "Odd one", IC["amber"]) + '</div>'
   + aline("The Windows one signed in from Abuja on 12 August and has not been back. If that was not you, "
@@ -2551,7 +2567,7 @@ write("Devices", devices)
 def habitrow(name, note, val, ic, col, first=False):
     return ('<div' + hook("", "soon") + ' style="' + ('' if first else 'border-top: 1px solid ' + LINE + '; ')
       + 'display: flex; align-items: center; gap: 13px; height: 72px">'
-      + badge(ic, None, 38, R_ICON, 20, False, IC[col])
+      + badge(ic, None, 38, R_ICON, 20, on=FILL)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
       '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
       '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + note + '</span></div>'
@@ -2592,7 +2608,7 @@ def saverow(name, sub, gain, ic, col, on=True, first=False, action=""):
        '<span style="font-size: 13px; font-weight: 700; color: ' + INK + '">' + action + '</span></div>'))
     return ('<div' + hook("", "soon") + ' style="' + ('' if first else 'border-top: 1px solid ' + LINE + '; ')
       + 'display: flex; align-items: center; gap: 13px; height: 76px">'
-      + badge(ic, None, 40, R_ICON, 20, False, IC[col])
+      + badge(ic, None, 40, R_ICON, 20)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
       '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
       '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span>'
@@ -2602,7 +2618,7 @@ def saverow(name, sub, gain, ic, col, on=True, first=False, action=""):
 
 saverule_inner = (
   '<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 2px 0 18px 0">'
-  + badge("pot", None, 60, "19px", 29, False, IC["green"])
+  + badge("pot", None, 60, "19px", 29)
   + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '; margin-top: 8px">Feed the Holiday goal</span>'
   + '<span style="font-size: 16px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
     'Pick something that runs without you thinking about it</span></div>'

@@ -5,7 +5,7 @@ The system is taken from the Fuse wallet screens. What defines it:
   A pure white page with no grey behind it. Grey appears only as a card fill.
   Titles in true black and heavy. Everything supporting them in a light grey.
   Money split in two, the whole number black and the decimal a pale grey.
-  Icons as small rounded squares in saturated colour with a white glyph.
+  Icons as small rounded squares in a light grey, with a black glyph.
   Cards that are either a flat grey fill or a dashed outline, and no shadow.
   Pills for every button, black for the main one and blue for a contextual one.
   Sheets that rise from the bottom over a blurred, dimmed page.
@@ -73,8 +73,15 @@ ON_DARK   = "#FFFFFF"
 ON_DARK_2 = "rgba(255,255,255,0.66)"
 ON_DARK_3 = "rgba(255,255,255,0.44)"
 
-# The icon set. Every service gets a colour and keeps it everywhere it appears,
-# so you learn to find electricity by its colour before you read the word.
+# The icon set. Every service used to get a colour and keep it everywhere, so
+# you could find electricity by its colour before reading the word. A page with
+# eighteen services on it was then eighteen colours, and a thing that shouts
+# everywhere cannot point at anything, so the squares went grey and the glyphs
+# went black. What is left of this map is the palette, and it is spent in four
+# places and no others: green for done, red for trouble, amber for a hard stop,
+# and the accent blue for the one item on a screen worth a second look. The
+# five glyphs behind the black circle on home keep their colours, because that
+# menu is the one place in the product that is meant to feel like a splash.
 IC = {
     "blue":   "#2A6AF5",
     "orange": "#FF8A4C",
@@ -87,7 +94,10 @@ IC = {
     "black":  "#1C1C1E",
 }
 
-# Which colour each icon wears. One lookup, so a service cannot drift.
+# Which colour each icon used to wear. Nothing reads this now: badge() paints
+# a grey square and a black glyph, and a caller that wants colour asks for it
+# by name. Kept because it is the record of which service is which, and the
+# day a chart or a legend needs to tell twelve services apart, it is here.
 PAINT = {
     "airtime": "blue",   "data": "purple",  "power": "amber",  "tv": "pink",
     "send": "blue",      "request": "green","card": "black",   "loan": "orange",
