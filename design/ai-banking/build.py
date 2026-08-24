@@ -255,6 +255,44 @@ FILLED = {
          '<path d="M12 9v4.6M12 17.4h.02" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" fill="none"/>',
  "wait": '<circle cx="12" cy="12" r="8.7" stroke="CUR" stroke-width="3" opacity="0.26" fill="none"/>'
          '<path d="M12 3.3a8.7 8.7 0 0 1 8.7 8.7" stroke="CUR" stroke-width="3" stroke-linecap="round" fill="none"/>',
+ # ---- the settings set, drawn as shapes so a row reads without a tile ----
+ # Anything knocked out of a glyph is knocked out in white and recoloured by
+ # fglyph, so the same drawing works on the page and on a grey card.
+ "faceid": '<rect x="2.4" y="2.4" width="19.2" height="19.2" rx="5.4" fill="CUR"/>'
+           '<path d="M9 9.3v2.3M15 9.3v2.3" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/>'
+           '<path d="M9.1 15.4a4.6 4.6 0 0 0 5.8 0" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none"/>',
+ "shield": '<path d="M11.6 2.5a1 1 0 0 1 .8 0l7 2.8a1 1 0 0 1 .6.93v5.37c0 4.63-3.17 8.05-7.6 9.95a1 1 0 0 1-.8 0C7.17 19.65 4 16.23 4 11.6V6.23a1 1 0 0 1 .6-.93z" fill="CUR"/>'
+           '<path d="M8.7 11.9 11 14.3l4.3-4.5" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ "list": '<g fill="CUR"><rect x="3.2" y="5" width="17.6" height="2.9" rx="1.45"/>'
+         '<rect x="3.2" y="10.55" width="17.6" height="2.9" rx="1.45"/>'
+         '<rect x="3.2" y="16.1" width="10.6" height="2.9" rx="1.45"/></g>',
+ "laptop": '<rect x="2.8" y="4.2" width="18.4" height="12.2" rx="2.6" fill="CUR"/>'
+           '<rect x="5.5" y="6.9" width="13" height="6.8" rx="1.2" fill="#FFFFFF"/>'
+           '<rect x="1.1" y="17.9" width="21.8" height="2.7" rx="1.35" fill="CUR"/>',
+ "key": '<circle cx="8.3" cy="15.5" r="4.9" fill="CUR"/><circle cx="8.3" cy="15.5" r="1.75" fill="#FFFFFF"/>'
+        '<path d="M11.3 12 19.1 4.2a1.7 1.7 0 0 1 2.4 2.4l-.85.85-1.5-1.5-1.75 1.75 1.5 1.5-1.7 1.7-1.5-1.5-1.75 1.75 1.5 1.5-2 2z" fill="CUR"/>',
+ "person": '<g fill="CUR"><circle cx="12" cy="7.9" r="4.3"/>'
+           '<path d="M12 13.7c4.4 0 8 3 8 6.6a.9.9 0 0 1-.9.9H4.9a.9.9 0 0 1-.9-.9c0-3.6 3.6-6.6 8-6.6z"/></g>',
+ "bell": '<g fill="CUR"><path d="M12 2.4a6.8 6.8 0 0 1 6.8 6.8c0 4.6 1.6 5.8 2.1 6.3a.95.95 0 0 1-.66 1.63H3.76a.95.95 0 0 1-.66-1.63c.5-.5 2.1-1.7 2.1-6.3A6.8 6.8 0 0 1 12 2.4z"/>'
+         '<path d="M9.5 18.8h5a2.5 2.5 0 0 1-5 0z"/></g>',
+ "gift": '<g fill="CUR"><rect x="2.6" y="7.5" width="18.8" height="5.1" rx="1.7"/>'
+         '<path d="M4.5 13.5h15v5.7a1.8 1.8 0 0 1-1.8 1.8H6.3a1.8 1.8 0 0 1-1.8-1.8z"/>'
+         '<path d="M12 7.5S10.3 2.9 7.9 2.9a2.3 2.3 0 0 0 0 4.6zM12 7.5s1.7-4.6 4.1-4.6a2.3 2.3 0 0 1 0 4.6z"/></g>'
+         '<path d="M12 8.1v12.5" stroke="#FFFFFF" stroke-width="2.1" fill="none"/>',
+ "card": '<rect x="2.3" y="4.9" width="19.4" height="14.2" rx="3.1" fill="CUR"/>'
+         '<path d="M2.3 10.1h19.4" stroke="#FFFFFF" stroke-width="2.3" fill="none"/>'
+         '<path d="M5.6 15.4h3.6" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" fill="none"/>',
+ "chat": '<path d="M12.5 3.4a8.3 8.3 0 0 1 8.3 8.3 8.3 8.3 0 0 1-8.7 8.3 9.1 9.1 0 0 1-2.6-.44l-4.83 1.22a.82.82 0 0 1-1-1.02l1.34-4.5a8.6 8.6 0 0 1-.67-3.13A8.3 8.3 0 0 1 12.5 3.4z" fill="CUR"/>',
+ "star": '<path d="m12 2.8 2.87 5.82 6.42.94a1 1 0 0 1 .56 1.7l-4.65 4.53 1.1 6.4a1 1 0 0 1-1.46 1.05L12 20.22l-5.74 3.02a1 1 0 0 1-1.46-1.05l1.1-6.4-4.65-4.53a1 1 0 0 1 .56-1.7l6.42-.94z" fill="CUR"/>',
+ "clock": '<circle cx="12" cy="12" r="9.4" fill="CUR"/>'
+          '<path d="M12 6.4v5.85l3.7 2.15" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ "eye": '<path d="M12 4.8c6.7 0 10.4 6.5 10.4 7.2s-3.7 7.2-10.4 7.2S1.6 12.7 1.6 12 5.3 4.8 12 4.8z" fill="CUR"/>'
+        '<circle cx="12" cy="12" r="3.2" fill="#FFFFFF"/>',
+ "camera": '<path d="M8.5 3.3h7a1.4 1.4 0 0 1 1.21.69l1.03 1.75h2.06a2.9 2.9 0 0 1 2.9 2.9v8.56a2.9 2.9 0 0 1-2.9 2.9H4.2a2.9 2.9 0 0 1-2.9-2.9V8.64a2.9 2.9 0 0 1 2.9-2.9h2.06L7.29 4a1.4 1.4 0 0 1 1.21-.7z" fill="CUR"/>'
+           '<circle cx="12" cy="12.8" r="3.6" fill="#FFFFFF"/>',
+ "lock": '<path d="M12 2a5 5 0 0 1 5 5v2.8h-2.7V7a2.3 2.3 0 0 0-4.6 0v2.8H7V7a5 5 0 0 1 5-5z" fill="CUR"/>'
+         '<rect x="4.1" y="9.7" width="15.8" height="11.5" rx="2.9" fill="CUR"/>'
+         '<circle cx="12" cy="15.4" r="1.65" fill="#FFFFFF"/>',
  "undo": '<path d="M12 4.6a9.4 9.4 0 1 1-8.9 12.5 1.9 1.9 0 0 1 3.6-1.24A5.6 5.6 0 1 0 12 8.4H9.9l1.5-1.5A1.9 1.9 0 0 0 8.7 4.2L3.9 9a1.9 1.9 0 0 0 0 2.7l4.8 4.8a1.9 1.9 0 0 0 2.7-2.7l-1.5-1.5H12z" fill="CUR"/>',
 }
 
@@ -1772,12 +1810,33 @@ write("Paused", paused)
 # A settings list where every row looks the same is a list nobody reads, so
 # each row says where it stands without being opened, and the five that decide
 # whether the money stays yours are the ones at the top.
+# The action menu draws its five as shapes standing on nothing, each in its
+# own colour, and settings follows it. This is the one list in the product
+# where colour is doing work rather than decorating: a settings list is read
+# by hunting, not by reading top to bottom, and a colour is found faster than
+# a word. Everywhere else a list is read in order, which is why everywhere
+# else the glyph is black.
+SET_TONE = {"faceid": "blue", "shield": "green", "list": "purple", "laptop": "amber",
+            "key": "cyan", "person": "blue", "bell": "amber", "gift": "pink",
+            "card": "purple", "chat": "green", "star": "amber", "clock": "cyan",
+            "eye": "blue", "camera": "purple", "lock": "red"}
+
+def rowglyph(ic, color=None, on=BG, size=26, cell=36):
+    """A settings row's mark. A shape, not a line drawing, and standing on
+    nothing rather than inside a tile. Anything knocked out of it is knocked
+    out in the colour of the ground it is on, so the same drawing works on the
+    page and on a grey card."""
+    c = color or IC[SET_TONE.get(ic, "black")]
+    return ('<div style="width: ' + str(cell) + 'px; height: ' + str(cell) + 'px; display: flex; '
+      'align-items: center; justify-content: center; flex-shrink: 0">'
+      + fglyph(ic, size, c, FILL if on == FILL else SURF) + '</div>')
+
 def setrow(name, ic, go="", act="soon", color=None, last=False, val="", tail=None, on=BG):
     right = tail if tail is not None else (
       ('<span class="num" style="font-size: 15px; font-weight: 500; color: ' + INK3 + '">' + val + '</span>' if val else '')
       + chevbtn())
     return ('<div' + hook(go, "" if go else act) + ' style="display: flex; align-items: center; gap: 12px; height: 64px">'
-      + badge(ic, None, 36, "11px", 19, False, color, on)
+      + rowglyph(ic, color, on)
       + '<span style="flex-grow: 1; min-width: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
       + right + '</div>')
 
@@ -1800,7 +1859,7 @@ settings = page(
              + setrow("Saved people", "gift") + setrow("Cards", "card", "Card", "", None, False, "1 virtual"))
   + setgroup("About", setrow("Contact support", "chat") + setrow("Give feedback", "star")
              + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 12px; height: 64px">'
-             + badge("lock", None, 36, "11px", 19, False, IC["red"])
+             + rowglyph("lock", IC["red"])
              + '<span style="flex-grow: 1; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + WARN_TEXT + '">Sign out</span></div>')
   + '<div style="padding-top: 8px; text-align: center">'
     '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">Version 1.0.4</span></div>', 20)
