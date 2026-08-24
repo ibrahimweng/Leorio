@@ -1814,14 +1814,14 @@ write("Settings", settings)
 lock = page(
   T("Lock and privacy", "What it takes to open this, and what shows once it is open")
   + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
-    + setrow("Face ID", "faceid", "", "", IC["green"], False, "", switch(True))
-    + setrow("Passcode", "key", "", "soon", IC["purple"], False, "6 digits")
-    + setrow("Ask again after", "clock", "", "soon", IC["blue"], False, "2 minutes") + '</div>'
+    + setrow("Face ID", "faceid", "", "", None, False, "", switch(True))
+    + setrow("Passcode", "key", "", "soon", None, False, "6 digits")
+    + setrow("Ask again after", "clock", "", "soon", None, False, "2 minutes") + '</div>'
   + '<div style="display: flex; flex-direction: column; gap: 12px">' + label("What other people can see")
     + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
-      + setrow("Hide my balance", "eye", "", "", IC["black"], False, "", switch(True))
-      + setrow("Hide it in screenshots", "camera", "", "", IC["black"], False, "", switch(True))
-      + setrow("Amounts in notifications", "bell", "", "", IC["black"], False, "", switch(False)) + '</div></div>'
+      + setrow("Hide my balance", "eye", "", "", None, False, "", switch(True))
+      + setrow("Hide it in screenshots", "camera", "", "", None, False, "", switch(True))
+      + setrow("Amounts in notifications", "bell", "", "", None, False, "", switch(False)) + '</div></div>'
   + '<div style="display: flex; gap: 10px; align-items: flex-start">' + icon("eye", 16, INK3, 1.8, "; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">With this on, your balance is dots until you look at the phone. '
