@@ -36,6 +36,14 @@ the same name first, so sending a screen again replaces it rather than stacking
 a second copy. `emit.mjs` takes screen names as arguments if only some of them
 changed, and packs as many as fit under the tool's character limit.
 
+**A section's children are placed relative to the section, not to the page.**
+This is the opposite of a group and it is the easiest thing in the file to get
+wrong, because a section at the origin behaves as though it were absolute and
+everything below it silently lands at twice its own offset. Set a child to
+`PAD`, never to `sec.y + PAD`. Checking it by measuring `child.x - sec.x`
+cancels the mistake out and reports the right numbers for the wrong reason;
+measure `absoluteBoundingBox` against the section's own box instead.
+
 Prefix a bundle with `PAGE` and `PLACE` to aim it. `PAGE` is a page id; `PLACE`
 gives each screen its x and y, and optionally the `id` of the exact node it
 replaces, which is what to use on a file where two pages hold a frame of the
