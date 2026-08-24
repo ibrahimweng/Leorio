@@ -222,7 +222,14 @@ ICONS = {
        '<rect x="3.4" y="13.6" width="7" height="7" rx="1.8"/><path d="M13.6 13.6h3.2v3.2h-3.2zM17.4 17.4h3.2v3.2h-3.2z"/>',
 }
 
+def _attr(color):
+    """A colour on its way into an SVG attribute. The browser computes a
+    color-mix in a style; in an attribute it is a string, and Figma reads the
+    string. So the mix is resolved here instead of being passed on."""
+    return ACC_TEXT_HEX if "color-mix" in str(color) else color
+
 def icon(name, size=22, color=INK2, sw=1.7, extra=""):
+    color = _attr(color)
     s = str(size)
     return ('<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="' + color
             + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: ' + color
@@ -266,6 +273,7 @@ def avatar(t, size=38, bg=FILL, fg=INK, act="", eid=""):
       + '; font-weight: 700; color: ' + fg + '; flex-shrink: 0">' + t + '</div>')
 
 def chev(size=15, color=INK4, sw=2.1):
+    color = _attr(color)
     s = str(size)
     return ('<svg width="' + s + '" height="' + s + '" viewBox="0 0 14 14" fill="none" style="flex-shrink: 0">'
             '<path d="M5 3l4 4-4 4" stroke="' + color + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round"/></svg>')
@@ -514,6 +522,17 @@ def pagehead(title, sub="", ic=""):
       + '<div style="font-size: 22px; font-weight: 700; color: '
       + INK + '">' + title + '</div></div>' + p + '</div>')
 
+def arcpath(cx, cy, r, pct):
+    """The visible part of a ring, as a path. A dashed circle says the same
+    thing in a browser and nothing at all once the dashes are dropped, and the
+    one place that happens is the one place the ring has to be right."""
+    import math
+    pct = max(0.0, min(100.0, float(pct)))
+    a = math.radians(-90 + 3.6 * pct)
+    x, y = cx + r * math.cos(a), cy + r * math.sin(a)
+    return ("M %g %g A %g %g 0 %d 1 %g %g"
+            % (cx, cy - r, r, r, 1 if pct > 50 else 0, x, y))
+
 def ring(pct, size=180, stroke=14, suffix="%", foot="of the way", eid="glPct"):
     r = (size - stroke) / 2.0
     circ = 2 * 3.141592653589793 * r
@@ -523,12 +542,13 @@ def ring(pct, size=180, stroke=14, suffix="%", foot="of the way", eid="glPct"):
         return ("%g" % v)
     return ('<div style="position: relative; width: ' + str(size) + 'px; height: ' + str(size) + 'px; flex-shrink: 0">'
       '<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size) + ' ' + str(size)
-      + '" style="transform: rotate(-90deg)">'
+      + '">'
       '<circle cx="' + n(half) + '" cy="' + n(half) + '" r="' + n(r) + '" fill="none" stroke="' + FILL3
       + '" stroke-width="' + str(stroke) + '"/>'
-      '<circle class="ring" cx="' + n(half) + '" cy="' + n(half) + '" r="' + n(r) + '" fill="none" stroke="' + ACC
-      + '" stroke-width="' + str(stroke) + '" stroke-linecap="round" stroke-dasharray="' + n(circ)
-      + '" stroke-dashoffset="' + n(off) + '"/></svg>'
+      + ('<circle class="ring" cx="' + n(half) + '" cy="' + n(half) + '" r="' + n(r) + '" fill="none" stroke="' + ACC
+         + '" stroke-width="' + str(stroke) + '"/>' if pct >= 100 else
+         '<path class="ring" d="' + arcpath(half, half, r, pct) + '" fill="none" stroke="' + ACC
+         + '" stroke-width="' + str(stroke) + '" stroke-linecap="round"/>') + '</svg>'
       '<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; flex-direction: column; '
       'align-items: center; justify-content: center; gap: 2px">'
       '<span' + (' id="' + eid + '"' if eid else '') + ' class="num" style="font-size: 40px; font-weight: 800; letter-spacing: -0.04em; color: ' + INK + '">'
@@ -670,12 +690,11 @@ def dial(n, size=48, stroke=5, fs=17, color=None):
     h = "%g" % (size / 2.0)
     return ('<div style="position: relative; width: ' + str(size) + 'px; height: ' + str(size)
       + 'px; flex-shrink: 0"><svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size)
-      + ' ' + str(size) + '" style="transform: rotate(-90deg)">'
+      + ' ' + str(size) + '">'
       '<circle cx="' + h + '" cy="' + h + '" r="' + ("%g" % r) + '" fill="none" stroke="' + FILL3
       + '" stroke-width="' + str(stroke) + '"/>'
-      '<circle cx="' + h + '" cy="' + h + '" r="' + ("%g" % r) + '" fill="none" stroke="' + c
-      + '" stroke-width="' + str(stroke) + '" stroke-linecap="round" stroke-dasharray="' + ("%g" % circ)
-      + '" stroke-dashoffset="' + ("%g" % off) + '"/></svg>'
+      + '<path d="' + arcpath(size / 2.0, size / 2.0, r, n) + '" fill="none" stroke="' + c
+      + '" stroke-width="' + str(stroke) + '" stroke-linecap="round"/></svg>'
       '<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center">'
       '<span class="num" style="font-size: ' + str(fs) + 'px; font-weight: 800; letter-spacing: -0.03em; color: ' + INK + '">'
       + str(n) + '</span></div></div>')
@@ -892,7 +911,7 @@ def wrongrow(t="Something wrong with this?"):
     person has when a payment reached the wrong place is the call centre."""
     return ('<div' + hook("Wrong") + ' style="display: flex; align-items: center; justify-content: center; gap: 7px; height: 44px">'
       '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">' + t + '</span>'
-      + chev(11, ACC_TEXT, 2.2) + '</div>')
+      + chev(11, ACC_TEXT_HEX, 2.2) + '</div>')
 
 def offer(text, action, go=""):
     return ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
@@ -1698,7 +1717,7 @@ goal = page(
   # screen where it occurs to them rather than buried in a help page.
   + '<div' + hook("Paused") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px">'
     '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">What happens if money gets tight?</span>'
-    + chev(11, ACC_TEXT, 2.2) + '</div>', 20)
+    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>', 20)
 goal += dockback("Ask about this goal")
 write("Goal", goal)
 

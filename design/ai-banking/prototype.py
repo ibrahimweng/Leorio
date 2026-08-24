@@ -307,8 +307,12 @@ function animateRing(){
   var r = screens.Goal.querySelector('.ring');
   var pct = document.getElementById('glPct');
   if(!r) return;
-  var circ = parseFloat(r.getAttribute('stroke-dasharray'));
-  var target = parseFloat(r.getAttribute('stroke-dashoffset'));
+  // The ring is a path now, not a dashed circle, because a dash does not
+  // survive the trip into Figma. It still draws itself on by dash, measured
+  // off the path instead of read off an attribute.
+  var circ = r.getTotalLength ? r.getTotalLength() : parseFloat(r.getAttribute('stroke-dasharray'));
+  var target = 0;
+  r.setAttribute('stroke-dasharray', circ);
   function land(){ A.remove(r); r.style.strokeDashoffset = target; if(pct) pct.textContent = '33%'; }
   if(REDUCED){ land(); return; }
   A.remove(r);

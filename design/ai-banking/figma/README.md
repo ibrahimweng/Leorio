@@ -8,12 +8,15 @@ The file is **AI Banking Screens**, key `BKwjYfTZbP7HzKeGyQr5ba`. Every frame
 is 393x852.
 
 Three pages matter. **test** holds the screens on their own, in the order of
-the review canvas, and the home screen the founder drew. **Flows** holds nine
-sections, one per way of doing a thing: send, receive and services, each
-reached by voice, by camera and by typing at the model. A screen that appears
-in more than one flow appears in each of them, so a section can be read
-straight through without jumping pages, but only one of those is the drawing:
-the rest are instances of it. **Components** holds what they are instances of.
+the review canvas, and the home screen the founder drew. **Flows** holds
+twenty sections, one per way of doing a thing, read left to right: send,
+receive and services, each reached by voice, by camera, by typing at the model
+and by tapping; then the half of a bank that is not the happy path, what runs
+on its own, what the black circle opens, the one number for the habits, what
+you set, and putting money away. A screen that appears in more than one flow
+appears in each of them, so a section can be read straight through without
+jumping pages, but only one of those is the drawing: the rest are instances of
+it. **Components** holds what they are instances of.
 
 ## Running it
 
@@ -56,10 +59,10 @@ what it says.
 with an optional list of indices to strip first. Use it when a screen gains or
 loses a section rather than changing its words.
 
-### The seven screens drawn over the home screen
+### The nine screens drawn over the home screen
 
-`Ask`, `AskReq`, `AskSvc`, `Receive`, `Typed`, `TypedAsk` and `TypedBuy` are not
-pages of their own. Each is the home screen with something on top: a voice
+`Ask`, `AskReq`, `AskSvc`, `Receive`, `Typed`, `TypedAsk`, `TypedBuy`, `Draft`
+and `Actions` are not pages of their own. Each is the home screen with something on top: a voice
 sheet, a keyboard, a chooser. The converter builds that backdrop from the same
 markup as everything else, so what arrives is the home feed this repo draws,
 and the home screen in the file is the one the founder drew. Left alone, the
@@ -78,12 +81,18 @@ running it once.
 Three pages now, not two. **Components** holds the design system, in three
 sections.
 
-**Screens** are the six that appear in more than one flow: `Confirm`,
-`DoneSend`, `Scan`, `Sent`, `ConfirmBuy` and `Done`. **Parts** are the sixteen
-things that appear in more than one screen: the keypad, the keyboard, the chat
-dock and header, the three tool panels, the waveform, and the rows that say the
-same sentence in several places. **Icons** holds the mark, which was drawn
-forty-nine times at three sizes and is now drawn once.
+**Screens** are the five that appear in more than one flow: `Confirm` (x5),
+`DoneSend` (x5), `Done` (x4), `ConfirmBuy` (x2) and `Sent` (x2). **Parts** are
+the thirteen things that appear in more than one screen: the passcode key and
+the keypad it fills, the keyboard, the three docks, the three ask bars, the
+three tool panels and the sheet row. **Icons** holds the mark, at the two sizes
+it is drawn at.
+
+Which parts earn a component is decided from the file, not from memory: hash
+every subtree on Flows, count what repeats, and take what still repeats once
+the things above it are folded in. Build them smallest first, bind, then build
+the next size up from a frame that is already bound, or the master will hold a
+copy where the page holds an instance and nothing will match.
 
 The home screen is the exception. It is a component too, but it stays on the
 **test** page where the founder drew it, because making a copy the master would
@@ -117,7 +126,14 @@ size itself, which is what the `ml` flag on a text node means.
 
 **Colour.** Chromium resolves `color-mix()` to `color(srgb r g b)` with values
 from 0 to 1, not 0 to 255. Reading those as bytes turns every mixed colour
-black, so the parser handles that form separately.
+black, so the parser handles that form separately. A colour written into an SVG
+attribute is a different matter: the browser never computes it, so a
+`color-mix()` there travels all the way to Figma as a string nothing can read.
+`build.py` resolves those at the boundary instead.
+
+**Progress rings.** Figma's SVG import drops `stroke-dasharray`, so a ring drawn
+as a dashed circle arrives as a closed one and a savings goal a third of the way
+along reads as finished. The visible part is drawn as an arc path instead.
 
 `emit.mjs` wraps a screen's nodes in the plugin code that rebuilds them. The
 same glyph appears four or five times on a screen, so SVGs are stored once in a

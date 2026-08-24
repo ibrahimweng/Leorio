@@ -15,8 +15,10 @@
 // Paste this whole file into the Figma MCP use_figma tool, with the file key
 // in ../README.md, after re-sending any of the seven. It is safe to run twice.
 
-// The home screen the founder drew, on the test page.
-const SOURCE = '70:5533';
+// The home screen the founder drew, on the test page. It is a component now,
+// so what goes behind an overlay is an instance of it: a clone would put a
+// second master in the file and only one of them could be the true one.
+const SOURCE = '193:1566';
 // The screens that are something drawn over the home screen.
 const OVER = ['Ask', 'AskReq', 'AskSvc', 'Receive', 'Typed', 'TypedAsk', 'TypedBuy',
               'Draft', 'Actions'];
@@ -43,7 +45,7 @@ for (const name of OVER) {
   if (!frames.length) { missing.push(name); continue; }
   for (const fr of frames) {
     const old = fr.children.filter(k => BACKDROP.indexOf(k.name) >= 0);
-    const clone = home.clone();
+    const clone = (home.type === 'COMPONENT') ? home.createInstance() : home.clone();
     clone.name = 'Home behind';
     fr.insertChild(0, clone);
     clone.x = 0;
