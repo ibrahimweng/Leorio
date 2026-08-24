@@ -54,6 +54,23 @@ what it says.
 with an optional list of indices to strip first. Use it when a screen gains or
 loses a section rather than changing its words.
 
+### The seven screens drawn over the home screen
+
+`Ask`, `AskReq`, `AskSvc`, `Receive`, `Typed`, `TypedAsk` and `TypedBuy` are not
+pages of their own. Each is the home screen with something on top: a voice
+sheet, a keyboard, a chooser. The converter builds that backdrop from the same
+markup as everything else, so what arrives is the home feed this repo draws,
+and the home screen in the file is the one the founder drew. Left alone, the
+first step of a flow and the second step of the same flow disagree about what
+the app looks like.
+
+`backdrop.js` fixes that in the file, because it cannot be fixed in the markup
+without redrawing their screen. Paste it whole into `use_figma` after
+re-sending any of the seven: it strips the backdrop the converter built and
+clones theirs in behind the overlay instead. It finds the frames by name, so
+the node ids can change underneath it, and running it twice is the same as
+running it once.
+
 ## How it works
 
 `extract.mjs` opens each screen in headless Chromium and walks the DOM, reading
