@@ -67,6 +67,46 @@ what it says.
 with an optional list of indices to strip first. Use it when a screen gains or
 loses a section rather than changing its words.
 
+`recolor.mjs` is for a change that is only colour, where re-sending forty
+screens would throw away every instance, backdrop and component binding in the
+file to repaint a few hundred squares. Build the old design into a second
+directory, extract both, and it walks the two trees together and writes down
+every fill, stroke and glyph colour that differs, as a path of child indices
+from the screen frame. `emit-recolor.mjs` turns that into a script that walks
+the same path in Figma. Four hundred edits fit in one call.
+
+```
+git archive <old-commit> design/ai-banking | tar -x -C $SP/old --strip-components=1
+(cd $SP/old/ai-banking && python3 build.py && bash figma/rev.sh $SP/old)
+CHROME=/opt/pw-browsers/chromium SP=$SP/old node figma/extract.mjs
+CHROME=/opt/pw-browsers/chromium SP=$SP      node figma/extract.mjs
+SP=$SP OLD=$SP/old node figma/recolor.mjs    # writes recolor.json
+SP=$SP node figma/emit-recolor.mjs           # writes recolor/1.js
+```
+
+Three things make it safe to run against a page where some screens are
+instances and some are not. It refuses to descend into an INSTANCE and says so,
+which is the right answer: the master gets painted once and the instances
+follow. It checks the name of the node each path lands on before painting it.
+And it is idempotent, so a call that times out half way is fixed by running it
+again.
+
+**A path counted from the tree can be one step out at the top.** The nine
+screens with a rebuilt backdrop have had their leading children replaced by a
+single instance, so a child that was fourth in the extraction is third in the
+file. Each edit therefore carries the name of the top-level child its path
+starts at, and the script looks for that name before it starts counting. Below
+the top level the two trees agree exactly, because the converter built them.
+
+**Do not sweep by colour value.** The obvious shortcut, repainting every small
+square that holds one of the palette colours, turns the green tick on a
+finished payment into a grey circle. A tick, a warning triangle, a switch that
+is on and a progress bar are all small and all coloured, and none of them is an
+icon square. Where a sweep is the only option, restrict it to nodes the
+converter named `Icon`, skip anything named `Mark`, and read back what it
+touched before trusting it: on the twenty component masters that list was
+seven, and three of the seven were wrong.
+
 ### The nine screens drawn over the home screen
 
 `Ask`, `AskReq`, `AskSvc`, `Receive`, `Typed`, `TypedAsk`, `TypedBuy`, `Draft`
