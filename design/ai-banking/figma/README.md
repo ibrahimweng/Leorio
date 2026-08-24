@@ -7,11 +7,13 @@ blurs that can be selected and edited.
 The file is **AI Banking Screens**, key `BKwjYfTZbP7HzKeGyQr5ba`. Every frame
 is 393x852.
 
-Two pages matter. **test** holds the screens on their own, in the order of the
-review canvas. **Flows** holds nine sections, one per way of doing a thing:
-send, receive and services, each reached by voice, by camera and by typing at
-the model. A screen that appears in more than one flow is a separate copy in
-each, so a section can be read straight through without jumping pages.
+Three pages matter. **test** holds the screens on their own, in the order of
+the review canvas, and the home screen the founder drew. **Flows** holds nine
+sections, one per way of doing a thing: send, receive and services, each
+reached by voice, by camera and by typing at the model. A screen that appears
+in more than one flow appears in each of them, so a section can be read
+straight through without jumping pages, but only one of those is the drawing:
+the rest are instances of it. **Components** holds what they are instances of.
 
 ## Running it
 
@@ -70,6 +72,33 @@ re-sending any of the seven: it strips the backdrop the converter built and
 clones theirs in behind the overlay instead. It finds the frames by name, so
 the node ids can change underneath it, and running it twice is the same as
 running it once.
+
+### The components
+
+Three pages now, not two. **Components** holds the design system, in three
+sections.
+
+**Screens** are the six that appear in more than one flow: `Confirm`,
+`DoneSend`, `Scan`, `Sent`, `ConfirmBuy` and `Done`. **Parts** are the sixteen
+things that appear in more than one screen: the keypad, the keyboard, the chat
+dock and header, the three tool panels, the waveform, and the rows that say the
+same sentence in several places. **Icons** holds the mark, which was drawn
+forty-nine times at three sizes and is now drawn once.
+
+The home screen is the exception. It is a component too, but it stays on the
+**test** page where the founder drew it, because making a copy the master would
+leave two homes in the file and only one of them true. Sixteen places use it:
+nine as the first step of a flow, seven as the backdrop behind an overlay.
+
+`components.js` binds Flows to all of that. A screen that is sent again arrives
+as a plain frame, so the instances in it go back to being copies; run this and
+they are instances again. It works from the smallest component up, because the
+keypad inside a fresh `Confirm` has to become an instance before the `Confirm`
+itself can match the `Confirm` component. Matching is by shape, not by name, and
+a subtree that is already an instance is skipped, so a clean file reports
+nothing swapped.
+
+Run it after `backdrop.js`, since the home screen goes in last.
 
 ## How it works
 
