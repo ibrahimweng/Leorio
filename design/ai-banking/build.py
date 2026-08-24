@@ -225,6 +225,36 @@ def icon(name, size=22, color=INK2, sw=1.7, extra=""):
             + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: ' + color
             + extra + '">' + ICONS[name] + '</svg>')
 
+# The action menu sits on a blurred white page, so its glyphs carry their own
+# colour and stand on nothing. A circle behind each one is a second shape doing
+# the first one's job. Filled, not drawn, so a small mark still reads as itself.
+FILLED = {
+ "voice": '<g fill="CUR"><rect x="1.4" y="9.6" width="2.9" height="4.8" rx="1.45"/>'
+          '<rect x="6" y="5.2" width="2.9" height="13.6" rx="1.45"/>'
+          '<rect x="10.6" y="1.6" width="2.9" height="20.8" rx="1.45"/>'
+          '<rect x="15.2" y="7" width="2.9" height="10" rx="1.45"/>'
+          '<rect x="19.8" y="10.4" width="2.9" height="3.2" rx="1.45"/></g>',
+ "send": '<path d="M21.5 2.9 3 10.1c-.93.36-.88 1.7.07 1.99l7.28 2.2 2.2 7.28c.29.95 1.63 1 1.99.07z" fill="CUR"/>'
+         '<path d="M21.5 2.9 10.35 14.29l2.2 7.28c.29.95 1.63 1 1.99.07z" fill="CUR" opacity="0.55"/>',
+ "receive": '<path d="M12 2.4a2 2 0 0 1 2 2v9.35l3.3-3.3a2 2 0 1 1 2.83 2.83l-6.71 6.72a2 2 0 0 1-2.83 0L3.87 13.3A2 2 0 0 1 6.7 10.45l3.3 3.3V4.4a2 2 0 0 1 2-2z" fill="CUR"/>',
+ "history": '<circle cx="12" cy="12" r="9.5" fill="CUR"/>'
+            '<path d="M12 6.5v5.75l3.6 2.1" stroke="#FFFFFF" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
+ "settings": '<path d="M5.1 3.3h13.8v18l-2.76-1.72-2.34 1.72-2.34-1.72-2.34 1.72-2.34-1.72L5.1 21.3z" fill="CUR"/>'
+             '<path d="M8.5 8.7h7M8.5 12.9h4.9" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" fill="none"/>',
+ "warn": '<path d="M12 2.9a2.1 2.1 0 0 1 1.83 1.06l8.5 14.9A2.1 2.1 0 0 1 20.5 22h-17a2.1 2.1 0 0 1-1.83-3.14l8.5-14.9A2.1 2.1 0 0 1 12 2.9z" fill="CUR"/>'
+         '<path d="M12 9v4.6M12 17.4h.02" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" fill="none"/>',
+ "wait": '<circle cx="12" cy="12" r="8.7" stroke="CUR" stroke-width="3" opacity="0.26" fill="none"/>'
+         '<path d="M12 3.3a8.7 8.7 0 0 1 8.7 8.7" stroke="CUR" stroke-width="3" stroke-linecap="round" fill="none"/>',
+ "undo": '<path d="M12 4.6a9.4 9.4 0 1 1-8.9 12.5 1.9 1.9 0 0 1 3.6-1.24A5.6 5.6 0 1 0 12 8.4H9.9l1.5-1.5A1.9 1.9 0 0 0 8.7 4.2L3.9 9a1.9 1.9 0 0 0 0 2.7l4.8 4.8a1.9 1.9 0 0 0 2.7-2.7l-1.5-1.5H12z" fill="CUR"/>',
+}
+
+def fglyph(name, size=34, color=INK, hole="#FFFFFF"):
+    """A glyph that is a shape, not a line. Colour and the colour of anything
+    knocked out of it both come in by substitution, so a white glyph on a
+    coloured panel does not lose its own detail to the panel."""
+    return ('<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" fill="none" '
+            'style="flex-shrink: 0">' + FILLED[name].replace("CUR", color).replace("#FFFFFF", hole) + '</svg>')
+
 def avatar(t, size=38, bg=FILL, fg=INK, act="", eid=""):
     s = str(size)
     return ('<div' + hook("", act) + (' id="' + eid + '"' if eid else '') + ' style="width: ' + s + 'px; height: ' + s
@@ -562,25 +592,34 @@ def tickmark(eid="", size=56, color=None):
       + 'px; border-radius: ' + PILL + '; background: ' + c + '; display: flex; align-items: center; justify-content: center">'
       + icon("check", int(size * 0.46), "#FFFFFF", 2.4) + '</div>')
 
-ACTIONS_LIST = [("Send money", "send", "blue", "Pay"),
-                ("Receive", "down", "green", "receive"),
-                ("History", "clock", "purple", "History"),
-                ("Pay a bill", "receipt", "amber", "Bills")]
+# Five things, in the order they are reached for. Voice first, because saying
+# it is the shortest way to do anything here.
+ACTIONS_LIST = [("Voice",      "voice",    "black",  "",         "ask"),
+                ("Send money", "send",     "blue",   "Pay",      ""),
+                ("Receive",    "receive",  "green",  "",         "receive"),
+                ("History",    "history",  "purple", "History",  ""),
+                ("Settings",   "settings", "amber",  "Settings", "")]
+
+# The page behind the menu goes to milk, not to grey: white at three quarters
+# over a hard blur, so the feed is plainly still there and plainly not the
+# thing to read. Grey would say the page is disabled. This says it is behind.
+MILK = "rgba(255,255,255,0.76)"
+BLUR_HARD = "backdrop-filter: blur(26px); -webkit-backdrop-filter: blur(26px)"
 
 def fabsheet():
-    """What the black circle opens. Four things you do most, stacked above the
-    circle over a blurred page, the way the reference dims behind a sheet."""
+    """What the black circle opens. A word and a glyph on each line, right
+    aligned above the circle, with nothing drawn behind either of them."""
     rows = ''
-    for i, (name, ic, col, go) in enumerate(ACTIONS_LIST):
-        rows += ('<div class="fabrow" data-i="' + str(i) + '"' + hook(go if go != "receive" else "", "" if go != "receive" else "receive")
-          + ' style="display: flex; align-items: center; justify-content: flex-end; gap: 12px">'
-          '<span style="height: 40px; padding: 0 16px; border-radius: ' + PILL + '; background: ' + SURF + '; ' + SH_RAISE
-          + '; display: flex; align-items: center; font-size: 17px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + name + '</span>'
-          + badge(ic, None, 52, PILL, 24, False, IC[col]) + '</div>')
+    for i, (name, ic, col, go, act) in enumerate(ACTIONS_LIST):
+        rows += ('<div class="fabrow" data-i="' + str(i) + '"' + hook(go, act)
+          + ' style="display: flex; align-items: center; justify-content: flex-end; gap: 20px">'
+          '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em; color: ' + INK + '">' + name + '</span>'
+          '<div style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+          + fglyph(ic, 38, IC[col]) + '</div></div>')
     return ('<div class="fabwrap" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 6">'
       '<div class="fabscrim"' + hook("", "actions") + ' style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: '
-      + SCRIM + '; ' + BLUR + '"></div>'
-      '<div style="position: absolute; right: 18px; bottom: 96px; display: flex; flex-direction: column; align-items: flex-end; gap: 14px">'
+      + MILK + '; ' + BLUR_HARD + '"></div>'
+      '<div style="position: absolute; right: 20px; bottom: 100px; display: flex; flex-direction: column; align-items: flex-end; gap: 18px">'
       + rows + '</div>'
       '<div class="fab fabclose"' + hook("", "actions") + ' style="position: absolute; right: 18px; bottom: 26px; width: 56px; height: 56px; '
       'border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center">'
@@ -771,6 +810,26 @@ services = page(
 services += dockback("Search, or say what you need")
 write("Services", services)
 
+def txstate(name, sub, amount, ic, col, go):
+    """A row in the list for money that is not simply gone. It wears its state
+    where a normal row wears its service, so the list can be read at a glance
+    for the ones that still need something from you."""
+    return ('<div' + hook(go) + ' style="display: flex; align-items: center; gap: 14px; height: 64px">'
+      '<div style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      + fglyph(ic, 26, IC[col]) + '</div>'
+      '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">'
+      '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + name + '</span>'
+      '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
+      '<span class="num" style="font-size: 16px; font-weight: 700; color: ' + INK2 + '">' + amount + '</span>'
+      + chevbtn() + '</div>')
+
+def wrongrow(t="Something wrong with this?"):
+    """Every receipt needs a door out of it. Without one, the only route a
+    person has when a payment reached the wrong place is the call centre."""
+    return ('<div' + hook("Wrong") + ' style="display: flex; align-items: center; justify-content: center; gap: 7px; height: 44px">'
+      '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">' + t + '</span>'
+      + chev(11, ACC_TEXT, 2.2) + '</div>')
+
 def offer(text, action, go=""):
     return ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
       + aline(text, "17px")
@@ -840,10 +899,9 @@ power = page(
     + '<div' + hook("", "copy") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: ' + PILL + '; background: ' + SURF + '">'
       + icon("copy", 18, INK, 1.8) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
   + '<div style="display: flex; flex-direction: column">'
-    + plainrow("Meter", "0102 4457 8891")
-    + plainrow("Units", "38.4 kWh")
-    + plainrow("Reference", "IKJ-90441-2286", True) + '</div>'
-  + offer("Want me to pay this every month?", "Set it up", "Rules"), 15)
+    + plainrow("Meter", "0102 4457 8891", True) + '</div>'
+  + offer("Want me to pay this every month?", "Set it up", "Rule")
+  + wrongrow("The token did not work?"), 15)
 power += dockback("Ask about this payment")
 write("Power", power)
 
@@ -881,7 +939,7 @@ bills = page(
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
     + '; display: flex; align-items: center; justify-content: center; gap: 9px">' + icon("plus", 17, INK, 2)
     + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Add a bill</span></div>'
-  + offer("DStv and Spectranet are not covered. Shall I pay them?", "Set both up", "Rules"), 14) + dockback("Ask about your bills")
+  + offer("DStv and Spectranet are not covered. Shall I pay them?", "Set both up", "Rule"), 14) + dockback("Ask about your bills")
 write("Bills", bills)
 
 # ================= LOAN =================
@@ -1005,13 +1063,16 @@ ask = ('<div class="behind">' + page(home_inner, 16) + askbar("Ask, or just say 
     + '<div style="display: flex; flex-direction: column; gap: 10px">' + sectionhead("Or try one of these")
       + '<div style="display: flex; flex-direction: column; gap: 8px">'
       + sugg("Pay my light bill", "PowerPay") + sugg("How much did I spend on data?", "Answer") + sugg("What can I borrow?", "Loan") + '</div></div></div>'
-  '<div style="padding: 0 20px 24px 20px; display: flex; gap: 10px; align-items: center">'
+  '<div style="padding: 0 20px 24px 20px; display: flex; flex-direction: column; gap: 12px">'
+    '<div' + hook("Amend") + ' style="display: flex; justify-content: center">'
+      '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Not what I said</span></div>'
+    '<div style="display: flex; gap: 10px; align-items: center">'
     '<div' + hook("Chat") + ' style="flex-grow: 1; height: 56px; border-radius: ' + PILL + '; background: ' + ACC + '; ' + SH_BTN
     + '; display: flex; align-items: center; justify-content: center">'
     '<span style="font-size: 17px; font-weight: 700; color: #FFFFFF">Release to send</span></div>'
     '<div' + hook("back") + ' style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: ' + FILL
     + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-    '<div style="width: 15px; height: 15px; border-radius: 3px; background: ' + INK2 + '"></div></div></div></div>')
+    '<div style="width: 15px; height: 15px; border-radius: 3px; background: ' + INK2 + '"></div></div></div></div></div>')
 write("Ask", ask, ANIM)
 
 # ================= ANSWER =================
@@ -1118,12 +1179,18 @@ def stepdot(state):
     return ('<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
       '<circle cx="9" cy="9" r="7.4" stroke="' + FILL3 + '" stroke-width="2.2"/></svg>')
 
-def toolrow(state, k, v, vcolor=INK, first=False, num=False):
+def toolrow(state, k, v, vcolor=INK, first=False, num=False, go=""):
+    """A field the model filled in. Give it a `go` and the value becomes the
+    way to change it, because a number that was misheard is corrected with a
+    keypad and not by arguing with a chat."""
     edge = '' if first else 'border-top: 1px solid ' + LINE + '; '
     cls = ' class="num"' if num else ''
+    tail = ('<div' + hook(go) + ' style="flex-grow: 1; display: flex; align-items: center; justify-content: flex-end; gap: 5px">'
+            + '<span' + cls + ' style="font-size: 14px; font-weight: 700; color: ' + vcolor + '">' + v + '</span>'
+            + chev(11, INK3, 2.2) + '</div>') if go else (
+            '<span' + cls + ' style="flex-grow: 1; text-align: right; font-size: 14px; font-weight: 700; color: ' + vcolor + '">' + v + '</span>')
     return ('<div style="' + edge + 'display: flex; align-items: center; gap: 12px; height: 44px">' + stepdot(state)
-      + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>'
-      + '<span' + cls + ' style="flex-grow: 1; text-align: right; font-size: 14px; font-weight: 700; color: ' + vcolor + '">' + v + '</span></div>')
+      + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>' + tail + '</div>')
 
 def toolpanel(name, status, rows, cta="", go=""):
     """The tool's own surface, running inside the chat."""
@@ -1182,7 +1249,7 @@ def transferchat(voice=True):
       toolpanel("Leorio Transfers", "Running",
         toolrow("done", "Recipient", "Sarah Adeyemi", INK, True)
         + toolrow("done", "Bank", "GTBank &#183; 0123 4457 8842", INK, False, True)
-        + toolrow("done", "Amount", "&#8358;20,000", INK, False, True)
+        + toolrow("done", "Amount", "&#8358;20,000", INK, False, True, "Amend")
         + toolrow("done", "Fee", "Free", IN_TEXT)
         + toolrow("work", "Arrives", "Checking with GTBank", INK3),
         "Confirm &#8358;20,000", "Confirm"),
@@ -1525,7 +1592,8 @@ done = page(
   + '<div id="dnCard" style="display: flex; flex-direction: column">'
     + plainrow("From", "Everyday &#183; 0102 4457 88")
     + plainrow("Reference", "MTN-88231-4471", True) + '</div>'
-  + '<div id="dnOffer">' + offer("Want me to do this every month without asking?", "Set it up", "Rules") + '</div>', 16)
+  + '<div id="dnOffer">' + offer("Want me to do this every month without asking?", "Set it up", "Rule") + '</div>'
+  + wrongrow(), 16)
 done += dockback("Ask about this")
 write("Done", done)
 
@@ -1611,7 +1679,8 @@ settings = page(
   '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.035em; color: ' + INK + '">Settings</div>'
   + '<div style="padding-top: 16px">'
   + promorow("Get Leorio Plus", "No transfer fees and instant settlement", "star", "", "soon") + '</div>'
-  + setgroup("Security", setrow("Keys and recovery", "key") + setrow("Spending limits", "shield")
+  + setgroup("Security", setrow("Hide my balance", "search") + setrow("Keys and recovery", "key")
+             + setrow("Spending limits", "shield")
              + setrow("Standing instructions", "list", "Rules"))
   + setgroup("General", setrow("Your details", "person") + setrow("Notifications", "bell")
              + setrow("Saved people", "gift") + setrow("Cards", "card", "Card"))
@@ -1630,9 +1699,13 @@ activity = page(
   + segment(["All", "In", "Out"], 0, "seg")
   + '<div style="display: flex; flex-direction: column; gap: 4px">' + sectionhead("Today")
     + '<div style="display: flex; flex-direction: column">'
+    # Money that has not landed is money you go looking for, so it sits at the
+    # top of the list it is missing from rather than buried in it.
+    + txstate("Sarah Adeyemi", "Still on its way &#183; 14:22", "&#8358;20,000", "wait", "blue", "Pending")
+    + txstate("Sarah Adeyemi", "Did not go &#183; 14:22", "&#8358;20,000", "warn", "red", "Failed")
+    + txstate("Musa Danjuma", "Came back &#183; 16:22", "&#8358;20,000", "undo", "green", "Reversed")
     + tx("Sarah Adeyemi", "send", "Flat deposit &#183; 09:14", "&#8358;50,000")
-    + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500")
-    + tx("Holiday goal", "pot", "Round ups &#183; 07:30", "&#8358;280") + '</div></div>'
+    + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500") + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 4px">' + sectionhead("Yesterday")
     + '<div style="display: flex; flex-direction: column">'
     + tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True)
@@ -1644,8 +1717,8 @@ activity += dockback("Ask about any of these")
 write("History", activity)
 
 # ================= ADD MONEY, AS A SHEET =================
-def sheetrow(name, ic, sub, last=False):
-    return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 72px">'
+def sheetrow(name, ic, sub, last=False, go=""):
+    return ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 72px">'
       + badge(ic, None, 44, R_ICON, 22)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
       '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
@@ -1659,7 +1732,7 @@ receive_inner = (sheetx()
   + '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
     'Pick how you want the money to reach you</span></div>'
   + '<div style="display: flex; flex-direction: column">'
-  + sheetrow("Bank transfer", "bank", "Your number, 0102 4457 88")
+  + sheetrow("Bank transfer", "bank", "Your number, 0102 4457 88", False, "Ways")
   + sheetrow("From a card", "card", "Any Nigerian debit card")
   + sheetrow("Ask someone", "request", "Send a request they can pay", True) + '</div>')
 
@@ -1724,7 +1797,7 @@ def typedscreen(text, go):
     return ('<div class="behind">' + page(home_inner, 16) + '</div>'
       + typedbar(text, go) + keyboard())
 
-write("Typed", typedscreen("send sarah 20k", "Chat"))
+write("Typed", typedscreen("send sarah 20k", "Draft"))
 write("TypedAsk", typedscreen("ask musa for 20k", "Request"))
 write("TypedBuy", typedscreen("2k data for mum", "Buy"))
 
@@ -1747,13 +1820,16 @@ def voicesheet(lead, tail, go, sugs):
         + wave()
         + '<div style="display: flex; flex-direction: column; gap: 10px">' + sectionhead("Or try one of these")
           + '<div style="display: flex; flex-direction: column; gap: 8px">' + s + '</div></div></div>'
-      '<div style="padding: 0 20px 24px 20px; display: flex; gap: 10px; align-items: center">'
+      '<div style="padding: 0 20px 24px 20px; display: flex; flex-direction: column; gap: 12px">'
+        '<div' + hook("Amend") + ' style="display: flex; justify-content: center">'
+          '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Not what I said</span></div>'
+        '<div style="display: flex; gap: 10px; align-items: center">'
         '<div' + hook(go) + ' style="flex-grow: 1; height: 56px; border-radius: ' + PILL + '; background: ' + ACC + '; ' + SH_BTN
         + '; display: flex; align-items: center; justify-content: center">'
         '<span style="font-size: 17px; font-weight: 700; color: #FFFFFF">Release to send</span></div>'
         '<div' + hook("back") + ' style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: ' + FILL
         + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-        '<div style="width: 15px; height: 15px; border-radius: 3px; background: ' + INK2 + '"></div></div></div></div>')
+        '<div style="width: 15px; height: 15px; border-radius: 3px; background: ' + INK2 + '"></div></div></div></div></div>')
 
 write("AskReq", voicesheet("Ask Musa for", "20k", "Request",
   [("Who owes me money?", "History"), ("Show my code", "MyCode"), ("Remind Musa again", "soon")]), ANIM)
@@ -1768,7 +1844,7 @@ def requestchat(voice=True):
       toolpanel("Leorio Requests", "Running",
         toolrow("done", "Person", "Musa Danjuma", INK, True)
         + toolrow("done", "Reaches him", "WhatsApp and SMS", INK, False)
-        + toolrow("done", "Amount", "&#8358;20,000", INK, False, True)
+        + toolrow("done", "Amount", "&#8358;20,000", INK, False, True, "Amend")
         + toolrow("done", "For", "Rent balance", INK)
         + toolrow("work", "Expires", "Picking a date", INK3),
         "Send the request", "Sent"),
@@ -1789,7 +1865,7 @@ sent = page(
     + plainrow("Expires", "In 7 days")
     + plainrow("Reference", "REQ-40112-8873", True) + '</div>'
   + aline("I will tell you the moment it lands. You do not have to watch for it.", "16px")
-  + offer("Want me to remind him if nothing comes by Friday?", "Set that up", "Rules"), 16)
+  + offer("Want me to remind him if nothing comes by Friday?", "Set that up", "Rule"), 16)
 sent += dockback("Ask about this request")
 write("Sent", sent)
 
@@ -1898,9 +1974,315 @@ donesend = page(
     + plainrow("To", "GTBank &#183; 0123 4457 8842")
     + plainrow("Reference", "Rent part payment", True) + '</div>'
   + aline("She has it. GTBank confirmed in four seconds.", "16px")
-  + offer("Rent again next month?", "Set it up", "Rules"), 16)
+  + offer("Rent again next month?", "Set it up", "Rule")
+  + wrongrow(), 16)
 donesend += dockback("Ask about this transfer")
 write("DoneSend", donesend)
+
+
+# ================= WHEN IT DOES NOT GO =================
+# Nine flows of everything working is a brochure. These are the four ways a
+# transfer really ends when it ends badly, and the two ways a person asks for
+# money back afterwards.
+#
+# The whole point of these screens is one distinction: money that is late is
+# not money that is lost. A person who cannot tell those apart sends the twenty
+# thousand a second time, and then they are out forty. So every screen here
+# says which of the two it is, in the first line, before anything else.
+
+def limitrow(ic, col, t):
+    """What the model did, and what it cannot do, told apart by their marks.
+    The same padlock on all three would say it failed at all three."""
+    return ('<div style="display: flex; align-items: flex-start; gap: 12px">'
+      + badge(ic, None, 30, "10px", 16, False, IC[col])
+      + '<span style="flex-grow: 1; font-size: 14px; font-weight: 400; line-height: 1.45; color: '
+      + INK2 + '; text-wrap: pretty">' + t + '</span></div>')
+
+def statehead(ic, colour, amount, line):
+    """A glyph, the figure, and one sentence. Every state screen opens the same
+    way, so what happened is read before it is explained."""
+    return ('<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
+      '<div style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center">'
+      + fglyph(ic, 52, colour) + '</div>'
+      '<div style="display: flex; flex-direction: column; gap: 5px">' + money(amount, "", 40)
+      + '<span style="font-size: 15px; color: ' + INK2 + '">' + line + '</span></div></div>')
+
+def loudnote(text, colour):
+    """The one sentence on the screen that has to survive being skimmed."""
+    return ('<div style="border-radius: ' + R_INNER + '; background: ' + colour
+      + '; padding: 16px 18px; display: flex; align-items: center; gap: 12px">'
+      + fglyph("warn", 24, "#FFFFFF", colour)
+      + '<span style="flex-grow: 1; font-size: 16px; font-weight: 700; letter-spacing: -0.015em; '
+        'color: #FFFFFF; text-wrap: pretty">' + text + '</span></div>')
+
+def waylist(items):
+    """A short list of ways out of a hole, each one a row you can take."""
+    out = ''
+    for i, (name, sub, ic, col, go) in enumerate(items):
+        out += ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 72px'
+          + ('' if i == 0 else '; border-top: 1px solid ' + LINE) + '">'
+          + badge(ic, None, 44, R_ICON, 22, False, IC[col])
+          + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+          '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
+          '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
+          + chevbtn() + '</div>')
+    return '<div style="' + cardstyle("4px 16px") + '; display: flex; flex-direction: column">' + out + '</div>'
+
+# ---------- not enough money, before anything is tried ----------
+short = page(
+  T("Not enough in Everyday", "Nothing has been sent")
+  + statehead("warn", IC["amber"], "&#8358;7,520", "short of the &#8358;20,000 you asked for")
+  + '<div style="display: flex; flex-direction: column">'
+    + plainrow("You asked for", "&#8358;20,000")
+    + plainrow("In Everyday", "&#8358;12,480")
+    + plainrow("Short by", "&#8358;7,520", True, IC["amber"]) + '</div>'
+  + aline("Three ways to close it. None of them costs you anything.", "16px")
+  + waylist([
+      ("Move it from Holiday", "&#8358;48,000 is sitting there", "pot", "green", ""),
+      ("Send &#8358;12,480 now", "The rest when your salary lands", "send", "blue", "Confirm"),
+      ("Ask Musa for &#8358;7,520", "He owes you from the rent", "request", "purple", "Request")])
+  + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">Nothing has left your account</span>',
+           "No fee and no attempt. This is a sum I did before trying."), 13)
+short += dockback("Ask me about this")
+write("Short", short)
+
+# ---------- sent, and the bank is slow ----------
+pending = page(
+  T("Still on its way", "Sent at 14:22, not confirmed yet")
+  + statehead("wait", ACC, "&#8358;20,000", "to Sarah Adeyemi &#183; GTBank")
+  + loudnote("Do not send it again. This one is still live.", IC["amber"])
+  + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 2px">'
+    + toolrow("done", "Left your account", "14:22", INK, True)
+    + toolrow("done", "GTBank has it", "14:22")
+    + toolrow("run", "Reaching Sarah", "Waiting", INK3) + '</div>'
+  + aline("Slow, not lost. If GTBank has not confirmed by 16:22 it comes back on its own, "
+          "and I will tell you either way.", "16px")
+  + offer("Want a message the moment it lands?", "Yes, tell me", "Rule"), 15)
+pending += dockback("Ask about this transfer")
+write("Pending", pending)
+
+# ---------- the bank turned it down ----------
+failed = page(
+  T("It did not go", "GTBank turned it down at 14:22")
+  + statehead("warn", IC["red"], "&#8358;20,000", "still in your account")
+  + loudnote("Your balance is exactly what it was.", IC["green"])
+  + aline("Nothing was taken and nothing was charged. GTBank has been failing since 13:40, "
+          "so this is their afternoon, not your account.", "16px")
+  + waylist([
+      ("Try again now", "It may have cleared already", "send", "blue", "Chat"),
+      ("Send it another way", "Through your Zenith account", "bank", "purple", "")])
+  + offer("Keep trying until GTBank is back?", "Do that", "Rule"), 13)
+failed += dockback("Ask why this failed")
+write("Failed", failed)
+
+# ---------- it went, and it came back ----------
+reversal = page(
+  T("It came back", "Returned at 16:22")
+  + statehead("undo", IC["green"], "&#8358;20,000", "back in Everyday")
+  + '<div style="display: flex; flex-direction: column">'
+    + plainrow("Left", "14:22")
+    + plainrow("Came back", "16:22")
+    + plainrow("Why", "Account could not be credited", False, INK2)
+    + plainrow("Reference", "REV-40118-2290", True) + '</div>'
+  + aline("Sarah never got it, so GTBank sent it back and I put it where it came from. "
+          "Nothing was charged, and your balance is whole.", "16px")
+  + waylist([
+      ("Check the account number", "One digit is usually all it is", "search", "amber", "Found"),
+      ("Try Sarah again", "Same amount, same account", "send", "blue", "Chat")]), 15)
+reversal += dockback("Ask about this")
+write("Reversed", reversal)
+
+# ---------- something was wrong with a payment that worked ----------
+wrong = page(
+  T("What went wrong?", "Tell me which and I start it now")
+  + waylist([
+      ("It went to the wrong person", "I ask their bank to send it back", "person", "amber", "Recall"),
+      ("They say it never arrived", "I make GTBank trace it", "search", "blue", "Pending"),
+      ("I did not make this payment", "I freeze the account first, then we look", "shield", "red", "Paused")])
+  + aline("Some of this I can do in minutes. Some of it only a bank can do, and that takes days. "
+          "I will tell you which one you are in before you start, not after.", "16px")
+  + '<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
+    + sectionhead("The payment")
+    + plainrow("Amount", "&#8358;20,000")
+    + plainrow("To", "Sarah Adeyemi &#183; GTBank")
+    + plainrow("Sent", "Today, 14:22", True) + '</div>', 15)
+wrong += dockback("Tell me what happened")
+write("Wrong", wrong)
+
+# ---------- asking for it back, and what that really means ----------
+recall = page(
+  T("Asking GTBank to send it back", "&#8358;20,000, sent at 14:22")
+  + toolpanel("Leorio Recall", "Running",
+      toolrow("done", "You reported it", "16:24", INK, True)
+      + toolrow("done", "Sent to GTBank", "16:24")
+      + toolrow("done", "Sarah asked to approve", "16:25")
+      + toolrow("run", "Her answer", "Up to 5 working days", INK3))
+  # The honest part. A product that implies it can claw money back out of
+  # somebody else's account is lying, and the person finds out on the worst
+  # day they have had this year.
+  + '<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 14px">'
+    + sectionhead("What this is and is not")
+    + '<div style="display: flex; flex-direction: column; gap: 10px">'
+      + limitrow("check", "green", "I have asked GTBank. That part is done.")
+      + limitrow("lock", "amber", "I cannot take it back. It is her money until she agrees.")
+      + limitrow("lock", "amber", "If she says no, no bank can force her.") + '</div>'
+    + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '; text-wrap: pretty">'
+      'After that it is a formal dispute, then a police report. I walk you through either.</span></div>'
+  + waylist([
+      ("Message Sarah", "Most of these end here, in an hour", "chat", "green", ""),
+      ("Open a dispute", "If she has not answered by Friday", "list", "amber", "")]), 15)
+recall += dockback("Ask what happens next")
+write("Recall", recall)
+
+# ================= WHAT A STANDING INSTRUCTION IS =================
+# Set it up appears at the end of five flows. Until now it made a promise
+# nobody could read and nobody could cancel. This is the thing it makes.
+ruleconfirm = page(
+  T("Set this up?", "Nothing is saved until you say yes")
+  + '<div style="' + cardstyle("6px 16px") + '; display: flex; flex-direction: column">'
+    + plainrow("What", "Pay Ikeja Electric")
+    + plainrow("Meter", "0102 4457 8891")
+    + plainrow("When", "The day the bill lands")
+    + plainrow("Up to", "&#8358;10,000")
+    + plainrow("Stops if", "Everyday is under &#8358;15,000", True, INK2) + '</div>'
+  + aline("Over &#8358;10,000 and I stop and ask you, every time. I never raise this on my own.", "16px")
+  + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">You can stop it any time</span>',
+           "It sits in Standing instructions with a switch beside it. Or just tell me to stop and it stops.")
+  + ctabtn("Set it up", "Rule")
+  + '<div' + hook("back") + ' style="display: flex; justify-content: center; height: 44px; align-items: center">'
+    '<span style="font-size: 16px; font-weight: 700; color: ' + INK2 + '">Not now</span></div>', 15)
+write("Rule", ruleconfirm)
+
+# ================= CHANGING THE NUMBER =================
+# A model that mishears twenty thousand as two hundred thousand and offers you
+# only conversation to fix it has put the burden in the wrong place. A number
+# is corrected with a keypad.
+def numkey(k, act="amend"):
+    return ('<div class="pinkey"' + hook("", act) + ' style="width: 74px; height: 74px; border-radius: ' + PILL
+      + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
+      '<span class="num" style="font-size: 26px; font-weight: 400; color: ' + INK + '">' + k + '</span></div>')
+
+def numpad():
+    out = ''
+    for r in (["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]):
+        out += '<div style="display: flex; gap: 22px; justify-content: center">' + "".join(numkey(k) for k in r) + '</div>'
+    out += ('<div style="display: flex; gap: 22px; justify-content: center">'
+      + numkey("000") + numkey("0")
+      + '<div class="pinkey"' + hook("", "amend") + ' style="width: 74px; height: 74px; display: flex; align-items: center; justify-content: center">'
+      + icon("del", 30, INK2, 1.8) + '</div></div>')
+    return ('<div style="display: flex; flex-direction: column; gap: 18px; align-items: center">' + out + '</div>')
+
+amend = page(
+  T("Change the amount", "Nothing has been sent")
+  + '<div style="display: flex; flex-direction: column; gap: 8px; align-items: center">'
+    + caption("I heard")
+    + '<span class="num" style="font-size: 16px; font-weight: 400; color: ' + INK3
+    + '; text-decoration: line-through">&#8358;200,000</span>'
+    + '<div id="amAmt">' + money("&#8358;20,000", "", 36) + '</div></div>'
+  + numpad()
+  + aline("Change it as many times as you like. It moves after your face and your passcode, not before.", "16px")
+  + ctabtn("Use &#8358;20,000", "Confirm")
+  + '<div' + hook("Short") + ' style="display: flex; justify-content: center; height: 40px; align-items: center">'
+    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">What if it is more than I have?</span></div>', 14)
+write("Amend", amend)
+
+# ================= HOW MONEY REACHES YOU =================
+# Receiving is not something the model does. It is two facts about you, and it
+# can hand you both. Asking somebody to pay is a different job with a different
+# name, and it is on this screen as a third thing, not as the first one.
+def waycard(head, big, sub, action, ic, col, go="", act="soon"):
+    return ('<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 14px">'
+      '<div style="display: flex; align-items: center; gap: 12px">'
+      + badge(ic, None, 40, R_ICON, 20, False, IC[col])
+      + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 1px">'
+        '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + head + '</span>'
+        '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div></div>'
+      '<span class="num" style="font-size: 16px; font-weight: 700; color: ' + INK + '">' + big + '</span>'
+      '<div' + hook(go, "" if go else act) + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + SURF
+      + '; display: flex; align-items: center; justify-content: center; gap: 7px">'
+      '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">' + action + '</span>' + chev(12, INK, 2.2) + '</div></div>')
+
+ways = page(
+  T("Three ways to be paid", "All of them safe to hand out")
+  + aline("You cannot receive by talking. What I can do is hand you the two things money "
+          "reaches you by, and write the message that asks.", "16px")
+  + waycard("Your account number", "0102 4457 88", "Leorio &#183; Ibrahim Musa", "Copy it", "bank", "blue", "", "copy")
+  + waycard("Your code", "Point a camera at it", "Works with any bank app", "Show it", "qr", "green", "MyCode")
+  + waycard("Ask somebody", "On WhatsApp and SMS", "I write it, you check it", "Ask for money", "request", "purple", "Request")
+  + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">None of these can take anything</span>',
+           "A number and a code can only be paid into. Neither carries your balance."), 13)
+ways += dockback("Ask about getting paid")
+write("Ways", ways)
+
+
+# ================= THE CAMERA, POINTED AT A BILL =================
+# Section eight opened on a screen that says point at an account number and
+# shows somebody's transfer message, and then read an electricity bill on the
+# next screen. The camera has two jobs and they want two prompts.
+def camera(title, sub, shot, chip, foot, go):
+    return ('<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCAN_BG
+      + '; display: flex; flex-direction: column; gap: 20px; padding: 60px 20px 32px 20px">'
+      '<div style="display: flex; align-items: center; height: 44px">'
+        + roundbtn("close", "back") + '<div style="flex-grow: 1"></div>' + roundbtn("power", "", "soon") + '</div>'
+      '<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">'
+        '<span style="font-size: 16px; font-weight: 700; color: #FFFFFF">' + title + '</span>'
+        '<span style="font-size: 14px; font-weight: 400; color: rgba(255,255,255,0.62)">' + sub + '</span></div>'
+      '<div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 16px; padding-top: 8px">'
+        '<div style="border: 2px solid rgba(255,255,255,0.34); border-radius: 24px; padding: 14px">'
+        + photo(shot, False) + '</div>'
+        '<div style="align-self: center; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 14px; '
+        'border-radius: ' + PILL + '; background: ' + GLASS + '">' + stepdot("done")
+        + '<span class="num" style="font-size: 14px; font-weight: 700; color: #FFFFFF">' + chip + '</span></div></div>'
+      '<div style="display: flex; align-items: center; height: 72px">'
+        + '<div' + hook(go) + ' style="width: 52px; height: 52px; border-radius: 14px; overflow: hidden; background: '
+          + SURF + '; display: flex; flex-direction: column; gap: 4px; padding: 8px; flex-shrink: 0">'
+          '<div style="display: flex; align-items: center; gap: 4px">'
+            '<div style="width: 10px; height: 10px; border-radius: ' + PILL + '; background: ' + IC["green"] + '"></div>'
+            '<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+          '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
+          '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
+          '<div style="height: 4px; width: 62%; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+        + '<div style="flex-grow: 1; display: flex; justify-content: center">'
+          '<div' + hook(go) + ' style="width: 72px; height: 72px; border-radius: ' + PILL
+          + '; border: 4px solid #FFFFFF; display: flex; align-items: center; justify-content: center">'
+          '<div style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: #FFFFFF"></div></div></div>'
+        + roundbtn("qr", "Pick", "", 52, 22) + '</div>'
+      '<span style="text-align: center; font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.5)">'
+      + foot + '</span></div>')
+
+write("ScanBill", camera("Point at a bill or a meter",
+  "The number on the card works too.", "meter", "4457 8891",
+  "Or the meter number, typed, if the light is bad.", "Meter"))
+
+# ================= A LINE YOU CAN STILL CHANGE =================
+# Speaking and typing were the same screen after step two, which made six of
+# the nine flows three. This is the thing typing can do that speaking cannot:
+# hold the sentence still while you read it, and let you take it apart.
+def chip(t, strong=False):
+    return ('<div' + hook("Amend") + ' style="height: 34px; padding: 0 13px; border-radius: ' + PILL
+      + '; background: ' + (ACC_SOFT if strong else FILL) + '; display: flex; align-items: center; gap: 5px; flex-shrink: 0">'
+      '<span style="font-size: 14px; font-weight: 700; color: ' + (ACC_INK if strong else INK) + '">' + t + '</span>'
+      + chev(10, ACC_INK if strong else INK3, 2.2) + '</div>')
+
+def draftbar(text):
+    """The ask bar holding a sentence that has not gone anywhere yet, with the
+    parts of it that can still be argued with sitting above it."""
+    return ('<div style="position: absolute; left: 0; right: 0; bottom: 262px; z-index: 4; padding: 0 18px 12px 18px; '
+      'background: linear-gradient(180deg, rgba(255,255,255,0) 0%, ' + BG + ' 30%); '
+      'display: flex; flex-direction: column; gap: 10px">'
+      '<div style="display: flex; gap: 7px; align-items: center">'
+      + chip("&#8358;20,000", True) + chip("Sarah Adeyemi") + chip("Everyday") + '</div>'
+      '<div style="display: flex; gap: 10px; align-items: center">'
+      '<div class="askpill" style="flex-grow: 1; min-width: 0; height: 48px; border-radius: ' + PILL
+      + '; background: ' + FILL + '; display: flex; align-items: center; gap: 9px; padding: 0 14px 0 8px">' + mark(32)
+      + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK
+      + '; white-space: nowrap; overflow: hidden">' + text + '</span>'
+      '<div style="width: 2px; height: 20px; background: ' + ACC + '"></div></div>'
+      + '<div' + hook("Chat") + ' style="width: 48px; height: 48px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      + icon("up", 22, "#FFFFFF", 2.4) + '</div></div></div>')
+
+write("Draft", '<div class="behind">' + page(home_inner, 16) + '</div>' + draftbar("send sarah 20k") + keyboard())
 
 if EMIT:
     print("built:", ", ".join(sorted(f for f in os.listdir(OUT) if f.endswith(".dc.html"))))

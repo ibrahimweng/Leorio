@@ -15,7 +15,12 @@ ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
          # so most of these are the second step of one of them.
          "Typed", "TypedAsk", "TypedBuy", "ChatTyped", "RequestTyped", "BuyTyped",
          "AskReq", "AskSvc", "Request", "Sent", "MyCode",
-         "Buy", "ConfirmBuy", "Meter", "ConfirmMeter", "DoneSend", "Receive"]
+         "Buy", "ConfirmBuy", "Meter", "ConfirmMeter", "DoneSend", "Receive",
+         # A line you can still take apart, and the camera aimed at a bill
+         # rather than at somebody's transfer message.
+         "Draft", "ScanBill", "Amend", "Ways", "Rule",
+         # The half of a bank that is not the happy path.
+         "Short", "Pending", "Failed", "Reversed", "Wrong", "Recall"]
 
 def acc(html):
     return html.replace("{{accent}}", "var(--acc)")

@@ -18,7 +18,8 @@
 // The home screen the founder drew, on the test page.
 const SOURCE = '70:5533';
 // The screens that are something drawn over the home screen.
-const OVER = ['Ask', 'AskReq', 'AskSvc', 'Receive', 'Typed', 'TypedAsk', 'TypedBuy'];
+const OVER = ['Ask', 'AskReq', 'AskSvc', 'Receive', 'Typed', 'TypedAsk', 'TypedBuy',
+              'Draft', 'Actions'];
 // What the converter leaves at the top level of one of those screens for the
 // backdrop: the feed, the group holding the feed and the ask bar, the ask bar
 // on its own, and the clone a previous run of this script put there. Anything

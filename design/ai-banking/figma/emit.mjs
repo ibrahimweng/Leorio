@@ -207,9 +207,18 @@ const list = which.length ? which : ORDER;
 // The comments are for whoever reads this file, not for the tool.
 const CODE = RUNNER.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n');
 
+// A screen drawn over the home screen carries the whole home feed as its first
+// child or two, and backdrop.js throws that away and clones the real one in.
+// Sending it is a third of a megabyte of work to be undone, so DROP takes it
+// out here instead: DROP='Ask:1,Receive:2' omits that many leading top level
+// children, and backdrop.js inserts at index 0 either way.
+const DROP = Object.fromEntries((process.env.DROP || '').split(',').filter(Boolean)
+  .map(p => { const [n, c] = p.split(':'); return [n, +c]; }));
+
 const loaded = list.map(name => {
   const i = ORDER.indexOf(name);
   const data = JSON.parse(fs.readFileSync(SP + '/figma/' + name + '.json', 'utf8'));
+  if (DROP[name]) data.k = data.k.slice(DROP[name]);
   (function go(nodes) {
     for (const n of nodes) {
       for (const k of ['x','y','w','h']) if (typeof n[k] === 'number') n[k] = Math.round(n[k] * 10) / 10;
