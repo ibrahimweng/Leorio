@@ -124,17 +124,42 @@ FONT_ITAL  = "PlusJakartaItalic-subset.woff2"
 FONT_NAME  = "Plus Jakarta Sans"
 FONT_WGHT  = "400 800"
 
-# Six steps, and nothing between them. Taken down a step from the reference
-# after a pass over the home screen, so the whole product reads quieter.
-#   12 a second line, a caption, a chip
-#   14 body, a card title, and everything the model says
-#   16 a row title, a button, a value
-#   22 a heading over a group
-#   26 a page title
-#   36 a balance
-TYPE = [12, 14, 16, 22, 26, 36]
+# Nine named styles, read straight off the home screen in Figma. That file is
+# the source of truth for type now, so the ramp is not a set of sizes any more:
+# it is a set of styles, and a size only exists at the weights a style gives
+# it. Tracking is a percentage of the size, which is how Figma stores it and
+# what keeps it honest as the size changes.
+#
+#   Display        36 ExtraBold   a balance
+#   Heading 1      22 ExtraBold   the kobo beside one
+#   Heading 2      22 Bold        a page title, a heading over a group
+#   Body/Bold      16 Bold        a row title, a button, a value
+#   Body/Regular   16 Regular     a paragraph, a date rule
+#   Label/Bold     14 Bold        a nav title, a chip that filters
+#   Label/Regular  14 Regular     a second line, and everything the model says
+#   Caption        12 Regular     a note under a field
+#   Tag            10 Bold        a badge, an initial, an axis label
+STYLE = {
+    (36, 800): ("Display",       "normal", -1.83),
+    (22, 800): ("Heading 1",     "normal", -3.0),
+    (22, 700): ("Heading 2",     "normal", -3.0),
+    (16, 700): ("Body/Bold",     "23.2px", -1.5),
+    (16, 400): ("Body/Regular",  "23.2px",  0.0),
+    (14, 700): ("Label/Bold",    "normal", -1.0),
+    (14, 400): ("Label/Regular", "normal",  0.0),
+    (12, 400): ("Caption",       "normal",  0.0),
+    (10, 700): ("Tag",           "normal",  0.0),
+}
+TYPE = sorted({fs for fs, _ in STYLE})
+# Which weights a size is allowed to take. Asking for one that does not exist
+# is not an error, it is a question about which style was meant, and snap()
+# answers it.
+WEIGHTS_AT = {}
+for _fs, _fw in STYLE:
+    WEIGHTS_AT.setdefault(_fs, []).append(_fw)
+
 # The Naira sign loses its crossbars below about twelve and a half pixels, so
-# the smallest step is not available to money. snap() lifts any figure off it.
+# money never renders at the bottom of the ramp. snap() lifts any figure off it.
 MONEY_MIN_PX = 14
 # Three weights, which is all the reference uses. Regular for anything grey,
 # bold for anything named, heavy for money.

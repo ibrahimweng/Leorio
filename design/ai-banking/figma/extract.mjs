@@ -104,6 +104,18 @@ const EXTRACT = () => {
   }
   const sameTypo = (a, b) => a.fs === b.fs && a.fw === b.fw && a.it === b.it && a.c === b.c;
 
+  // The nine named text styles in the Figma file, keyed by the size and weight
+  // that build.py has already snapped every line onto. A pair that is not here
+  // is one of the two surfaces that opt out of the ramp, the keyboard and the
+  // payment card, and those stay unbound.
+  const STYLE = {
+    '36/800': 'Display',   '22/800': 'Heading 1',     '22/700': 'Heading 2',
+    '16/700': 'Body/Bold', '16/400': 'Body/Regular',
+    '14/700': 'Label/Bold','14/400': 'Label/Regular',
+    '12/400': 'Caption',   '10/700': 'Tag'
+  };
+  const styleOf = T => STYLE[T.fs + '/' + T.fw] || null;
+
   function textNode(str, b, T, op, clipW) {
     const s = str.replace(/\s+/g, ' ');
     if (!s.trim()) return null;
@@ -120,6 +132,7 @@ const EXTRACT = () => {
       if (T.ls) n.ls = T.ls;
       if (T.ta === 'center' || T.ta === 'right') n.ta = T.ta;
       if (op < 1) n.o = r2(op);
+      const sn = styleOf(T); if (sn) n.sn = sn;
       return n;
     }
     // Figma's metrics run a hair wider than the browser's, so a single line
@@ -135,6 +148,7 @@ const EXTRACT = () => {
     if (T.ls) n.ls = T.ls;
     if (T.ta === 'center' || T.ta === 'right') n.ta = T.ta;
     if (op < 1) n.o = r2(op);
+    const sn = styleOf(T); if (sn) n.sn = sn;
     return n;
   }
 

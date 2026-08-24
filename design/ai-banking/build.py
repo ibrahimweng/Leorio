@@ -49,12 +49,68 @@ def screen(inner):
 def _near(v, scale):
     return min(scale, key=lambda x: (abs(x - v), x))
 
+def _ramp(fs, fw, num=False):
+    """Answer the question 'which of the nine styles was this?'. A size that
+    does not exist goes to its neighbour, then a weight that does not exist at
+    that size goes to its own. The one judgement call is small and bold: there
+    is no bold at twelve, and a short bold thing at that size is a tag, so it
+    becomes one."""
+    fs = _near(fs, TYPE)
+    fw = WEIGHT.get(fw, 400)
+    if num and fs < MONEY_MIN_PX:      # money never renders at the bottom
+        fs = MONEY_MIN_PX
+    if fw not in WEIGHTS_AT[fs]:
+        if fs == 12 and fw >= 700:
+            fs, fw = 10, 700
+        elif fs == 10 and fw < 700:
+            fs, fw = 12, 400
+        else:
+            fw = min(WEIGHTS_AT[fs], key=lambda w: (abs(w - fw), -w))
+    return fs, fw
+
+def _sized(css, num=False):
+    """Rewrite one inline style so its type is a style off the ramp and not a
+    set of numbers that happen to be nearby."""
+    m = re.search(r"font-size: ([0-9.]+)px", css)
+    if not m:
+        return css
+    wm = re.search(r"font-weight: (\d+)", css)
+    fs, fw = _ramp(float(m.group(1)), int(wm.group(1)) if wm else 400, num)
+    _, lh, tr = STYLE[(fs, fw)]
+    css = re.sub(r"font-size: [0-9.]+px", "font-size: %dpx" % fs, css, count=1)
+    css = (re.sub(r"font-weight: \d+", "font-weight: %d" % fw, css, count=1) if wm
+           else css.replace("font-size: %dpx" % fs, "font-size: %dpx; font-weight: %d" % (fs, fw), 1))
+    # The style owns the line and the tracking. Whatever the call site asked
+    # for is replaced, because a style that only half applies is not a style.
+    ls = "letter-spacing: %sem" % ("0" if tr == 0 else ("%.4f" % (tr / 100.0)).rstrip("0"))
+    css = (re.sub(r"letter-spacing: -?[0-9.]+em", ls, css, count=1)
+           if "letter-spacing:" in css else css + "; " + ls)
+    css = (re.sub(r"line-height: [0-9.]+(px)?", "line-height: " + lh, css, count=1)
+           if "line-height:" in css else css + "; line-height: " + lh)
+    return css
+
+_ELEM = re.compile(r'<[^>]+>')
+
+def _type_pass(html):
+    """Every element that sets a size gets its style. Two surfaces opt out:
+    the on-screen keyboard and the payment card are objects the phone and the
+    bank draw, not text this product writes, and neither belongs to the ramp."""
+    def one(m):
+        tag = m.group(0)
+        cls = re.search(r'class="([^"]*)"', tag)
+        names = cls.group(1).split() if cls else []
+        if "chrome" in names:
+            return tag
+        sm = re.search(r'style="([^"]*)"', tag)
+        if not sm:
+            return tag
+        css = _sized(sm.group(1), num="num" in names)
+        return tag[:sm.start(1)] + css + tag[sm.end(1):]
+    return _ELEM.sub(one, html)
+
 def snap(html):
     """Pull every size, gap and radius onto its scale. Nothing drifts."""
-    html = re.sub(r"font-size: ([0-9.]+)px",
-                  lambda m: "font-size: %dpx" % _near(float(m.group(1)), TYPE), html)
-    html = re.sub(r"font-weight: (\d+)",
-                  lambda m: "font-weight: %d" % WEIGHT.get(int(m.group(1)), 400), html)
+    html = _type_pass(html)
     html = re.sub(r"\b(gap|row-gap|column-gap): ([0-9.]+)px",
                   lambda m: "%s: %dpx" % (m.group(1), _near(float(m.group(2)), SPACE)), html)
 
@@ -64,10 +120,6 @@ def snap(html):
             return m.group(0)
         return "border-radius: %dpx" % _near(v, RADII)
     html = re.sub(r"border-radius: ([0-9.]+)px", _rad, html)
-
-    def _num(m):
-        return m.group(0).replace("font-size: %dpx" % TYPE[0], "font-size: %dpx" % MONEY_MIN_PX)
-    html = re.sub(r'<[^>]*class="num"[^>]*>', _num, html)
 
     def _pad(m):
         out = []
@@ -357,7 +409,7 @@ def tinted(inner, note, pad="14px 16px"):
     """A field the model filled in. It speaks from its own soft panel."""
     return ('<div style="border-radius: ' + R_INNER + '; background: ' + ACC_SOFT
         + '; padding: ' + pad + '; display: flex; flex-direction: column; gap: 7px">' + inner
-        + '<span style="font-size: 13px; font-weight: 700; color: '
+        + '<span style="font-size: 12px; font-weight: 400; color: '
         + ACC_INK + '">' + note + '</span></div>')
 
 def slide(label, go="", lid=""):
@@ -420,11 +472,13 @@ def pagehead(title, sub="", ic=""):
     lead = (badge(ic, None, 40, R_ICON, 21) + '') if ic else ''
     p = ''
     if sub:
-        p = ('<div style="font-size: 17px; font-weight: 400; line-height: 1.4; color: ' + INK3
+        p = ('<div style="font-size: 16px; font-weight: 400; color: ' + INK3
              + '; text-wrap: pretty">' + sub + '</div>')
+    # Heading 2. The home screen sets "Activities" at this size, and a page
+    # title is the same rank as that, so it is the same style.
     return ('<div class="phead" style="display: flex; flex-direction: column; gap: 8px">'
       '<div style="display: flex; align-items: center; gap: 12px">' + lead
-      + '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.1; color: '
+      + '<div style="font-size: 22px; font-weight: 700; color: '
       + INK + '">' + title + '</div></div>' + p + '</div>')
 
 def ring(pct, size=180, stroke=14):
@@ -782,7 +836,7 @@ power = page(
   + aline("Type this into your meter. I have sent it to your messages as well.", "16.5px")
   + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
     + sectionhead("Meter token")
-    + '<span class="num" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
+    + '<span class="num chrome" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
     + '<div' + hook("", "copy") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: ' + PILL + '; background: ' + SURF + '">'
       + icon("copy", 18, INK, 1.8) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
   + '<div style="display: flex; flex-direction: column">'
@@ -891,18 +945,18 @@ vcard = page(
   + '<div id="cdFace" style="height: 194px; border-radius: ' + R_CARDLG + '; background: ' + CARD_FACE + '; ' + SH_RAISE + '; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; '
     + SHADOW + '">'
     '<div style="display: flex; align-items: flex-start; justify-content: space-between">'
-      + mark(24, "#FFFFFF") + '<span style="font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: rgba(255,255,255,0.7)">NETFLIX ONLY</span></div>'
+      + mark(24, "#FFFFFF") + '<span class="chrome" style="font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: rgba(255,255,255,0.7)">NETFLIX ONLY</span></div>'
     '<div style="width: 34px; height: 25px; border-radius: 5px; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.28); display: flex; flex-direction: column; justify-content: center; gap: 3px; padding: 0 5px">'
       '<div style="height: 1.5px; background: rgba(255,255,255,0.45)"></div>'
       '<div style="height: 1.5px; background: rgba(255,255,255,0.45)"></div></div>'
     '<div style="display: flex; flex-direction: column; gap: 16px">'
-      '<span id="cdNum" class="num" style="font-size: 20px; font-weight: 500; letter-spacing: 0.12em; color: #FFFFFF">5399 &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; 4471</span>'
+      '<span id="cdNum" class="num chrome" style="font-size: 20px; font-weight: 500; letter-spacing: 0.12em; color: #FFFFFF">5399 &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; 4471</span>'
       '<div style="display: flex; align-items: flex-end; justify-content: space-between">'
         '<div style="display: flex; flex-direction: column; gap: 4px">'
-          '<span style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">CARD HOLDER</span>'
-          '<span style="font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: #FFFFFF">IBRAHIM WENG</span></div>'
+          '<span class="chrome" style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">CARD HOLDER</span>'
+          '<span class="chrome" style="font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: #FFFFFF">IBRAHIM WENG</span></div>'
         '<div style="display: flex; flex-direction: column; gap: 4px">'
-          '<span style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">EXPIRES</span>'
+          '<span class="chrome" style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">EXPIRES</span>'
           '<span class="num" style="font-size: 13px; font-weight: 500; color: #FFFFFF">09/28</span></div>'
         '</div></div></div>'
   + '<div style="' + cardstyle("14px 8px", "20px") + ' display: flex; gap: 4px">' + act("Reveal","search","","reveal") + act("Freeze","freeze","","freeze", IC["cyan"]) + act("Fund","plus","","soon", IC["green"]) + act("Rules","list","Rules", IC["purple"]) + '</div>'
@@ -1635,7 +1689,7 @@ def keyboard():
         for ch in r:
             cells += ('<div style="width: 33px; height: 42px; border-radius: 6px; background: ' + SURF + '; ' + SH_RAISE
               + '; display: flex; align-items: center; justify-content: center">'
-              '<span style="font-size: 22px; font-weight: 400; color: ' + INK + '">' + ch + '</span></div>')
+              '<span class="chrome" style="font-size: 22px; font-weight: 400; color: ' + INK + '">' + ch + '</span></div>')
         if i == 2:
             cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + FILL2
               + '; display: flex; align-items: center; justify-content: center">' + icon("del", 20, INK, 1.8) + '</div>')

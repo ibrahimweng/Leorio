@@ -20,6 +20,11 @@ const RUNNER = `
 const F='Plus Jakarta Sans';
 const ST=w=>w>=800?'ExtraBold':w>=700?'Bold':'Regular';
 for(const s of ['Regular','Bold','ExtraBold','Italic']) await figma.loadFontAsync({family:F,style:s});
+// The file's own text styles. Every line the ramp covers is bound to one of
+// them, so the type can be changed in one place afterwards instead of in
+// twelve hundred nodes. A style this file does not have is simply not bound.
+const SID={}; for(const st of await figma.getLocalTextStylesAsync()) SID[st.name]=st.id;
+let binds=[], bound=0, unstyled=0;
 function C(h){const a=String(h).split('|'),v=a[0];
   return {c:{r:parseInt(v.slice(0,2),16)/255,g:parseInt(v.slice(2,4),16)/255,b:parseInt(v.slice(4,6),16)/255},o:a[1]!==undefined?+a[1]:1};}
 function P(h){const x=C(h);return {type:'SOLID',color:x.c,opacity:x.o};}
@@ -81,6 +86,7 @@ function build(n,parent){
       else if(n.ml){ nd.textAutoResize='HEIGHT'; nd.resize(n.w+4,n.h); if(n.ta) nd.textAlignHorizontal=n.ta.toUpperCase(); }
       else { nd.textAutoResize='WIDTH_AND_HEIGHT'; }
       nd.name=n.n||n.s.slice(0,30);
+      if(n.sn && SID[n.sn]) binds.push([nd,SID[n.sn]]); else unstyled++;
     } else {
       nd=figma.createFrame();
       nd.name=n.n||'Frame';
@@ -179,11 +185,16 @@ for(const S of SCREENS){
   fr.x = at ? at.x : S.X; fr.y = at ? at.y : S.Y;
   fr.fills=[P(S.D.bg)]; fr.clipsContent=true; fr.cornerRadius=0;
   page.appendChild(fr);
+  binds=[]; bound=0; unstyled=0;
   for(const n of S.D.k) build(n,fr);
+  // Bind before tune(), so auto layout measures the type the style gives and
+  // not the type the browser happened to hand over.
+  for(const [nd,id] of binds){ try{ await nd.setTextStyleIdAsync(id); bound++; }catch(e){ errs.push('style: '+String(e.message||e).slice(0,60)); } }
   for(let i=0;i<S.D.k.length;i++) if(S.D.k[i].t===0 && fr.children[i]) tune(fr.children[i],S.D.k[i]);
   ids.push(fr.id);
   out.push({name:S.name, frame:fr.id, replaced:took, at:[fr.x,fr.y], made,
-            autoLayout:kept+'/'+autos, placedByHand:undone, errs:errs.slice(0,4)});
+            autoLayout:kept+'/'+autos, placedByHand:undone,
+            styled:bound+'/'+(bound+unstyled), errs:errs.slice(0,4)});
 }
 return {createdNodeIds:ids, page:page.name, screens:out};
 `;
