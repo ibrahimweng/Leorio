@@ -21,6 +21,11 @@ ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
          "Draft", "ScanBill", "Amend", "Ways", "Rule",
          # The half of a bank that is not the happy path.
          "Short", "Pending", "Failed", "Reversed", "Wrong", "Recall",
+         # The account being opened, one question at a time, with everything
+         # already answered kept on the screen.
+         "Start", "Number", "Code", "Nin", "Who", "Face", "Passcode", "Ready", "Finish",
+         # The second pocket, and the one screen that moves money between them.
+         "Dollars", "Convert", "Converted",
          # One number for the habits, and the settings that build them: what
          # opens the app, what stops a transfer, and where else you are open.
          "Health", "Lock", "Limits", "LimitStop", "Devices", "SaveRule"]

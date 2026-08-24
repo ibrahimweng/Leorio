@@ -218,6 +218,10 @@ ICONS = {
  "laptop": '<rect x="3.4" y="4.6" width="17.2" height="11.4" rx="2.1"/><path d="M2 19.4h20"/>',
  "eye": '<path d="M2.3 12s3.5-6.3 9.7-6.3S21.7 12 21.7 12s-3.5 6.3-9.7 6.3S2.3 12 2.3 12z"/><circle cx="12" cy="12" r="2.9"/>',
  "chart": '<path d="M4.6 19.6V13.2M9.5 19.6V8.1M14.4 19.6v-4.3M19.4 19.6V4.5"/>',
+    "dollar": '<path d="M12 3.2v17.6"/>'
+              '<path d="M16.4 7.6a3.8 3.8 0 0 0-3.7-2.6h-1.5a3.5 3.5 0 0 0 0 7h1.6a3.5 3.5 0 0 1 0 7h-1.6a3.8 3.8 0 0 1-3.7-2.6"/>',
+ "id": '<rect x="2.6" y="4.8" width="18.8" height="14.4" rx="2.8"/><circle cx="8.6" cy="11.2" r="2.2"/>'
+       '<path d="M5.2 16.6a3.9 3.9 0 0 1 6.8 0M14.8 10.2h3.6M14.8 13.8h3.6"/>',
  "qr": '<rect x="3.4" y="3.4" width="7" height="7" rx="1.8"/><rect x="13.6" y="3.4" width="7" height="7" rx="1.8"/>'
        '<rect x="3.4" y="13.6" width="7" height="7" rx="1.8"/><path d="M13.6 13.6h3.2v3.2h-3.2zM17.4 17.4h3.2v3.2h-3.2z"/>',
 }
@@ -372,17 +376,18 @@ def topbar(title="", right=""):
 def pillbtn(text, go="", act="", ic="", kind="black", full=True, height=56, bid=""):
     """Every button here is a pill. Black is the action you are meant to take,
     blue is the one that belongs to the thing you are looking at."""
-    bg = {"black": BTN, "blue": ACC, "grey": FILL}[kind]
-    fg = INK if kind == "grey" else "#FFFFFF"
+    bg = {"black": BTN, "blue": ACC, "grey": FILL, "white": SURF}[kind]
+    quiet = kind in ("grey", "white")
+    fg = INK if quiet else "#FFFFFF"
     lead = ''
     if ic:
         _c = int(round(height * 0.58))
-        lead = circicon(ic, "#FFFFFF" if kind != "grey" else BTN,
-                        (BTN if kind == "black" else ACC_HEX) if kind != "grey" else "#FFFFFF",
+        lead = circicon(ic, "#FFFFFF" if not quiet else BTN,
+                        (BTN if kind == "black" else ACC_HEX) if not quiet else "#FFFFFF",
                         _c) + ''
     width = ('width: 100%; ' if full else '')
     pad = ('0 24px' if not ic else ('0 20px 0 ' + str(int(round((height - int(round(height * 0.58))) / 2)) + 2) + 'px'))
-    sh = ('; ' + SH_BTN) if kind != "grey" else ''
+    sh = ('; ' + SH_BTN) if not quiet else (('; ' + SH_RAISE) if kind == "white" else '')
     return ('<div' + hook(go, act) + (' id="' + bid + '"' if bid else '') + ' class="pbtn" style="' + width + 'height: ' + str(height)
       + 'px; border-radius: ' + PILL + '; background: ' + bg + sh + '; display: flex; align-items: center; justify-content: center; gap: 10px; padding: '
       + pad + '">' + lead + '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em; color: ' + fg + '">' + text + '</span></div>')
@@ -763,6 +768,22 @@ def healthstrip(n=72, moved="Up 4 since July"):
         '<span style="font-size: 14px; font-weight: 400; color: ' + IN_TEXT + '">' + moved + '</span></div>'
       + chevbtn() + '</div>')
 
+def dollarstrip(usd="$412.60", ngn="&#8358;640,300 today"):
+    """The second pocket, on home, as one row and nothing more. Naira keeps the
+    big figure at the top because that is what nearly every day is spent in.
+    Dollars are a thing you hold rather than a thing you spend, so they sit
+    where a thing you hold belongs, and a person who never touches them reads
+    one extra line for the rest of their life."""
+    return ('<div' + hook("Dollars") + ' style="' + cardstyle("14px 16px") + '; display: flex; align-items: center; gap: 14px">'
+      '<div style="width: 48px; height: 48px; border-radius: ' + PILL + '; background: ' + BTN
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      '<span class="num" style="font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: #FFFFFF">$</span></div>'
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+        '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">Dollars</span>'
+        '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + ngn + '</span></div>'
+      + '<span class="num" style="font-size: 17px; font-weight: 700; color: ' + INK + '">' + usd + '</span>'
+      + chevbtn() + '</div>')
+
 def track(pct, color=None, h=10, bed=None):
     """One filled track. The savings ring is for a thing you are building; this
     is for a thing you are spending, which only runs the one way."""
@@ -856,6 +877,7 @@ home_inner = (
   # have and what you did with it. This is the only place it appears and the
   # only place the model volunteers anything, because advice you did not ask
   # for is only tolerable somewhere you can walk past it.
+  + dollarstrip()
   + healthstrip(72, "Up 4 since July")
   # The section names itself, says in one line what it holds, and offers the
   # way out. Then the filter and the sort, then the feed itself: what the model
@@ -2691,6 +2713,339 @@ saverule_inner = (
            "Take any of it back the same day. No fee, no notice, and no question from me about why.") + '</div>')
 
 write("SaveRule", goal + sheetup(saverule_inner))
+
+# ================= THE SECOND POCKET =================
+# A Nigerian who wants a stablecoin wants dollars that hold their value. So the
+# product says Dollars. It does not say crypto, or USDT, or blockchain, or
+# network, or gas, because none of those words is the thing being bought. The
+# balance is held by a partner licensed for it; this app never holds a key, and
+# says so on the screen rather than in a help centre.
+#
+# The naira-pegged coin is plumbing, not a pocket. It settles transfers at two
+# in the morning and on a public holiday, which is a thing the user feels and
+# never has to be told the name of. A third balance would be a third thing to
+# understand in exchange for nothing.
+
+def bigmoney(big, small, note=""):
+    """A figure and what it is worth in the other currency, which is the only
+    way a dollar balance means anything to somebody who is paid in naira."""
+    return ('<div style="display: flex; flex-direction: column; gap: 6px">'
+      + money(big, "", 40)
+      + '<span class="num" style="font-size: 17px; font-weight: 400; color: ' + INK3 + '">' + small + '</span>'
+      + (('<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + note + '</span>') if note else '')
+      + '</div>')
+
+def raterow(rate, moved, up=True):
+    """Today's rate, and which way it went. A number with no direction on it is
+    the same number every day."""
+    c = IN_TEXT if up else WARN_TEXT
+    return ('<div style="' + cardstyle("14px 16px") + '; display: flex; align-items: center; gap: 12px">'
+      + icon("chart", 20, INK2, 1.8)
+      + '<span style="flex-grow: 1; font-size: 15px; font-weight: 400; color: ' + INK2 + '">' + rate + '</span>'
+      + '<span class="num" style="font-size: 14px; font-weight: 700; white-space: nowrap; flex-shrink: 0; color: '
+      + c + '">' + moved + '</span></div>')
+
+def twoup(a, b):
+    """Two pills on one line. Each takes half, because a pill told to fill its
+    parent and given no basis takes all of it and sits on its neighbour."""
+    return ('<div style="display: flex; gap: 10px">'
+      '<div style="flex-grow: 1; flex-basis: 0; min-width: 0">' + a + '</div>'
+      '<div style="flex-grow: 1; flex-basis: 0; min-width: 0">' + b + '</div></div>')
+
+dollars = page(
+  T("Dollars", "Steady when the naira is not, and yours to turn back any day")
+  + '<div style="' + cardstyle("18px") + '; display: flex; flex-direction: column; gap: 16px">'
+    + bigmoney("$412.60", "&#8358;640,300 at today&#8217;s rate")
+    + twoup(pillbtn("Convert", "Convert", "", "swap", "black", True, 50),
+            pillbtn("Send", "Pay", "", "send", "white", True, 50)) + '</div>'
+  + raterow("&#8358;1,552 to the dollar today", "Up &#8358;18")
+  + aline("You put these away in March at &#8358;1,410. Held in naira that same money would "
+          "be worth &#8358;58,200 less than it is now.", "16px")
+  + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("Where they came from")
+    + '<div style="display: flex; flex-direction: column">'
+      + tx("Converted from naira", "swap", "12 August &#183; at &#8358;1,534", "$180.00", True)
+      + tx("From Musa Danjuma", "down", "28 July &#183; for the generator", "$120.00", True)
+      + tx("Converted from naira", "swap", "3 March &#183; at &#8358;1,410", "$112.60", True) + '</div></div>'
+  + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">Nobody here holds a key</span>',
+           "Your dollars sit with a custodian licensed by the SEC to hold them. Leorio moves them "
+           "when you say so and cannot move them when you do not.")
+  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+    + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
+    + '; text-wrap: pretty">Turn any of it back to naira the same day. There is no notice and no lock.</span></div>', 15)
+dollars += dockback("Ask me about your dollars")
+write("Dollars", dollars)
+
+# ---------- naira in, dollars out ----------
+def pocketrow(name, sub, amount, last=False):
+    return ('<div style="display: flex; align-items: center; gap: 12px; height: 62px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">'
+        '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + name + '</span>'
+        '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + sub + '</span></div>'
+      + '<span class="num" style="font-size: 15px; font-weight: 500; white-space: nowrap; flex-shrink: 0; color: '
+      + INK3 + '">' + amount + '</span></div>')
+
+convert = page(
+  T("Convert", "Naira into dollars, at the rate on this screen")
+  + '<div style="position: relative; ' + cardstyle("2px 16px") + '">'
+    + pocketrow("From", "Everyday", "&#8358;640,300 there")
+    + pocketrow("To", "Dollars", "$412.60 there", True)
+    + '<div style="position: absolute; right: 16px; top: 50%; margin-top: -18px; width: 36px; height: 36px; '
+      'border-radius: ' + PILL + '; background: ' + SURF + '; ' + SH_RAISE + '; display: flex; align-items: center; '
+      'justify-content: center">' + icon("swap", 18, INK, 1.9) + '</div></div>'
+  + '<div style="' + cardstyle("18px") + '; display: flex; flex-direction: column; gap: 8px">'
+    + caption("You are converting", INK2, 14)
+    + '<div style="display: flex; align-items: baseline; gap: 1px">'
+      '<span id="cvAmt" class="num" style="font-size: 40px; font-weight: 600; letter-spacing: -0.035em; line-height: 1; color: '
+      + INK + '">&#8358;155,200</span>'
+      '<div class="caret" style="width: 2px; height: 34px; background: ' + ACC + '; margin-left: 3px"></div></div>'
+    + '<span class="num" style="font-size: 17px; font-weight: 400; color: ' + INK3 + '">You get about $100.00</span></div>'
+  + '<div style="background: ' + SURF + '; border-radius: ' + R_FIELD + '; overflow: hidden; padding: 0 16px">'
+    + plainrow("Rate", "&#8358;1,552 to $1", False, INK, False)
+    + plainrow("Our fee", "Free under $500", False, IN_TEXT, False)
+    + plainrow("You get", "$100.00", True, INK, False) + '</div>'
+  + aline("The rate moved &#8358;18 your way this week. If you were waiting for a better day, this is one of them.", "16px")
+  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+    + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
+    + '; text-wrap: pretty">The rate is held for sixty seconds once you slide.</span></div>', 15)
+convert += confirmbar(slide("Slide to convert", "Converted", "cvSlide"))
+write("Convert", convert, "", True)
+
+converted = page(
+  T("Converted", "It is in your dollars already")
+  + '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
+    + tickmark("", 56)
+    + '<div style="display: flex; flex-direction: column; gap: 6px">' + money("$100.00", "", 40)
+      + '<span style="font-size: 15px; color: ' + INK2 + '">From &#8358;155,200 in Everyday</span></div></div>'
+  + '<div style="display: flex; flex-direction: column">'
+    + plainrow("Rate you got", "&#8358;1,552 to $1")
+    + plainrow("Fee", "Free", False, IN_TEXT)
+    + plainrow("Dollars now", "$512.60", True) + '</div>'
+  + offer("Dollars sitting still do nothing. Move &#8358;20,000 across on payday and you never have to think about it again.",
+          "Set it up", "SaveRule")
+  + wrongrow("Something wrong with this?"), 16)
+converted += dockback("Ask me about this")
+write("Converted", converted)
+
+# ================= OPENING AN ACCOUNT =================
+# Six questions, and nothing you answer ever leaves the screen. That is the
+# whole idea: this is one account being built in front of you, not six forms in
+# a row. A progress bar counts at you; a stack of things already settled tells
+# you the same thing while being useful, because you can see what you gave and
+# check it before the account exists.
+#
+# Nigeria requires a BVN or a NIN on every account, so that question is not
+# optional. The typing is: eleven digits come back with a name and a date of
+# birth attached, and the person confirms rather than fills a form. Everything
+# else the regulations want in the end can be handed over later, from a row on
+# the home screen, which is the difference between ninety seconds and ten
+# minutes at the one moment a person is deciding whether to bother.
+
+def settledrow(k, v, last=False):
+    return ('<div style="display: flex; align-items: center; gap: 12px; height: 50px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
+      + tickmark("", 20)
+      + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK3 + '">' + k + '</span>'
+      + '<span class="num" style="font-size: 15px; font-weight: 700; white-space: nowrap; flex-shrink: 0; color: '
+      + INK + '">' + v + '</span></div>')
+
+def settled(rows):
+    """What is already done, kept where it can be seen. The row that carries
+    from one screen to the next is what makes six screens feel like one."""
+    if not rows:
+        return ''
+    return '<div style="' + cardstyle("2px 16px", "20px") + '; display: flex; flex-direction: column">' + rows + '</div>'
+
+def bigfield(value, hint="", caret=True):
+    """The answer to the one question on the screen, drawn as the biggest thing
+    on it, because it is the only thing on it."""
+    return ('<div style="display: flex; flex-direction: column; gap: 8px">'
+      '<div style="display: flex; align-items: baseline; justify-content: center; gap: 1px; height: 52px">'
+      '<span class="num" style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; color: ' + INK + '">' + value + '</span>'
+      + ('<div class="caret" style="width: 2px; height: 30px; background: ' + ACC + '; margin-left: 3px"></div>' if caret else '')
+      + '</div>'
+      + (('<span style="font-size: 14px; font-weight: 400; color: ' + INK3
+          + '; text-align: center">' + hint + '</span>') if hint else '') + '</div>')
+
+def numpad():
+    """The same keys the passcode uses. A phone number and an eleven digit NIN
+    are both numbers, so neither of them deserves a different keyboard."""
+    out = ''
+    for r in (["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]):
+        out += '<div style="display: flex; gap: 22px; justify-content: center">' + "".join(pinkey(k) for k in r) + '</div>'
+    out += ('<div style="display: flex; gap: 22px; justify-content: center">'
+      '<div style="width: 76px; height: 76px; flex-shrink: 0"></div>' + pinkey("0")
+      + pinkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
+    return '<div style="display: flex; flex-direction: column; gap: 14px">' + out + '</div>'
+
+def obfoot(text, go="", act="", back_btn=True, kind="black"):
+    """Onboarding's bottom bar. Back keeps the corner it has everywhere else,
+    and there is one thing to press."""
+    return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; '
+      'padding: 30px 20px 26px 20px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, '
+      + BG + ' 62%); display: flex; gap: 10px; align-items: center">'
+      + (back() if back_btn else '<div style="width: 6px; flex-shrink: 0"></div>')
+      + '<div style="flex-grow: 1; min-width: 0">' + pillbtn(text, go, act, "", kind, True, 56) + '</div></div>')
+
+# ---------- the door ----------
+start = page(
+  '<div style="display: flex; flex-direction: column; align-items: center; gap: 18px; padding-bottom: 8px">'
+  + mark(72)
+  + '<div style="display: flex; flex-direction: column; align-items: center; gap: 10px">'
+    '<span style="font-size: 36px; font-weight: 800; letter-spacing: -0.04em; color: ' + INK + '">Leorio</span>'
+    '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
+      'A bank that answers when you ask it something.</span></div></div>'
+  + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
+    + never("Opening this takes about a minute")
+    + never("Your number and your NIN, and that is all")
+    + never("No card in the post and no branch to visit") + '</div>', 22, 150, True)
+start += ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; '
+  'padding: 30px 20px 26px 20px; display: flex; flex-direction: column; gap: 10px; align-items: center">'
+  + '<div style="width: 100%">' + pillbtn("Open an account", "Number", "", "", "black", True, 56) + '</div>'
+  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px">'
+    '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">Already have one?</span>'
+    '<span style="font-size: 15px; font-weight: 700; color: ' + ACC_TEXT + '">Sign in</span></div></div>')
+write("Start", start)
+
+# ---------- one ----------
+number = page(
+  T("What is your number?", "I will text you six digits to check it is yours")
+  + bigfield("0803 214 4471")
+  + numpad(), 20)
+number += obfoot("Continue", "Code")
+write("Number", number, "", True)
+
+# ---------- two: the first thing settles ----------
+code = page(
+  T("Six digits", "Sent to 0803 214 4471 a moment ago")
+  + settled(settledrow("Your number", "0803 214 4471", True))
+  + '<div style="padding: 6px 0">' + pindots(4, 6) + '</div>'
+  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 36px">'
+    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
+    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>'
+  + numpad(), 14)
+code += obfoot("Continue", "Nin")
+write("Code", code, "", True)
+
+# ---------- three ----------
+nin = page(
+  T("Your NIN or BVN", "Eleven digits. Whichever one you know.")
+  + settled(settledrow("Your number", "0803 214 4471", True))
+  + bigfield("1234 5678 90")
+  + aline("Every account in Nigeria needs one of these. I use it to open yours and for nothing else.", "16px")
+  + numpad(), 14)
+nin += obfoot("Continue", "Who")
+write("Nin", nin, "", True)
+
+# ---------- four: the model reads it back ----------
+who = page(
+  T("Is this you?", "This came back from the record, I did not type it")
+  + settled(settledrow("Your number", "0803 214 4471")
+            + settledrow("Your NIN", "1234 5678 90", True))
+  + '<div style="' + cardstyle("18px") + '; display: flex; flex-direction: column; gap: 14px">'
+    + '<div style="display: flex; align-items: center; gap: 14px">' + avatar("IM", 56, FILL3, INK2)
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">'
+        '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '">Ibrahim Musa</span>'
+        '<span class="num" style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">Born 14 June 1996</span></div></div>'
+    + '<div style="height: 1px; background: ' + LINE + '"></div>'
+    + rowline("On the record as", "IBRAHIM MUSA WENG", True) + '</div>'
+  + aline("If the name is spelt differently to what you use, that is normal. It has to match the record, not the way you write it.", "16px")
+  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px">'
+    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Something here is wrong</span>'
+    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>', 15)
+who += obfoot("Yes, that is me", "Face")
+write("Who", who)
+
+# ---------- five ----------
+face = page(
+  T("A quick look at you", "So that only you can open this again")
+  + settled(settledrow("Your number", "0803 214 4471")
+            + settledrow("Your NIN", "1234 5678 90")
+            + settledrow("Your name", "Ibrahim Musa", True))
+  + '<div style="position: relative; height: 300px; border-radius: ' + R_CARD + '; background: ' + FILL
+    + '; overflow: hidden; display: flex; align-items: center; justify-content: center">'
+    + '<div style="width: 200px; height: 250px; border-radius: 100px 100px 96px 96px; border: 3px solid ' + ACC
+      + '; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 18px">'
+      + icon("person", 84, LINE2, 1.4) + '</div>'
+    + '<span style="position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-size: 14px; '
+      'font-weight: 500; color: ' + INK2 + '">Hold still and look at the camera</span></div>'
+  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("eye", 16, INK3, 1.6, "; margin-top: 2px")
+    + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
+    + '; text-wrap: pretty">The photo is checked against your NIN record and then kept on this phone. It is not a profile picture and nobody else sees it.</span></div>', 15)
+face += obfoot("Take it", "Passcode")
+write("Face", face)
+
+# ---------- six ----------
+passcode = page(
+  T("Pick six digits", "These send your money, so pick something nobody watching would guess")
+  + '<div style="padding: 8px 0">' + pindots(3, 6) + '</div>'
+  + never("Not your year of birth, and not 123456")
+  + numpad(), 16)
+passcode += obfoot("Continue", "Ready")
+write("Passcode", passcode, "", True)
+
+# ---------- and in ----------
+def canrow(t, on=True, last=False):
+    return ('<div style="display: flex; align-items: center; gap: 12px; height: 52px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
+      + (tickmark("", 20) if on
+         else '<div style="width: 20px; height: 20px; border-radius: ' + PILL + '; border: 1.5px dashed ' + LINE2
+              + '; flex-shrink: 0"></div>')
+      + '<span style="flex-grow: 1; font-size: 15px; font-weight: 500; color: ' + (INK if on else INK3) + '">' + t + '</span></div>')
+
+ready = page(
+  '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
+    + tickmark("", 64)
+    + '<div style="display: flex; flex-direction: column; gap: 6px">'
+      '<span style="font-size: 36px; font-weight: 800; letter-spacing: -0.04em; color: ' + INK + '">You are in</span>'
+      '<span class="num" style="font-size: 17px; font-weight: 400; color: ' + INK3 + '">Your account number is 0102 4457 88</span></div></div>'
+  + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
+    + canrow("Receive money from any Nigerian bank")
+    + canrow("Send up to &#8358;50,000 a day")
+    + canrow("Buy airtime, data and pay bills")
+    + canrow("Hold dollars", False)
+    + canrow("Send up to &#8358;1,000,000 a day", False, True) + '</div>'
+  + aline("Two of those are waiting on your address and a photo of an ID. It takes two minutes and you can do it whenever you like.", "16px")
+  + '<div' + hook("Finish") + ' style="' + bordered("16px", "24px") + ' display: flex; align-items: center; gap: 12px">'
+    + rowglyph("shield", None, SURF)
+    + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">'
+      '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">Finish setting up</span>'
+      '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">Two minutes, and the limits come off</span></div>'
+    + chevbtn() + '</div>', 16)
+ready += obfoot("Take me in", "Main", "", False)
+write("Ready", ready)
+
+# ---------- the part that waits ----------
+def steprow(n, name, sub, done=False, last=False):
+    lead = (tickmark("", 28) if done else
+      '<div style="width: 28px; height: 28px; border-radius: ' + PILL + '; background: ' + FILL3
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      '<span class="num" style="font-size: 13px; font-weight: 700; color: ' + INK2 + '">' + str(n) + '</span></div>')
+    return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 12px; height: 68px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + lead
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+        '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + (INK3 if done else INK) + '">' + name + '</span>'
+        '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
+      + ('' if done else chevbtn()) + '</div>')
+
+finish = page(
+  T("Finish setting up", "Three things, and the limits come off")
+  + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
+    + steprow(1, "Where you live", "Street, town and state. No utility bill needed.")
+    + steprow(2, "A photo of an ID", "Driver&#8217;s licence, passport or voter&#8217;s card")
+    + steprow(3, "Where the money comes from", "Salary, business, or something else", False, True) + '</div>'
+  + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("What it opens")
+    + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
+      + canrow("Send up to &#8358;1,000,000 a day")
+      + canrow("Hold dollars")
+      + canrow("Borrow against your history", False, True) + '</div></div>'
+  + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">You can stop halfway</span>',
+           "Whatever you finish is kept. Come back to the rest any time, and nothing you already do stops working while you wait.")
+  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+    + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
+    + '; text-wrap: pretty">This is the same check every Nigerian bank runs. We ask once and we do not sell it.</span></div>', 16)
+finish += dockback("Ask me why any of this is needed")
+write("Finish", finish)
 
 if EMIT:
     print("built:", ", ".join(sorted(f for f in os.listdir(OUT) if f.endswith(".dc.html"))))
