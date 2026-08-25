@@ -23,7 +23,7 @@ ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
          "Short", "Pending", "Failed", "Reversed", "Wrong", "Recall",
          # The account being opened, one question at a time, with everything
          # already answered kept on the screen.
-         "Start", "Number", "Code", "Nin", "Who", "Face", "Passcode", "Ready", "Finish",
+         "Start", "Number", "Code", "Nin", "Who", "Face", "Passcode", "Opening", "Ready", "Finish",
          # The second pocket, and the one screen that moves money between them.
          "Dollars", "Convert", "Converted", "PayFrom", "PayDollars",
          # One number for the habits, and the settings that build them: what

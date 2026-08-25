@@ -243,6 +243,13 @@ def icon(name, size=22, color=INK2, sw=1.7, extra=""):
 # colour and stand on nothing. A circle behind each one is a second shape doing
 # the first one's job. Filled, not drawn, so a small mark still reads as itself.
 FILLED = {
+ "phone": '<rect x="5.4" y="1.8" width="13.2" height="20.4" rx="3.4" fill="CUR"/>'
+          '<path d="M10.3 5.1h3.4" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" fill="none"/>'
+          '<circle cx="12" cy="18.5" r="1.3" fill="#FFFFFF"/>',
+ "id": '<rect x="2.1" y="4.5" width="19.8" height="15" rx="3.4" fill="CUR"/>'
+       '<circle cx="8.5" cy="10.7" r="2.3" fill="#FFFFFF"/>'
+       '<path d="M5.1 16.2c.5-1.7 1.85-2.6 3.4-2.6s2.9.9 3.4 2.6" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" fill="none"/>'
+       '<path d="M14.8 9.9h4.2M14.8 13.5h2.8" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" fill="none"/>',
  "voice": '<g fill="CUR"><rect x="1.4" y="9.6" width="2.9" height="4.8" rx="1.45"/>'
           '<rect x="6" y="5.2" width="2.9" height="13.6" rx="1.45"/>'
           '<rect x="10.6" y="1.6" width="2.9" height="20.8" rx="1.45"/>'
@@ -2866,55 +2873,122 @@ converted += dockback("Ask me about this")
 write("Converted", converted)
 
 # ================= OPENING AN ACCOUNT =================
-# Six questions, and nothing you answer ever leaves the screen. That is the
-# whole idea: this is one account being built in front of you, not six forms in
-# a row. A progress bar counts at you; a stack of things already settled tells
-# you the same thing while being useful, because you can see what you gave and
-# check it before the account exists.
+# This is not six screens. It is one screen, six times.
+#
+# Every question the account needs is a row in one list, and that list is on
+# screen from the first moment to the last. The question you are on is the only
+# one that opens: its glyph takes its colour, its name grows, and the way to
+# answer it appears underneath. The rest stay small and grey, above if they are
+# answered and below if they are not, so at any moment you can see what you
+# gave and what is still coming. That is the whole of the navigation. There is
+# no progress bar, no step counter and no back arrow, because the list already
+# says everything those would say and it says it in words.
+#
+# No question is ever ticked. One that is done simply goes quiet. The only tick
+# on a question is the green one on the last row, and it means what it means
+# because it is the only one in the run.
+#
+# Each question owns a colour, and the colour goes into the room rather than
+# onto anything: a wash fills the top of the screen and is gone before it
+# reaches the first word, so no text and no control ever sits on top of it. The
+# six run cool to warm, and the last two screens have no wash at all. The flow
+# starts strange and ends calm.
 #
 # Nigeria requires a BVN or a NIN on every account, so that question is not
 # optional. The typing is: eleven digits come back with a name and a date of
 # birth attached, and the person confirms rather than fills a form. Everything
 # else the regulations want in the end can be handed over later, from a row on
-# the home screen, which is the difference between ninety seconds and ten
+# the Ready screen, which is the difference between ninety seconds and ten
 # minutes at the one moment a person is deciding whether to bother.
 
-def settledrow(k, v, last=False):
-    return ('<div style="display: flex; align-items: center; gap: 12px; height: 50px'
-      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
-      + tickmark("", 20)
-      + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK3 + '">' + k + '</span>'
-      + '<span class="num" style="font-size: 15px; font-weight: 700; white-space: nowrap; flex-shrink: 0; color: '
-      + INK + '">' + v + '</span></div>')
+# name, glyph, colour, the line under it when it is the one you are on
+STEPS = [
+  ("Your number", "phone",  "#22B8E8", "I will text you six digits to check the number is yours."),
+  ("Who you are", "id",     "#8B5CF6", "Eleven digits from your NIN or your BVN, whichever you know. Your name comes back with them."),
+  ("Your face",   "faceid", "#FF3B8E", "One photo, checked against the same record, so that only you can open this again."),
+  ("A passcode",  "lock",   "#F5A524", "Six digits. These are what send your money, so pick something nobody watching could guess."),
+]
+LAST = ("Your account", "wait")
 
-def settled(rows):
-    """What is already done, kept where it can be seen. The row that carries
-    from one screen to the next is what makes six screens feel like one."""
-    if not rows:
-        return ''
-    return '<div style="' + cardstyle("2px 16px", "20px") + '; display: flex; flex-direction: column">' + rows + '</div>'
+def _rgba(h, a):
+    h = h.lstrip("#")
+    return ('rgba(' + str(int(h[0:2], 16)) + ', ' + str(int(h[2:4], 16)) + ', '
+            + str(int(h[4:6], 16)) + ', ' + str(a) + ')')
 
-def bigfield(value, hint="", caret=True):
-    """The answer to the one question on the screen, drawn as the biggest thing
-    on it, because it is the only thing on it."""
-    return ('<div style="display: flex; flex-direction: column; gap: 8px">'
-      '<div style="display: flex; align-items: baseline; justify-content: center; gap: 1px; height: 52px">'
-      '<span class="num" style="font-size: 34px; font-weight: 600; letter-spacing: -0.02em; color: ' + INK + '">' + value + '</span>'
-      + ('<div class="caret" style="width: 2px; height: 30px; background: ' + ACC + '; margin-left: 3px"></div>' if caret else '')
-      + '</div>'
-      + (('<span style="font-size: 14px; font-weight: 400; color: ' + INK3
-          + '; text-align: center">' + hint + '</span>') if hint else '') + '</div>')
+def steplight(hex):
+    """The colour of the question you are on. It is light in the room: not a
+    panel and not a card, so it has no edge to notice.
 
-def numpad():
-    """The same keys the passcode uses. A phone number and an eleven digit NIN
-    are both numbers, so neither of them deserves a different keyboard."""
-    out = ''
-    for r in (["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]):
-        out += '<div style="display: flex; gap: 22px; justify-content: center">' + "".join(pinkey(k) for k in r) + '</div>'
-    out += ('<div style="display: flex; gap: 22px; justify-content: center">'
-      '<div style="width: 76px; height: 76px; flex-shrink: 0"></div>' + pinkey("0")
-      + pinkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
-    return '<div style="display: flex; flex-direction: column; gap: 14px">' + out + '</div>'
+    It is given the space the list does not use rather than a height of its own,
+    and it fades out inside that space. So it can never reach a word, and it
+    retreats on its own as answered questions pile up. By the last question
+    there is little left of it, and the two screens after that are white."""
+    if not hex:
+        return '<div style="flex-grow: 1; min-height: 0"></div>'
+    return ('<div style="flex-grow: 1; min-height: 0; margin: 0 -20px; '
+      'background: radial-gradient(126% 92% at 50% -6%, ' + _rgba(hex, 1) + ' 0%, ' + _rgba(hex, 0.95) + ' 30%, '
+      + _rgba(hex, 0.5) + ' 58%, ' + _rgba(hex, 0.12) + ' 78%, ' + _rgba(hex, 0) + ' 92%)"></div>')
+
+def qrow(name, ic, done=False):
+    """A question you are not on. The glyph goes grey and the word goes grey,
+    and an answered one looks the same as one not asked yet, because neither of
+    them is what you are doing now. Nothing here is ticked."""
+    return ('<div style="display: flex; align-items: center; gap: 14px; height: 40px">'
+      '<div style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; '
+      'flex-shrink: 0">' + fglyph(ic, 23, INK4, BG) + '</div>'
+      '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '">' + name + '</span></div>')
+
+def qopen(name, sub, ic, color):
+    """The one you are on. The glyph is the only saturated thing at reading
+    size on the screen, and the name is the only large one."""
+    return ('<div style="display: flex; flex-direction: column; gap: 7px; padding: 2px 0">'
+      + fglyph(ic, 30, color, BG)
+      + '<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; color: '
+      + INK + '">' + name + '</span>'
+      + '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
+      + '; text-wrap: pretty">' + sub + '</span></div>')
+
+def qdone(name, sub):
+    """The end of it. One tick, green, and the only one in the flow."""
+    return ('<div style="display: flex; gap: 14px; padding: 2px 0">' + tickmark("", 26)
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
+      '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
+      '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
+      + '; text-wrap: pretty">' + sub + '</span></div></div>')
+
+def account(at, control="", tail="", sub=None, foot=120):
+    """One screen of opening an account: the same list every time, with a
+    different question open. `at` is which one, counting from zero, and -1 and
+    -2 are the two that come after the questions run out."""
+    rows = ''
+    for i, (name, ic, color, dsub) in enumerate(STEPS):
+        if i > at >= 0:
+            continue                      # what has not been asked yet is not on the screen
+        if i == at:
+            rows += qopen(name, sub or dsub, ic, color)
+            if control:
+                rows += '<div style="padding-top: 14px">' + control + '</div>'
+            if tail:
+                rows += tail
+        else:
+            rows += qrow(name, ic)
+    if at == -1:
+        rows += ('<div style="display: flex; align-items: center; gap: 14px; height: 44px">'
+          '<div style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; '
+          'flex-shrink: 0">' + fglyph("wait", 24, ACC_TEXT_HEX, BG) + '</div>'
+          '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
+          + '">Opening your account</span></div>'
+          '<span style="font-size: 15px; font-weight: 400; color: ' + INK3
+          + '; padding-left: 40px">Hold on. This takes a few seconds.</span>')
+    elif at == -2:
+        rows += qdone("Your account is ready", "Your number is 0102 4457 88, and money can reach it now.")
+        rows += tail
+    wash = steplight(STEPS[at][2] if 0 <= at < len(STEPS) else '')
+    return ('<div class="pg" style="position: relative; height: 852px; padding: 0 20px; '
+      'display: flex; flex-direction: column">' + wash
+      + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; padding-top: 24px; '
+        'display: flex; flex-direction: column">' + rows + '</div>'
+      + '<div style="height: ' + str(foot) + 'px; flex-shrink: 0"></div></div>')
 
 def obfoot(text, go="", act="", back_btn=True, kind="black"):
     """Onboarding's bottom bar. Back keeps the corner it has everywhere else,
@@ -2925,20 +2999,64 @@ def obfoot(text, go="", act="", back_btn=True, kind="black"):
       + (back() if back_btn else '<div style="width: 6px; flex-shrink: 0"></div>')
       + '<div style="flex-grow: 1; min-width: 0">' + pillbtn(text, go, act, "", kind, True, 56) + '</div></div>')
 
+def bigfield(value, caret=True):
+    """The answer, drawn as the biggest thing under the question, because it is
+    the only thing under it."""
+    return ('<div style="display: flex; align-items: baseline; gap: 1px; height: 46px">'
+      '<span class="num" style="font-size: 30px; font-weight: 600; letter-spacing: -0.02em; color: ' + INK + '">' + value + '</span>'
+      + ('<div class="caret" style="width: 2px; height: 28px; background: ' + ACC + '; margin-left: 3px"></div>' if caret else '')
+      + '</div>')
+
+NUMPAD_H = 336
+
+def obkey(t="", glyph="", act=""):
+    """A key. Smaller than the one the passcode gate uses, because that screen
+    has a name and an amount above it and this one has six questions."""
+    body = (glyph if glyph else '<span class="num" style="font-size: 24px; font-weight: 700; '
+            'letter-spacing: -0.02em; color: ' + INK + '">' + t + '</span>')
+    return ('<div' + hook("", act or ("pin|" + t)) + ' class="pinkey" style="width: 68px; height: 68px; border-radius: '
+      + PILL + (('; background: ' + FILL) if not glyph else '')
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + body + '</div>')
+
+def numpad():
+    """The same keys the passcode uses. A phone number and an eleven digit NIN
+    are both numbers, so neither of them deserves a different keyboard."""
+    out = ''
+    for r in (["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]):
+        out += '<div style="display: flex; gap: 18px; justify-content: center">' + "".join(obkey(k) for k in r) + '</div>'
+    out += ('<div style="display: flex; gap: 18px; justify-content: center">'
+      '<div style="width: 68px; height: 68px; flex-shrink: 0"></div>' + obkey("0")
+      + obkey("", icon("del", 26, INK2, 1.8), "pin|del") + '</div>')
+    return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: '
+      + str(NUMPAD_H) + 'px; padding: 16px 20px 20px 20px; background: ' + BG
+      + '; display: flex; flex-direction: column; gap: 8px">' + out + '</div>')
+
 # ---------- the door ----------
-start = page(
-  '<div style="display: flex; flex-direction: column; align-items: center; gap: 18px; padding-bottom: 8px">'
-  + mark(72)
-  + '<div style="display: flex; flex-direction: column; align-items: center; gap: 10px">'
-    '<span style="font-size: 36px; font-weight: 800; letter-spacing: -0.04em; color: ' + INK + '">Leorio</span>'
-    '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
-      'A bank that answers when you ask it something.</span></div></div>'
-  + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
-    + never("Opening this takes about a minute")
-    + never("Your number and your NIN, and that is all")
-    + never("No card in the post and no branch to visit") + '</div>', 22, 150, True)
+# The same grammar as the flow it opens: one word lit, the rest ghosted. A
+# person meets the pattern before they are asked to read it.
+def wheelword(t, ic=None, color=None):
+    on = ic is not None
+    return ('<div style="display: flex; align-items: center; gap: 10px; height: 42px">'
+      + (fglyph(ic, 26, color, BG) if on else '<div style="width: 26px; height: 26px"></div>')
+      + '<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.035em; color: '
+      + (INK if on else FILL3) + '">' + t + '</span></div>')
+
+start = ('<div class="pg" style="position: relative; height: 852px; padding: 0 20px; '
+  'display: flex; flex-direction: column">'
+  + steplight("#2A6AF5")
+  + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; '
+    'display: flex; flex-direction: column; gap: 22px">'
+  + '<div style="display: flex; flex-direction: column">'
+    + wheelword("Save") + wheelword("Send", "send", "#2A6AF5") + wheelword("Spend")
+    + wheelword("Ask") + '</div>'
+  + '<div style="display: flex; flex-direction: column; gap: 10px">' + mark(40)
+    + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '">Leorio</span>'
+    + '<span style="font-size: 16px; font-weight: 400; color: ' + INK3 + '; text-wrap: pretty">'
+      'A bank that answers when you ask it something. Opening one takes about a minute, '
+      'and all it needs is your number and your NIN.</span></div></div>'
+  + '<div style="height: 164px; flex-shrink: 0"></div></div>')
 start += ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; '
-  'padding: 30px 20px 26px 20px; display: flex; flex-direction: column; gap: 10px; align-items: center">'
+  'padding: 30px 20px 26px 20px; display: flex; flex-direction: column; gap: 6px; align-items: center">'
   + '<div style="width: 100%">' + pillbtn("Open an account", "Number", "", "", "black", True, 56) + '</div>'
   + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px">'
     '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">Already have one?</span>'
@@ -2946,110 +3064,89 @@ start += ('<div class="dock" style="position: absolute; left: 0; right: 0; botto
 write("Start", start)
 
 # ---------- one ----------
-number = page(
-  T("What is your number?", "I will text you six digits to check it is yours")
-  + bigfield("0803 214 4471")
-  + numpad(), 20)
-number += obfoot("Continue", "Code")
+number = account(0, bigfield("0803 214 4471"), foot=NUMPAD_H) + numpad()
 write("Number", number, "", True)
 
-# ---------- two: the first thing settles ----------
-code = page(
-  T("Six digits", "Sent to 0803 214 4471 a moment ago")
-  + settled(settledrow("Your number", "0803 214 4471", True))
-  + '<div style="padding: 6px 0">' + pindots(4, 6) + '</div>'
-  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 36px">'
-    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
-    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>'
-  + numpad(), 14)
-code += obfoot("Continue", "Nin")
+# ---------- two ----------
+code = account(0, '<div style="display: flex; justify-content: flex-start">' + pindots(4, 6) + '</div>',
+  sub="Six digits, sent to 0803 214 4471 a moment ago.", foot=NUMPAD_H, tail=
+  '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 6px; height: 38px">'
+  '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
+  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
 write("Code", code, "", True)
 
 # ---------- three ----------
-nin = page(
-  T("Your NIN or BVN", "Eleven digits. Whichever one you know.")
-  + settled(settledrow("Your number", "0803 214 4471", True))
-  + bigfield("1234 5678 90")
-  + aline("Every account in Nigeria needs one of these. I use it to open yours and for nothing else.", "16px")
-  + numpad(), 14)
-nin += obfoot("Continue", "Who")
+nin = account(1, bigfield("1234 5678 90"), foot=NUMPAD_H) + numpad()
 write("Nin", nin, "", True)
 
 # ---------- four: the model reads it back ----------
-who = page(
-  T("Is this you?", "This came back from the record, I did not type it")
-  + settled(settledrow("Your number", "0803 214 4471")
-            + settledrow("Your NIN", "1234 5678 90", True))
-  + '<div style="' + cardstyle("18px") + '; display: flex; flex-direction: column; gap: 14px">'
-    + '<div style="display: flex; align-items: center; gap: 14px">' + avatar("IM", 56, FILL3, INK2)
-      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">'
-        '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '">Ibrahim Musa</span>'
-        '<span class="num" style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">Born 14 June 1996</span></div></div>'
-    + '<div style="height: 1px; background: ' + LINE + '"></div>'
-    + rowline("On the record as", "IBRAHIM MUSA WENG", True) + '</div>'
-  + aline("If the name is spelt differently to what you use, that is normal. It has to match the record, not the way you write it.", "16px")
-  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px">'
-    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Something here is wrong</span>'
-    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>', 15)
+who = account(1,
+  '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
+  + '<div style="display: flex; align-items: center; gap: 14px">' + avatar("IM", 48, FILL3, INK2)
+    + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+      '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">Ibrahim Musa</span>'
+      '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">Born 14 June 1996</span></div></div>'
+  + '<div style="height: 1px; background: ' + LINE + '"></div>'
+  + rowline("On the record as", "IBRAHIM MUSA WENG", True) + '</div>',
+  '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 6px; height: 40px">'
+  '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Something here is wrong</span>'
+  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>',
+  sub="This came back from the record against those digits. I did not type it.")
 who += obfoot("Yes, that is me", "Face")
 write("Who", who)
 
 # ---------- five ----------
-face = page(
-  T("A quick look at you", "So that only you can open this again")
-  + settled(settledrow("Your number", "0803 214 4471")
-            + settledrow("Your NIN", "1234 5678 90")
-            + settledrow("Your name", "Ibrahim Musa", True))
-  + '<div style="position: relative; height: 300px; border-radius: ' + R_CARD + '; background: ' + FILL
-    + '; overflow: hidden; display: flex; align-items: center; justify-content: center">'
-    + '<div style="width: 200px; height: 250px; border-radius: 100px 100px 96px 96px; border: 3px solid ' + ACC
-      + '; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 18px">'
-      + icon("person", 84, LINE2, 1.4) + '</div>'
-    + '<span style="position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-size: 14px; '
-      'font-weight: 500; color: ' + INK2 + '">Hold still and look at the camera</span></div>'
-  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("eye", 16, INK3, 1.6, "; margin-top: 2px")
-    + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
-    + '; text-wrap: pretty">The photo is checked against your NIN record and then kept on this phone. It is not a profile picture and nobody else sees it.</span></div>', 15)
+face = account(2,
+  '<div style="position: relative; height: 232px; border-radius: ' + R_CARD + '; background: ' + FILL
+  + '; overflow: hidden; display: flex; align-items: center; justify-content: center">'
+  + '<div style="width: 138px; height: 168px; border-radius: 69px 69px 66px 66px; border: 3px solid ' + ACC
+    + '; margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px">'
+    + icon("person", 58, LINE2, 1.4) + '</div>'
+  + '<span style="position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 14px; '
+    'font-weight: 500; color: ' + INK2 + '">Hold still and look at the camera</span></div>',
+  '<div style="display: flex; gap: 9px; align-items: flex-start; padding-top: 12px">'
+  + icon("eye", 16, INK3, 1.6, "; margin-top: 2px")
+  + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
+  + '; text-wrap: pretty">The photo is kept on this phone. It is not a profile picture and nobody else sees it.</span></div>')
 face += obfoot("Take it", "Passcode")
 write("Face", face)
 
 # ---------- six ----------
-passcode = page(
-  T("Pick six digits", "These send your money, so pick something nobody watching would guess")
-  + '<div style="padding: 8px 0">' + pindots(3, 6) + '</div>'
-  + never("Not your year of birth, and not 123456")
-  + numpad(), 16)
-passcode += obfoot("Continue", "Ready")
+passcode = account(3, '<div style="display: flex; justify-content: flex-start">' + pindots(3, 6) + '</div>',
+  foot=NUMPAD_H, tail=
+  '<div style="display: flex; gap: 9px; align-items: flex-start; padding-top: 10px">'
+  + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+  + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
+  + '; text-wrap: pretty">Not your year of birth, and not 123456.</span></div>') + numpad()
 write("Passcode", passcode, "", True)
+
+# ---------- the few seconds it actually takes ----------
+opening = account(-1, foot=60)
+write("Opening", opening, "", True)
 
 # ---------- and in ----------
 def canrow(t, on=True, last=False):
-    return ('<div style="display: flex; align-items: center; gap: 12px; height: 52px'
+    return ('<div style="display: flex; align-items: center; gap: 12px; height: 50px'
       + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
       + (tickmark("", 20) if on
          else '<div style="width: 20px; height: 20px; border-radius: ' + PILL + '; border: 1.5px dashed ' + LINE2
               + '; flex-shrink: 0"></div>')
       + '<span style="flex-grow: 1; font-size: 15px; font-weight: 500; color: ' + (INK if on else INK3) + '">' + t + '</span></div>')
 
-ready = page(
-  '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
-    + tickmark("", 64)
-    + '<div style="display: flex; flex-direction: column; gap: 6px">'
-      '<span style="font-size: 36px; font-weight: 800; letter-spacing: -0.04em; color: ' + INK + '">You are in</span>'
-      '<span class="num" style="font-size: 17px; font-weight: 400; color: ' + INK3 + '">Your account number is 0102 4457 88</span></div></div>'
+ready = account(-2, "", foot=118, tail=
+  '<div style="padding-top: 18px; display: flex; flex-direction: column; gap: 14px">'
   + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
     + canrow("Receive money from any Nigerian bank")
     + canrow("Send up to &#8358;50,000 a day")
     + canrow("Buy airtime, data and pay bills")
     + canrow("Hold dollars", False)
     + canrow("Send up to &#8358;1,000,000 a day", False, True) + '</div>'
-  + aline("Two of those are waiting on your address and a photo of an ID. It takes two minutes and you can do it whenever you like.", "16px")
-  + '<div' + hook("Finish") + ' style="' + bordered("16px", "24px") + ' display: flex; align-items: center; gap: 12px">'
-    + rowglyph("shield", None, SURF)
+  + '<div' + hook("Finish") + ' style="' + bordered("14px", "22px") + ' display: flex; align-items: center; gap: 12px">'
+    + rowglyph("shield", ACC_TEXT_HEX, SURF, 24, 32)
     + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px">'
-      '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">Finish setting up</span>'
-      '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">Two minutes, and the limits come off</span></div>'
-    + chevbtn() + '</div>', 16)
+      '<span style="font-size: 15px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">Finish setting up</span>'
+      '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">Two minutes, and the last two come on</span></div>'
+    + chevbtn() + '</div></div>')
 ready += obfoot("Take me in", "Main", "", False)
 write("Ready", ready)
 
