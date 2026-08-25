@@ -34,6 +34,36 @@ Two rows lead out of the flow they sit in: Sign in on the door, and Finish
 setting up on the Ready screen. Those carry their own reaction, because the
 frame's reaction takes any click that a child does not.
 
+### The links are on the controls
+
+Not on the frames. A slide goes to the passcode gate, a row opens the thing it
+names, the back arrow goes back, and clicking a piece of card does nothing,
+because that is what the app does.
+
+The markup already knows all of this: every element that leads somewhere carries
+`data-go`, and the ones the walkable prototype handles itself carry `data-act`.
+What Figma needs on top is a way to find the same element in a tree that has no
+attributes on it, and the answer is the box. `hotspots.mjs` measures every one
+of them in the browser, and because Figma's nodes were built from those same
+measurements, matching on x, y, width and height finds the node again.
+
+    sh figma/rev.sh $SP
+    SP=$SP node figma/hotspots.mjs        # $SP/figma/hotspots.json
+
+Then, per screen: match each box to the deepest node that fits, and set one
+reaction on it. `back` becomes Figma's own back. An act, or a slide that writes
+a receipt, becomes the next screen in the section. A name becomes that screen,
+preferring the copy in the same flow. Once a screen has at least one control
+wired, its frame reaction is removed so it stops swallowing clicks; the last
+screen of each section keeps one, so no flow dead ends.
+
+Three things do not match, on purpose. The seven overlay screens keep the
+founder's home behind them, laid out differently, so anything measured up there
+is dropped before it is sent. The camera in the ask bar is smaller than the box
+the markup hangs its link on, so it is found as the third thing in the bar
+rather than by its box. And a control that names its own screen means "yes,
+that one" rather than "go there", so it goes to the next screen instead.
+
 Wiring is not preserved when a screen is sent again. `emit.mjs` removes the old
 frame and builds a new one, so the reactions that pointed at it and the ones it
 carried both go. After sending anything to Flows, rewire that section.
