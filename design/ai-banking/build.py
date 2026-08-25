@@ -1008,9 +1008,9 @@ def quote(t):
     return ('<div style="display: flex; flex-direction: column; gap: 6px">' + caption("You said")
       + '<span style="font-size: 17px; font-style: italic; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
 
-def plainrow(k, v, last=False, vcolor=INK, chevron=False, vid=""):
+def plainrow(k, v, last=False, vcolor=INK, chevron=False, vid="", go=""):
     c = chevbtn(22) if chevron else ""
-    return ('<div style="display: flex; align-items: center; height: 56px; gap: 10px">'
+    return ('<div' + (hook(go) if go else '') + ' style="display: flex; align-items: center; height: 56px; gap: 10px">'
       '<span style="flex-grow: 1; font-size: 17px; font-weight: 400; color: ' + INK3 + '">' + k + '</span>'
       '<span' + (' id="' + vid + '"' if vid else '') + ' class="num" style="font-size: 17px; font-weight: 700; color: '
       + vcolor + '">' + v + '</span>' + c + '</div>')
@@ -1289,30 +1289,54 @@ answer = page(
 write("Answer", answer)
 
 # ================= SEND MONEY =================
-pay = page(
-  T("Send money", "To Sarah Adeyemi")
-  + quote("send Sarah 50k for the flat deposit")
-  + aline("Here it is, ready to go. Check the three parts I filled in.")
-  + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 10px">'
-    + tinted(money("&#8358;50,000", "", 40), "I took this from your message", "14px 15px 12px 15px", FILL)
-    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + avatar("SA")
-        + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
-          '<span style="font-size: 15px; font-weight: 600">Sarah Adeyemi</span>'
-          '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">GTBank &#183; 0123 4457 8842</span></div>' + chev() + '</div>',
-        "The only Sarah you have paid before", on=FILL)
-    + tinted('<div style="display: flex; align-items: center; height: 22px">'
-        '<span style="flex-grow: 1; font-size: 13.5px; color: ' + INK2 + '">Reference</span>'
-        '<span style="font-size: 15px; font-weight: 500">Flat deposit</span></div>',
-        "I took this from your message", on=FILL)
-    + '<div style="background: ' + SURF + '; border-radius: ' + R_FIELD + '; overflow: hidden; padding: 0 16px">'
-      + plainrow("From", "Everyday &#183; 0102 4457 88", False, INK, True)
-      + plainrow("Arrives", "In a few seconds", False, INK, True)
-      + plainrow("Fee", "Free", True, IN_TEXT) + '</div></div>'
-  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
-    + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
-    + '; text-wrap: pretty">Nothing moves until you slide.</span></div>', 15)
+# The same send, twice. Sarah is paid in naira whichever pocket it leaves from,
+# so the screen is the same screen: only the grey block at the bottom changes,
+# because that block is the answer to "what is this actually going to do".
+#
+# From dollars it has to say the rate and it has to say what leaves, on the
+# screen before the slide, not after it. A person who finds out the rate on the
+# receipt has been told, not asked.
+
+def paypage(fx=False):
+    frm = plainrow("From", "Dollars &#183; $412.60" if fx else "Everyday &#183; &#8358;640,300",
+                   False, INK, True, "", "PayFrom")
+    # What it costs in dollars belongs on the amount, not in a row of its own.
+    # The eye is already on the big number, and a rate the person reads there is
+    # a rate they were asked about rather than told about afterwards.
+    note = ("About $32.07 from your dollars, at &#8358;1,559 to $1"
+            if fx else "I took this from your message")
+    foot = ("The rate is held for sixty seconds once you slide, and nothing moves until then."
+            if fx else "Nothing moves until you slide.")
+    return page(
+      T("Send money", "To Sarah Adeyemi")
+      + quote("send Sarah 50k for the flat deposit")
+      + aline("Here it is, ready to go. Check the three parts I filled in.")
+      + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 10px">'
+        + tinted(money("&#8358;50,000", "", 40), note, "14px 15px 12px 15px", FILL)
+        + tinted('<div style="display: flex; align-items: center; gap: 12px">' + avatar("SA")
+            + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">'
+              '<span style="font-size: 15px; font-weight: 600">Sarah Adeyemi</span>'
+              '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">GTBank &#183; 0123 4457 8842</span></div>' + chev() + '</div>',
+            "The only Sarah you have paid before", on=FILL)
+        + tinted('<div style="display: flex; align-items: center; height: 22px">'
+            '<span style="flex-grow: 1; font-size: 13.5px; color: ' + INK2 + '">Reference</span>'
+            '<span style="font-size: 15px; font-weight: 500">Flat deposit</span></div>',
+            "I took this from your message", on=FILL)
+        + '<div style="background: ' + SURF + '; border-radius: ' + R_FIELD + '; overflow: hidden; padding: 0 16px">'
+          + frm
+          + plainrow("Arrives", "In a few seconds", False, INK, True)
+          + plainrow("Fee", "Free", True, IN_TEXT) + '</div></div>'
+      + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+        + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
+        + '; text-wrap: pretty">' + foot + '</span></div>', 15)
+
+pay = paypage()
 pay += confirmbar(slide("Slide to send &#8358;50,000", "done|Pay"))
 write("Pay", pay, "", True)
+
+paydollars = paypage(True)
+paydollars += confirmbar(slide("Slide to send &#8358;50,000", "done|PayDollars"))
+write("PayDollars", paydollars, "", True)
 
 # ================= THE SAME SEND, ASKED FOR IN CHAT =================
 # The voice sheet hands over to a conversation. What the model is doing is not
@@ -1963,7 +1987,10 @@ receive_inner = ('<div style="display: flex; flex-direction: column; align-items
   + '<div style="display: flex; flex-direction: column">'
   + sheetrow("Bank transfer", "bank", "Your number, 0102 4457 88", False, "Ways")
   + sheetrow("From a card", "card", "Any Nigerian debit card")
-  + sheetrow("Ask someone", "request", "Send a request they can pay", True) + '</div>')
+  + sheetrow("Ask someone", "request", "Send a request they can pay")
+  # Dollars are not a place of their own any more. You reach them where you
+  # reach every other way money gets to you, because that is what they are.
+  + sheetrow("In dollars", "dollar", "Hold it steady, or turn naira across", True, "Dollars") + '</div>')
 
 RECEIVE_SHEET = sheetup(receive_inner)
 write("Receive", page(home_inner, 16) + askbar("Ask, or just say what you need") + RECEIVE_SHEET)
@@ -2831,6 +2858,9 @@ converted = page(
     + plainrow("Dollars now", "$512.60", True) + '</div>'
   + offer("Dollars sitting still do nothing. Move &#8358;20,000 across on payday and you never have to think about it again.",
           "Set it up", "SaveRule")
+  + '<div' + hook("Dollars") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px">'
+    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">See your dollars</span>'
+    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>'
   + wrongrow("Something wrong with this?"), 16)
 converted += dockback("Ask me about this")
 write("Converted", converted)
@@ -3054,6 +3084,44 @@ finish = page(
     + '; text-wrap: pretty">This is the same check every Nigerian bank runs. We ask once and we do not sell it.</span></div>', 16)
 finish += dockback("Ask me why any of this is needed")
 write("Finish", finish)
+
+# ================= WHICH POCKET IT LEAVES FROM =================
+# Dollars are not a destination in this product. They are a property of money,
+# so you meet them where money moves: here on the way out, and on the Receive
+# sheet on the way in. A person who never holds a dollar never opens either.
+#
+# It came up from the send screen and it goes back to it, so it is a sheet with
+# a handle and a word at the bottom, not a page with a back arrow.
+
+def pocketpick(name, sub, ic, on=False, last=False, go=""):
+    """A place the money can leave from. The one it is leaving from now carries
+    the tick, because a list of two with nothing marked is a question rather
+    than an answer."""
+    mark = (tickmark("", 22) if on else
+      '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + LINE2
+      + '; flex-shrink: 0"></div>')
+    return ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 76px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
+      + badge(ic, None, 44, R_ICON, 22)
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+        '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
+        '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
+      + mark + '</div>')
+
+payfrom_inner = (
+  '<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 2px 0 18px 0">'
+  + badge("send", None, 60, "19px", 29)
+  + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '; margin-top: 8px">Pay from</span>'
+  + '<span style="font-size: 16px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
+    'Two places the money can leave</span></div>'
+  + '<div style="display: flex; flex-direction: column">'
+  + pocketpick("Everyday", "&#8358;640,300 in naira", "bank", True)
+  + pocketpick("Dollars", "$412.60, about &#8358;640,300 today", "dollar", False, True, "PayDollars") + '</div>'
+  + '<div style="padding-top: 14px">'
+  + aline("Sarah is paid in naira either way. From dollars I convert at the rate on the "
+          "next screen, and you see it before anything moves.", "16px") + '</div>')
+
+write("PayFrom", pay + sheetup(payfrom_inner))
 
 if EMIT:
     print("built:", ", ".join(sorted(f for f in os.listdir(OUT) if f.endswith(".dc.html"))))

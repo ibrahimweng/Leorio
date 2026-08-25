@@ -18,7 +18,14 @@ const AT = +(process.env.AT || 0);
 if (!TARGET) { console.error('TARGET is required'); process.exit(2); }
 
 const data = JSON.parse(fs.readFileSync(SP + '/figma/' + SRC + '.json', 'utf8'));
-const content = data.k[0].k[0];
+// A page's own rows live in its Content column, which is where PICK counts
+// from by default. A sheet keeps its rows somewhere else, so ROOT is a path of
+// child indices down to whatever holds them.
+const ROOT = (process.env.ROOT || '0/0').split('/').filter(Boolean).map(Number);
+const content = ROOT.reduce((n, i) => {
+  if (!n || !n.k || !n.k[i]) { console.error('no child ' + i + ' on the way to ' + ROOT.join('/')); process.exit(2); }
+  return n.k[i];
+}, data);
 const nodes = PICK.map(i => {
   const n = content.k[i];
   if (!n) { console.error('no child ' + i + ' in ' + SRC); process.exit(2); }
