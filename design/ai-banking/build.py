@@ -863,6 +863,14 @@ LEAD = (aisay("Due on Thursday", "Ikeja Electric, and last month it was &#8358;7
       '<div' + hook("", "dismiss") + ' style="width: 52px; height: 52px; border-radius: ' + PILL + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
       '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="' + INK2 + '" stroke-width="2" stroke-linecap="round"/></svg></div></div>', "mBill"))
 
+# NOT THE HOME SCREEN. The home screen is the founder's, it lives in Figma at
+# 193:1566, and every Home screen on the Flows page is an instance of it. This
+# is what the walkable prototype starts from, and it is never sent to Figma.
+#
+# So a row added here appears in the prototype and nowhere anybody looks. When
+# something belongs on home it goes into their component too, with
+# figma/rowgraft.mjs. The money health row and the dollars row were both added
+# here first and reached the real home screen only afterwards.
 home_inner = (
   # The whole top block is compact on purpose. The balance was eating the fold
   # and pushing the model's first card off the screen.

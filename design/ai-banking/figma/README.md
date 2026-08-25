@@ -122,6 +122,40 @@ converter named `Icon`, skip anything named `Mark`, and read back what it
 touched before trusting it: on the twenty component masters that list was
 seven, and three of the seven were wrong.
 
+### The home screen is theirs, and it is `193:1566`
+
+There are two things in this repo that look like a home screen and only one of
+them is the home screen.
+
+**`193:1566` on the `test` page is the home screen.** The founder drew it. It
+is a component, it is 393 by 2219, and every `Home screen` on the Flows page is
+an instance of it: eighteen of them, at the head of seventeen flows and behind
+nine overlays. It is what anybody opening the file sees.
+
+**`Main` is not the home screen.** It is what `build.py` draws so the walkable
+prototype has something to start from, and it is never sent to Figma. It looks
+like a home screen and it is 852 tall and it is a stand-in.
+
+So: **anything added to home goes into `193:1566`.** Adding it to `home_inner`
+in build.py changes the prototype and changes nothing anybody looks at. That
+mistake was made twice, once with the money health row and once with the
+dollars row, and both times the flow that started at home led to a screen the
+home screen had no way of reaching.
+
+`rowgraft.mjs` is how a row gets there. It builds the row here, where the
+design system is, and puts that node into their frame, rather than redrawing it
+by hand in Figma where it would drift:
+
+```
+SP=$SP SRC=Main PICK=4,5 TARGET=70:5590 AT=0 PAGE=70:1340 node figma/rowgraft.mjs
+```
+
+`PICK` is indices into the screen's Content column, which is where a page's own
+rows live; print them with a few lines of node against the extracted JSON.
+`TARGET` is `Frame 5`, the column inside the home screen that holds Activities
+and the feed, so `AT=0` puts a row above Activities and under the dark header.
+Running it again removes what it added last time, so it is safe to repeat.
+
 ### The nine screens drawn over the home screen
 
 `Ask`, `AskReq`, `AskSvc`, `Receive`, `Typed`, `TypedAsk`, `TypedBuy`, `Draft`
