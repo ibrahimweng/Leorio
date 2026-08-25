@@ -8,7 +8,7 @@ OUT = os.path.dirname(os.path.abspath(__file__))
 ACC = build.ACC_HEX
 ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 
-ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
+ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "NoFace", "Services",
          "Airtime", "PowerPay", "Power", "Bills", "Loan", "Card", "Answer",
          "Pay", "Rules", "Goal", "Done", "Settings", "History", "Paused",
          # The nine flows. The same three destinations reached three ways,
@@ -23,7 +23,7 @@ ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "Services",
          "Short", "Pending", "Failed", "Reversed", "Wrong", "Recall",
          # The account being opened, one question at a time, with everything
          # already answered kept on the screen.
-         "Start", "Number", "Code", "Nin", "Who", "Face", "Passcode", "Opening", "Ready", "Finish", "Idcard", "Income", "Full",
+         "Start", "Number", "Code", "Nin", "Who", "Face", "Passcode", "Opening", "Ready", "Finish", "Idcard", "Income", "Full", "Signin", "Signcode", "Nomatch",
          # The second pocket, and the one screen that moves money between them.
          "Dollars", "Convert", "Converted", "PayFrom", "PayDollars",
          # One number for the habits, and the settings that build them: what

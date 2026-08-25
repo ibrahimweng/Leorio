@@ -986,6 +986,7 @@ services = page(
       + listrow("Fixed savings", "clock", "Lock it for a set time", True) + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 11px">' + sectionhead("Money")
     + '<div style="display: flex; flex-direction: column">'
+      + listrow("Dollars", "dollar", "$412.60, holding steady", False, "Dollars")
       + listrow("Request money", "request", "Ask someone to pay you")
       + listrow("Send abroad", "globe", "Pounds, dollars and euros", True) + '</div></div>', 15)
 services += dockback("Search, or say what you need")
@@ -1496,11 +1497,17 @@ def pinpad():
       + pinkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
     return '<div style="display: flex; flex-direction: column; gap: 16px">' + out + '</div>'
 
-def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves until the fourth number lands."):
-    """One gate for every naira that leaves. Face ID is tried first and keeps
-    the corner of the keypad it has on a phone, so the numbers are what you see
-    when it does not catch you. A slide says you meant it; a face says it is
-    you, and only one of those is worth anything if the phone is not yours."""
+def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves until the fourth number lands.",
+                  missed=False):
+    """One gate for every naira that leaves. A slide says you meant it; a face
+    says it is you, and only one of those is worth anything if the phone is not
+    yours.
+
+    The passcode is the gate and Face ID is the shortcut, so the keypad is what
+    the screen rests on and the face keeps the corner it has on a phone. It used
+    to say Face ID had not caught you, which put an error in front of four
+    flows that were going perfectly well. `missed` is that state now, and it
+    lives on one screen of its own."""
     lead = (avatar(initials, 40) if len(initials) <= 2
             else badge(initials, None, 40, R_ICON, 20))
     return page(
@@ -1514,13 +1521,18 @@ def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves un
           '</div></div></div>'
       + '<div style="display: flex; flex-direction: column; align-items: center; gap: 6px">'
         '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em; color: ' + INK + '">Enter your passcode</span>'
-        '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">Face ID did not catch you. Tap the face to try again.</span></div>'
+        + ('<span style="font-size: 14px; font-weight: 400; color: ' + WARN_TEXT
+           + '">Face ID did not catch you. Tap the face to try again.</span>' if missed else
+           '<span style="font-size: 14px; font-weight: 400; color: ' + INK3
+           + '">Or tap the face to use Face ID.</span>') + '</div>'
       + pindots(2)
       + pinpad()
       + '<div style="display: flex; gap: 9px; align-items: center; justify-content: center">' + icon("lock", 16, INK3, 1.6)
         + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + foot + '</span></div>', 24)
 
 write("Confirm", confirmscreen("&#8358;20,000", "SA", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"))
+write("NoFace", confirmscreen("&#8358;20,000", "SA", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842", None,
+  "Three wrong tries locks the passcode for an hour.", True))
 
 # ================= SENDING FROM A PICTURE =================
 # An account number does not usually arrive as something you type. It arrives
@@ -3074,7 +3086,7 @@ start = ('<div class="pg" style="position: relative; height: 852px; padding: 0 2
 start += ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; '
   'padding: 30px 20px 26px 20px; display: flex; flex-direction: column; gap: 6px; align-items: center">'
   + '<div style="width: 100%">' + pillbtn("Open an account", "Number", "", "", "black", True, 56) + '</div>'
-  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px">'
+  + '<div' + hook("Signin") + ' style="display: flex; align-items: center; justify-content: center; gap: 6px; height: 44px">'
     '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">Already have one?</span>'
     '<span style="font-size: 15px; font-weight: 700; color: ' + ACC_TEXT + '">Sign in</span></div></div>')
 write("Start", start)
@@ -3274,6 +3286,69 @@ full = account(-2, "", "", foot=118, steps=MORE, ahead=True, done=MORE_DONE,
     + canrow("Everything you could already do", True, True) + '</div></div>')
 full += obfoot("Take me in", "Main", "", False)
 write("Full", full)
+
+# ================= COMING BACK, AND NOT GETTING IN =================
+# Two things the flows promised and did not draw. The Sign in link on the door
+# went nowhere, and there was no screen for the one question in opening an
+# account that can actually fail.
+
+def plaintop(title, sub, ic=None, color=None, wash="#2A6AF5"):
+    """The head of a screen that is not part of a run. Same shape as an open
+    question, without a list above it, because there is nothing settled yet."""
+    return (steplight(wash)
+      + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; padding-top: 24px; '
+        'display: flex; flex-direction: column; gap: 7px">'
+      + (fglyph(ic, 30, color, BG) if ic else mark(30))
+      + '<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; color: '
+      + INK + '">' + title + '</span>'
+      + '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
+      + '; text-wrap: pretty">' + sub + '</span>')
+
+def plainpage(inner, foot=NUMPAD_H):
+    return ('<div class="pg" style="position: relative; height: 852px; padding: 0 20px; '
+      'display: flex; flex-direction: column">' + inner + '</div>'
+      + '<div style="height: ' + str(foot) + 'px; flex-shrink: 0"></div></div>')
+
+# ---------- the door swings both ways ----------
+signin = plainpage(
+  plaintop("Welcome back", "Your number, and then six digits from a text. Nothing else, because "
+           "the account is already yours.")
+  + '<div style="padding-top: 14px">' + bigfield("0803 214 4471") + '</div>') + numpad()
+write("Signin", signin, "", True)
+
+signcode = plainpage(
+  plaintop("Six digits", "Sent to 0803 214 4471 a moment ago. On a phone I already know, your "
+           "passcode alone would have been enough.")
+  + '<div style="padding-top: 14px; display: flex; justify-content: flex-start">' + pindots(4, 6) + '</div>'
+  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 6px; height: 38px">'
+    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
+  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
+write("Signcode", signcode, "", True)
+
+# ---------- when the digits come back with nobody attached ----------
+# The one question in opening an account that can fail on its own. Eleven digits
+# either match a record or they do not, and a person who mistyped one of them
+# needs to be told that and nothing worse. It is not a refusal, so the screen
+# does not look like one: the same amber a hard stop uses, said once, and the
+# way back is the button.
+nomatch = account(1,
+  '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 10px">'
+  + '<div style="display: flex; align-items: center; gap: 12px">'
+    + rowglyph("warn", IC["amber"], SURF, 26, 34)
+    + '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
+    + '">Nothing came back</span></div>'
+  + '<span style="font-size: 15px; font-weight: 400; line-height: 1.45; color: ' + INK2
+    + '; text-wrap: pretty">No record matches 1234 5678 90. One wrong digit is the usual reason, '
+      'so it is worth reading them again.</span></div>',
+  aline("If the digits are right and it still says this, your BVN will work instead. It is the "
+        "same eleven digits from a different register.", "16px")
+  + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 6px; height: 40px">'
+    '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Talk to someone</span>'
+  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>',
+  sub="Eleven digits from your NIN or your BVN. These ones did not match anything.",
+  foot=118, steps=STEPS)
+nomatch += obfoot("Try again", "Nin")
+write("Nomatch", nomatch)
 
 # ================= WHICH POCKET IT LEAVES FROM =================
 # Dollars are not a destination in this product. They are a property of money,
