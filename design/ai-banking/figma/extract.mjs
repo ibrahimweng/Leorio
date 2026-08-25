@@ -73,7 +73,32 @@ const EXTRACT = () => {
     return { c: c || '000000|0.2', x: nums[0] || 0, y: nums[1] || 0, b: nums[2] || 0, s: nums[3] || 0 };
   }
 
+  function stopsOf(parts) {
+    return parts.map((p, i) => {
+      const cm2 = p.match(/(rgba?\([^)]*\)|color\(srgb[^)]*\)|#[0-9a-fA-F]{3,8})/);
+      const pos = p.match(/([\d.]+)%\s*$/);
+      return { c: col(cm2 ? cm2[1] : null) || 'ffffff|0', p: pos ? +pos[1] / 100 : i / Math.max(1, parts.length - 1) };
+    });
+  }
+
+  // radial-gradient(<rx>% <ry>% at <cx>% <cy>%, ...). Only the shape this repo
+  // draws is read: an ellipse given in per cent of the box it sits in, which is
+  // what a wash behind a screen is.
+  function radial(bi) {
+    const m = bi.match(/^radial-gradient\((.*)\)$/s);
+    if (!m) return null;
+    const parts = splitTop(m[1]);
+    const head = parts[0].trim();
+    const shape = head.match(/^([\d.]+)%\s+([\d.]+)%\s+at\s+([\d.-]+)%\s+([\d.-]+)%$/);
+    if (!shape) return null;
+    parts.shift();
+    return { rad: 1, rx: +shape[1] / 100, ry: +shape[2] / 100,
+             cx: +shape[3] / 100, cy: +shape[4] / 100, stops: stopsOf(parts) };
+  }
+
   function gradient(bi) {
+    const r = radial(bi);
+    if (r) return r;
     const m = bi.match(/^linear-gradient\((.*)\)$/s);
     if (!m) return null;
     const parts = splitTop(m[1]);
@@ -83,12 +108,7 @@ const EXTRACT = () => {
       const to = parts.shift();
       deg = { 'to top': 0, 'to right': 90, 'to bottom': 180, 'to left': 270 }[to.trim()] ?? 180;
     }
-    const stops = parts.map((p, i) => {
-      const cm2 = p.match(/(rgba?\([^)]*\)|color\(srgb[^)]*\)|#[0-9a-fA-F]{3,8})/);
-      const pos = p.match(/([\d.]+)%\s*$/);
-      return { c: col(cm2 ? cm2[1] : null) || 'ffffff|0', p: pos ? +pos[1] / 100 : i / Math.max(1, parts.length - 1) };
-    });
-    return { deg, stops };
+    return { deg, stops: stopsOf(parts) };
   }
 
   function typo(cs) {

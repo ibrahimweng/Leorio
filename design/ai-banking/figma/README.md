@@ -52,6 +52,25 @@ same name:
     const PAGE='127:2';
     const PLACE={Meter:{x:9860,y:-2000},DoneSend:{x:10846,y:-2000}};
 
+### Gradients
+
+Both kinds go across. A `linear-gradient` becomes a `GRADIENT_LINEAR` with the
+angle turned into Figma's transform. A `radial-gradient` becomes a
+`GRADIENT_RADIAL`, and only the shape this repo draws is read: an ellipse given
+in per cent of its own box, as in
+
+    radial-gradient(126% 92% at 50% -6%, ...)
+
+Figma has no radius and centre to set, only a transform, so the emitter builds
+the inverse of the matrix that maps the unit square onto that ellipse. Any other
+radial syntax is dropped rather than guessed at, and the fill comes out empty,
+which is visible immediately.
+
+The onboarding wash is a radial. It is not given a height: it is the flex item
+above the list, so it takes whatever space the list is not using and fades out
+inside it. That is why it can never sit under a word, and why it shrinks on its
+own as answered questions pile up.
+
 ### Sending less than a whole screen
 
 Two smaller tools exist for the common case where a screen is nearly one that

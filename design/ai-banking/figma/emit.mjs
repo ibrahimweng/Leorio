@@ -30,6 +30,8 @@ function C(h){const a=String(h).split('|'),v=a[0];
 function P(h){const x=C(h);return {type:'SOLID',color:x.c,opacity:x.o};}
 function GT(d){const r=(d-90)*Math.PI/180,cs=Math.cos(r),sn=Math.sin(r);
   return [[cs,sn,0.5-0.5*cs-0.5*sn],[-sn,cs,0.5+0.5*sn-0.5*cs]];}
+function GR(g){const a=2*g.rx,d=2*g.ry,e=g.cx-g.rx,f=g.cy-g.ry;
+  return [[1/a,0,-e/a],[0,1/d,-f/d]];}
 
 let errs=[], made=0, autos=0, kept=0, undone=0;
 
@@ -38,7 +40,8 @@ let errs=[], made=0, autos=0, kept=0, undone=0;
 function dress(nd,n){
   const fl=[];
   if(n.bg) fl.push(P(n.bg));
-  if(n.g) fl.push({type:'GRADIENT_LINEAR',gradientTransform:GT(n.g.deg),
+  if(n.g) fl.push({type:n.g.rad?'GRADIENT_RADIAL':'GRADIENT_LINEAR',
+    gradientTransform:n.g.rad?GR(n.g):GT(n.g.deg),
     gradientStops:n.g.stops.map(s=>{const c=C(s.c);return {position:s.p,color:{r:c.c.r,g:c.c.g,b:c.c.b,a:c.o}};})});
   nd.fills=fl;
   if(n.r){nd.topLeftRadius=n.r[0];nd.topRightRadius=n.r[1];nd.bottomRightRadius=n.r[2];nd.bottomLeftRadius=n.r[3];}

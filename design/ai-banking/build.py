@@ -114,12 +114,18 @@ def snap(html):
     html = re.sub(r"\b(gap|row-gap|column-gap): ([0-9.]+)px",
                   lambda m: "%s: %dpx" % (m.group(1), _near(float(m.group(2)), SPACE)), html)
 
-    def _rad(m):
-        v = float(m.group(1))
+    def _one(p):
+        v = float(p[:-2])
         if v >= 100 or v < 8:          # a pill, or too small to belong to the scale
-            return m.group(0)
-        return "border-radius: %dpx" % _near(v, RADII)
-    html = re.sub(r"border-radius: ([0-9.]+)px", _rad, html)
+            return p
+        return "%dpx" % _near(v, RADII)
+
+    def _rad(m):
+        # A radius can name one corner or all four. Reading only the first
+        # number rounded one corner of an oval and left the other three, which
+        # is how the face oval came out lopsided.
+        return "border-radius: " + " ".join(_one(p) for p in m.group(1).split())
+    html = re.sub(r"border-radius: ((?:[0-9.]+px)(?:\s+[0-9.]+px){0,3})", _rad, html)
 
     def _pad(m):
         out = []
@@ -3099,7 +3105,10 @@ write("Who", who)
 face = account(2,
   '<div style="position: relative; height: 232px; border-radius: ' + R_CARD + '; background: ' + FILL
   + '; overflow: hidden; display: flex; align-items: center; justify-content: center">'
-  + '<div style="width: 138px; height: 168px; border-radius: 69px 69px 66px 66px; border: 3px solid ' + ACC
+  # 200 is not a radius, it is a way of saying "as round as this box can be".
+  # Both the browser and the extractor clamp it to half the shorter side, so
+  # the oval stays an oval and snap() leaves it alone.
+  + '<div style="width: 138px; height: 168px; border-radius: 200px; border: 3px solid ' + ACC
     + '; margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px">'
     + icon("person", 58, LINE2, 1.4) + '</div>'
   + '<span style="position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 14px; '
