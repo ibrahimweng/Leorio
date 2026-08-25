@@ -249,6 +249,8 @@ def icon(name, size=22, color=INK2, sw=1.7, extra=""):
 # colour and stand on nothing. A circle behind each one is a second shape doing
 # the first one's job. Filled, not drawn, so a small mark still reads as itself.
 FILLED = {
+ "home": '<path d="M11.1 2.9a1.4 1.4 0 0 1 1.8 0l8.1 6.75a1.4 1.4 0 0 1 .5 1.07V19.4a2.1 2.1 0 0 1-2.1 2.1H4.6a2.1 2.1 0 0 1-2.1-2.1v-8.68a1.4 1.4 0 0 1 .5-1.07z" fill="CUR"/>'
+         '<path d="M9.6 21.5v-5.1a2.4 2.4 0 0 1 4.8 0v5.1z" fill="#FFFFFF"/>',
  "phone": '<rect x="5.4" y="1.8" width="13.2" height="20.4" rx="3.4" fill="CUR"/>'
           '<path d="M10.3 5.1h3.4" stroke="#FFFFFF" stroke-width="1.7" stroke-linecap="round" fill="none"/>'
           '<circle cx="12" cy="18.5" r="1.3" fill="#FFFFFF"/>',
@@ -2962,14 +2964,20 @@ def qdone(name, sub):
       '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
       + '; text-wrap: pretty">' + sub + '</span></div></div>')
 
-def account(at, control="", tail="", sub=None, foot=120):
-    """One screen of opening an account: the same list every time, with a
-    different question open. `at` is which one, counting from zero, and -1 and
-    -2 are the two that come after the questions run out."""
+def account(at, control="", tail="", sub=None, foot=120, steps=None, ahead=False, done=None, below=""):
+    """One screen of a run of questions: the same list every time, with a
+    different one of them open. `at` is which, counting from zero, and -1 and -2
+    are the two screens that come after the questions run out.
+
+    `ahead` says whether the questions not reached yet are drawn. Opening an
+    account does not draw them, because a keypad is up and there is no room.
+    Finishing setting up does, because it is optional and a person deciding
+    whether to bother needs to see the whole of what they are agreeing to."""
+    steps = steps or STEPS
     rows = ''
-    for i, (name, ic, color, dsub) in enumerate(STEPS):
-        if i > at >= 0:
-            continue                      # what has not been asked yet is not on the screen
+    for i, (name, ic, color, dsub) in enumerate(steps):
+        if i > at >= 0 and not ahead:
+            continue
         if i == at:
             rows += qopen(name, sub or dsub, ic, color)
             if control:
@@ -2987,9 +2995,11 @@ def account(at, control="", tail="", sub=None, foot=120):
           '<span style="font-size: 15px; font-weight: 400; color: ' + INK3
           + '; padding-left: 40px">Hold on. This takes a few seconds.</span>')
     elif at == -2:
-        rows += qdone("Your account is ready", "Your number is 0102 4457 88, and money can reach it now.")
+        d = done or ("Your account is ready", "Your number is 0102 4457 88, and money can reach it now.")
+        rows += qdone(d[0], d[1])
         rows += tail
-    wash = steplight(STEPS[at][2] if 0 <= at < len(STEPS) else '')
+    rows += below                     # after the whole list, not inside it
+    wash = steplight(steps[at][2] if 0 <= at < len(steps) else '')
     return ('<div class="pg" style="position: relative; height: 852px; padding: 0 20px; '
       'display: flex; flex-direction: column">' + wash
       + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; padding-top: 24px; '
@@ -3160,36 +3170,110 @@ ready += obfoot("Take me in", "Main", "", False)
 write("Ready", ready)
 
 # ---------- the part that waits ----------
-def steprow(n, name, sub, done=False, last=False):
-    lead = (tickmark("", 28) if done else
-      '<div style="width: 28px; height: 28px; border-radius: ' + PILL + '; background: ' + FILL3
-      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      '<span class="num" style="font-size: 13px; font-weight: 700; color: ' + INK2 + '">' + str(n) + '</span></div>')
-    return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 12px; height: 68px'
-      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + lead
-      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
-        '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + (INK3 if done else INK) + '">' + name + '</span>'
-        '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
-      + ('' if done else chevbtn()) + '</div>')
+# The same list, a second time. Three more questions, weeks later, from a row on
+# the Ready screen rather than from a cold start.
+#
+# One thing is drawn differently here and it is on purpose. In the first run the
+# questions not reached yet are not on the screen, because a keypad is up and
+# there is no room for them. Here they are, greyed, below the open one. This run
+# is optional, so a person is deciding whether to bother at all, and they cannot
+# decide that without seeing the whole of what they are agreeing to.
+#
+# Nothing here blocks anything. Whatever is finished is kept, and the account
+# carries on working at the limits it already has.
 
-finish = page(
-  T("Finish setting up", "Three things, and the limits come off")
-  + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
-    + steprow(1, "Where you live", "Street, town and state. No utility bill needed.")
-    + steprow(2, "A photo of an ID", "Driver&#8217;s licence, passport or voter&#8217;s card")
-    + steprow(3, "Where the money comes from", "Salary, business, or something else", False, True) + '</div>'
-  + '<div style="display: flex; flex-direction: column; gap: 11px">' + label("What it opens")
+MORE = [
+  ("Where you live", "home", "#FF8A4C",
+   "Street, town and state. No utility bill, and nothing arrives in the post."),
+  ("A photo of an ID", "camera", "#FF3B8E",
+   "A driver&#8217;s licence, a passport or a voter&#8217;s card. Any of the three will do."),
+  ("Where your money comes from", "receive", "#8B5CF6",
+   "One tap. It is the last question, and every bank has to ask it."),
+]
+MORE_DONE = ("Everything is on", "You can send a million naira a day and hold dollars now.")
+
+def quietnote(ic, t):
+    """A line that is not an instruction and not a warning. It sits under the
+    control at the smallest size on the screen, for the person who wants to know
+    why before they answer."""
+    return ('<div style="display: flex; gap: 9px; align-items: flex-start; padding-top: 12px">'
+      + icon(ic, 16, INK3, 1.6, "; margin-top: 2px")
+      + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
+      + '; text-wrap: pretty">' + t + '</span></div>')
+
+def typedfield(v, hint=""):
+    """Somewhere to have typed. The answer is the biggest thing in the field and
+    the field is quiet around it, because the field is not the point."""
+    return ('<div style="background: ' + FILL + '; border-radius: ' + R_FIELD + '; padding: 14px 16px; '
+      'display: flex; flex-direction: column; gap: 4px">'
+      '<div style="display: flex; align-items: center">'
+      '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + v + '</span>'
+      + '<div class="caret" style="width: 2px; height: 20px; background: ' + ACC + '; margin-left: 3px"></div></div>'
+      + (('<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + hint + '</span>') if hint else '')
+      + '</div>')
+
+def pickline(t, on=False, last=False):
+    """One of a few answers, drawn as bare rows rather than tiles. The list of
+    questions above it is bare, and an answer to one of them should not arrive
+    looking heavier than the question."""
+    mark = (tickmark("", 22) if on else
+      '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + LINE2
+      + '; flex-shrink: 0"></div>')
+    return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 56px'
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
+      '<span style="flex-grow: 1; font-size: 17px; font-weight: 400; color: ' + INK + '">' + t + '</span>'
+      + mark + '</div>')
+
+# ---------- one ----------
+# The reason to bother goes under the whole list, because it is the reason for
+# all three questions and not for the one that happens to be open.
+finish = account(0, typedfield("12 Bode Thomas Street", "Surulere, Lagos State"), "",
+  foot=118, steps=MORE, ahead=True,
+  below='<div style="padding-top: 20px; display: flex; flex-direction: column; gap: 10px">'
+    + label("What it opens")
     + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
-      + canrow("Send up to &#8358;1,000,000 a day")
-      + canrow("Hold dollars")
-      + canrow("Borrow against your history", False, True) + '</div></div>'
-  + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">You can stop halfway</span>',
-           "Whatever you finish is kept. Come back to the rest any time, and nothing you already do stops working while you wait.")
-  + '<div style="display: flex; gap: 9px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
-    + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
-    + '; text-wrap: pretty">This is the same check every Nigerian bank runs. We ask once and we do not sell it.</span></div>', 16)
-finish += dockback("Ask me why any of this is needed")
+      + canrow("Send up to &#8358;1,000,000 a day", False)
+      + canrow("Hold dollars", False)
+      + canrow("Borrow against your history", False, True) + '</div>'
+    + quietnote("lock", "This is the same check every Nigerian bank runs. We ask once, and we do not sell it.")
+    + '</div>')
+finish += obfoot("Continue", "Idcard")
 write("Finish", finish)
+
+# ---------- two ----------
+idcard = account(1,
+  '<div style="position: relative; height: 196px; border-radius: ' + R_CARD + '; background: ' + FILL
+  + '; overflow: hidden; display: flex; align-items: center; justify-content: center">'
+  + '<div style="width: 246px; height: 152px; border-radius: 16px; border: 3px solid ' + ACC
+    + '; margin-bottom: 22px"></div>'
+  + '<span style="position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 14px; '
+    'font-weight: 500; color: ' + INK2 + '">Lay it flat and fill the frame</span></div>',
+  quietnote("eye", "I read the name and the number off it and keep nothing else. The photo does not leave your phone."),
+  foot=118, steps=MORE, ahead=True)
+idcard += obfoot("Take it", "Income")
+write("Idcard", idcard)
+
+# ---------- three ----------
+income = account(2,
+  '<div style="display: flex; flex-direction: column">'
+  + pickline("A salary", True)
+  + pickline("My own business")
+  + pickline("Family or friends")
+  + pickline("Something else", False, True) + '</div>',
+  "", foot=118, steps=MORE, ahead=True)
+income += obfoot("Continue", "Full")
+write("Income", income)
+
+# ---------- and the limits come off ----------
+full = account(-2, "", "", foot=118, steps=MORE, ahead=True, done=MORE_DONE,
+  below='<div style="padding-top: 18px">'
+  + '<div style="' + cardstyle("2px 16px") + '; display: flex; flex-direction: column">'
+    + canrow("Send up to &#8358;1,000,000 a day")
+    + canrow("Hold dollars")
+    + canrow("Borrow against your history")
+    + canrow("Everything you could already do", True, True) + '</div></div>')
+full += obfoot("Take me in", "Main", "", False)
+write("Full", full)
 
 # ================= WHICH POCKET IT LEAVES FROM =================
 # Dollars are not a destination in this product. They are a property of money,
