@@ -134,36 +134,36 @@ FONT_ITAL  = "PlusJakartaItalic-subset.woff2"
 FONT_NAME  = "Plus Jakarta Sans"
 FONT_WGHT  = "400 800"
 
-# Nine named styles, read straight off the home screen in Figma. That file is
-# the source of truth for type now, so the ramp is not a set of sizes any more:
-# it is a set of styles, and a size only exists at the weights a style gives
-# it. Tracking is a percentage of the size, which is how Figma stores it and
-# what keeps it honest as the size changes.
+# Seven named styles, read straight off the home screen in Figma. That file is
+# the source of truth for type, so the ramp is not a set of sizes any more: it
+# is a set of styles, and a size only exists at the weights a style gives it.
+# Tracking is a percentage of the size, which is how Figma stores it and what
+# keeps it honest as the size changes.
 #
-#   Display/ExtraBold 36    a balance
-#   Display/Bold 32         a balance on the home screen
-#   Heading/ExtraBold 22    the kobo beside one
-#   Heading/Bold 22         a page title, a heading over a group
-#   Heading/Bold 20         a section head on the home screen
-#   Body/Bold 16            a row title, a button, a value
-#   Body/Regular 16         a paragraph, a date rule
-#   Label/Bold 14           a nav title, a chip that filters
+# Four sizes are in use and two weights. This is a phone, so the ramp starts
+# small and never climbs: 36 is defined as the ceiling nothing may pass, and
+# nothing snaps to it, so it is there for one hero moment later rather than for
+# anybody to invent a size around.
+#
+#   Display/Bold 36         the ceiling, held in reserve, unused
+#   Display/Bold 32         a balance
+#   Heading/Bold 20         a page title, a heading over a group, the kobo tail
+#   Label/Bold 14           a row title, a button, a value, a chip that filters
 #   Label/Regular 14        a second line, and everything the model says
-#   Caption/Bold 12         a day separator, a small firm number
+#   Caption/Bold 12         a day separator, a badge, a small firm number
 #   Caption/Regular 12      a note under a field
-#   Tag/Bold 10             a badge, an initial, an axis label
 STYLE = {
-    (36, 800): ("Display/ExtraBold 36",       "normal", -1.83),
-    (22, 800): ("Heading/ExtraBold 22",     "normal", -3.0),
-    (22, 700): ("Heading/Bold 22",     "normal", -3.0),
-    (16, 700): ("Body/Bold 16",     "23.2px", -1.5),
-    (16, 400): ("Body/Regular 16",  "23.2px",  0.0),
-    (14, 700): ("Label/Bold 14",    "normal", -1.0),
-    (14, 400): ("Label/Regular 14", "normal",  0.0),
-    (12, 400): ("Caption/Regular 12",       "normal",  0.0),
-    (10, 700): ("Tag/Bold 10",           "normal",  0.0),
+    (36, 700): ("Display/Bold 36",     "normal", -1.83),
+    (32, 700): ("Display/Bold 32",     "normal", -1.83),
+    (20, 700): ("Heading/Bold 20",     "normal", -3.0),
+    (14, 700): ("Label/Bold 14",       "normal", -1.0),
+    (14, 400): ("Label/Regular 14",    "normal",  0.0),
+    (12, 700): ("Caption/Bold 12",     "normal",  0.0),
+    (12, 400): ("Caption/Regular 12",  "normal",  0.0),
 }
-TYPE = sorted({fs for fs, _ in STYLE})
+# The sizes a stray number is allowed to land on. 36 is deliberately absent:
+# the style exists so the ceiling is named, but nothing rounds up into it.
+TYPE = [12, 14, 20, 32]
 # Which weights a size is allowed to take. Asking for one that does not exist
 # is not an error, it is a question about which style was meant, and snap()
 # answers it.
@@ -174,9 +174,9 @@ for _fs, _fw in STYLE:
 # The Naira sign loses its crossbars below about twelve and a half pixels, so
 # money never renders at the bottom of the ramp. snap() lifts any figure off it.
 MONEY_MIN_PX = 14
-# Three weights, which is all the reference uses. Regular for anything grey,
-# bold for anything named, heavy for money.
-WEIGHT = {400: 400, 500: 400, 600: 700, 700: 700, 800: 800}
+# Two weights. Regular for anything grey, bold for everything else. ExtraBold
+# is gone: the home screen dropped it and a balance at 32 Bold carries itself.
+WEIGHT = {400: 400, 500: 400, 600: 700, 700: 700, 800: 700}
 
 # ---------------------------------------------------------------- shape
 # A 4px rhythm, with 2 and 6 kept for the gap between an icon and its label.

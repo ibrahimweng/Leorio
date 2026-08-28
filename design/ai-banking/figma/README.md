@@ -409,23 +409,53 @@ onto the same grid by hand: 56 values moved, its feed icons all became 40 with a
 20px glyph, and seven rows whose padding grew past a fixed height were set to
 hug instead, which is what a row should have been doing anyway.
 
-**The type ramp, which does hold.** A ramp is the closed set of sizes text is
-allowed to be, together with the weights each size may take. `tokens.py` names
-six sizes, 10 12 14 16 22 and 36, and allows only bold at 10, only regular at
-12, bold or regular at 14 and at 16, extrabold or bold at 22, and only extrabold
-at 36. Nine legal pairs, which is why there are nine styles.
+### The type ramp is four sizes and two weights
+
+A ramp is the closed set of sizes text is allowed to be, together with the
+weights each size may take. This one was read off the home screen and then
+applied to everything else, so `193:1566` and the 91 generated screens finally
+agree about how big a balance is.
+
+| Style | Size | Weight | Carries |
+|---|---|---|---|
+| `Display/Bold 36` | 36 | Bold | the ceiling. Named, bound to nothing, nothing rounds up into it |
+| `Display/Bold 32` | 32 | Bold | a balance |
+| `Heading/Bold 20` | 20 | Bold | a page title, a heading over a group, the kobo tail |
+| `Label/Bold 14` | 14 | Bold | a row title, a button, a value, a chip |
+| `Label/Regular 14` | 14 | Regular | a second line, and everything the model says |
+| `Caption/Bold 12` | 12 | Bold | a day separator, a badge, a small firm number |
+| `Caption/Regular 12` | 12 | Regular | a note under a field |
+
+This is a phone, so the ramp starts small and never climbs. 36 exists so nobody
+invents a size above 32 later, and it is deliberately left out of `TYPE`, which
+is the list a stray number is allowed to land on. Everything else went down:
+36 to 32, 22 to 20, 16 to 14, and ExtraBold to Bold. `Tag/Bold 10` folded into
+`Caption/Bold 12`, which is the one place in the app where type got bigger, and
+it was chosen knowingly for 55 badges and initials.
 
 `_sized()` enforces it on the way out. Every inline style in the markup is
-rewritten before it is written to disk: the size moves to the nearest legal one,
-the weight moves to one that size permits, and the line height and tracking are
-overwritten from the style as well, because a style that only half applies is
-not a style. So the markup can say 17px and the screen says 16px.
+rewritten before it reaches disk: the size moves to the nearest legal one,
+`_near` breaking a tie downwards, the weight moves to one that size permits, and
+the line height and tracking are overwritten from the style too, because a style
+that only half applies is not a style. So the markup can say 17px and the screen
+says 14px.
 
-The source carries 18 different sizes and five weights. The built screens carry
-six and three, plus exactly six text nodes that are off the ramp on purpose:
-the embossed numbers on the payment card, at 9, 13 and 20, and the meter token
-on Power and SharePower at 21. Those two surfaces opt out by design and reach
-Figma bound to no style, which is what `extract.mjs` already says about them.
+Measured across all 92 built screens: **2,496 text nodes on four sizes and two
+weights, and none off the ramp by accident.** 111 more are off it on purpose,
+all of them carrying `class="chrome"`, which is the opt-out for surfaces this
+product does not draw: the on-screen keyboard, the payment card and the meter
+token. Chrome reaches Figma bound to no style, which is how to tell it apart in
+the file.
+
+Retyping shrank almost everything, which was the point: 86 screens got shorter,
+3 grew by 2 or 3px, the median screen lost 34px, and no screen gained horizontal
+overflow. Across the app 52 elements used to be cut by the dock edge and 33 are
+now.
+
+Six styles the new ramp no longer reaches are still in the Figma file, renamed
+`Retired/…` rather than deleted, because they are still bound to text on screens
+that have not been re-sent. Deleting a style strips those nodes back to loose
+type. They go when the last screen is retyped.
 
 Counting the raw literals in `build.py` and calling that the shipped type is a
 mistake, and one this README made until it was measured against the built

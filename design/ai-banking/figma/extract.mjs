@@ -124,18 +124,17 @@ const EXTRACT = () => {
   }
   const sameTypo = (a, b) => a.fs === b.fs && a.fw === b.fw && a.it === b.it && a.c === b.c;
 
-  // The twelve named text styles in the Figma file, keyed by the size and weight
+  // The seven named text styles in the Figma file, keyed by the size and weight
   // that build.py has already snapped every line onto. A pair that is not here
-  // is one of the two surfaces that opt out of the ramp, the keyboard and the
-  // payment card, and those stay unbound.
+  // is one of the surfaces marked `chrome`, which opt out of the ramp: the
+  // on-screen keyboard, the payment card and the meter token. Those stay
+  // unbound, which is how you can tell them apart in the file.
   const STYLE = {
-    '36/800': 'Display/ExtraBold 36', '32/700': 'Display/Bold 32',
-    '22/800': 'Heading/ExtraBold 22', '22/700': 'Heading/Bold 22',
+    '36/700': 'Display/Bold 36',
+    '32/700': 'Display/Bold 32',
     '20/700': 'Heading/Bold 20',
-    '16/700': 'Body/Bold 16',         '16/400': 'Body/Regular 16',
-    '14/700': 'Label/Bold 14',        '14/400': 'Label/Regular 14',
-    '12/700': 'Caption/Bold 12',      '12/400': 'Caption/Regular 12',
-    '10/700': 'Tag/Bold 10'
+    '14/700': 'Label/Bold 14',   '14/400': 'Label/Regular 14',
+    '12/700': 'Caption/Bold 12', '12/400': 'Caption/Regular 12'
   };
   const styleOf = T => STYLE[T.fs + '/' + T.fw] || null;
 

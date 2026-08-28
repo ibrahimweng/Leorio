@@ -50,22 +50,18 @@ def _near(v, scale):
     return min(scale, key=lambda x: (abs(x - v), x))
 
 def _ramp(fs, fw, num=False):
-    """Answer the question 'which of the nine styles was this?'. A size that
-    does not exist goes to its neighbour, then a weight that does not exist at
-    that size goes to its own. The one judgement call is small and bold: there
-    is no bold at twelve, and a short bold thing at that size is a tag, so it
-    becomes one."""
+    """Answer the question 'which of the seven styles was this?'. A size that
+    does not exist goes to its nearest neighbour, and _near breaks a tie
+    downwards, because this is a phone and type here should shrink rather than
+    grow. Then a weight that does not exist at that size goes to its own: 32
+    and 20 are bold only, so asking for regular at either is asking for the
+    heading it clearly is."""
     fs = _near(fs, TYPE)
     fw = WEIGHT.get(fw, 400)
     if num and fs < MONEY_MIN_PX:      # money never renders at the bottom
         fs = MONEY_MIN_PX
     if fw not in WEIGHTS_AT[fs]:
-        if fs == 12 and fw >= 700:
-            fs, fw = 10, 700
-        elif fs == 10 and fw < 700:
-            fs, fw = 12, 400
-        else:
-            fw = min(WEIGHTS_AT[fs], key=lambda w: (abs(w - fw), -w))
+        fw = min(WEIGHTS_AT[fs], key=lambda w: (abs(w - fw), -w))
     return fs, fw
 
 def _sized(css, num=False):
