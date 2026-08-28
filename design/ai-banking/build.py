@@ -1195,7 +1195,7 @@ def receipt(blocks):
     """White, held by a hairline, so the record reads as a document laid on the
     page rather than another grey card in the stack. The gap between blocks is
     what does the grouping; the dashed lines only mark the two big joins."""
-    return ('<div style="' + bordered("20px", "24px") + ' display: flex; flex-direction: column; gap: 20px">'
+    return ('<div style="' + bordered("20px", "24px") + ' display: flex; flex-direction: column; gap: 24px">'
       + "".join(blocks) + '</div>')
 
 def offerrow(text, action, go=""):
