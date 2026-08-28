@@ -409,12 +409,27 @@ onto the same grid by hand: 56 values moved, its feed icons all became 40 with a
 20px glyph, and seven rows whose padding grew past a fixed height were set to
 hug instead, which is what a row should have been doing anyway.
 
-**Still off the grid: the type ramp itself.** `tokens.py` defines twelve text
-styles across six sizes, but `build.py` writes raw `font-size` in its markup and
-emits 20 distinct sizes and 5 weights, from 9px to 40px. `snap()` exists to pull
-a size onto the ramp and most of the markup does not call it. That is why so
-many text nodes arrive in Figma bound to no style at all. It is the next thing
-worth fixing and it is bigger than this pass was.
+**The type ramp, which does hold.** A ramp is the closed set of sizes text is
+allowed to be, together with the weights each size may take. `tokens.py` names
+six sizes, 10 12 14 16 22 and 36, and allows only bold at 10, only regular at
+12, bold or regular at 14 and at 16, extrabold or bold at 22, and only extrabold
+at 36. Nine legal pairs, which is why there are nine styles.
+
+`_sized()` enforces it on the way out. Every inline style in the markup is
+rewritten before it is written to disk: the size moves to the nearest legal one,
+the weight moves to one that size permits, and the line height and tracking are
+overwritten from the style as well, because a style that only half applies is
+not a style. So the markup can say 17px and the screen says 16px.
+
+The source carries 18 different sizes and five weights. The built screens carry
+six and three, plus exactly six text nodes that are off the ramp on purpose:
+the embossed numbers on the payment card, at 9, 13 and 20, and the meter token
+on Power and SharePower at 21. Those two surfaces opt out by design and reach
+Figma bound to no style, which is what `extract.mjs` already says about them.
+
+Counting the raw literals in `build.py` and calling that the shipped type is a
+mistake, and one this README made until it was measured against the built
+screens instead.
 
 ### The components
 
