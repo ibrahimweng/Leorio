@@ -321,18 +321,19 @@ left on it.
 
 | Style | Size | Weight | Nodes | What it carries |
 |---|---|---|---|---|
-| `Display 32` | 32 | Bold | 1 | the balance |
-| `Heading 20` | 20 | Bold | 2 | the kobo tail, and Activities |
-| `Label/Bold` | 14 | Bold | 34 | row titles, amounts, buttons, chips |
-| `Label/Regular` | 14 | Regular | 14 | row subtitles and card copy |
-| `Caption Bold` | 12 | Bold | 4 | Today, Yesterday, the FX chip, the health score |
-| `Caption` | 12 | Regular | 7 | shortcut labels and small notes |
+| `Display/Bold 32` | 32 | Bold | 1 | the balance |
+| `Heading/Bold 20` | 20 | Bold | 2 | the kobo tail, and Activities |
+| `Label/Bold 14` | 14 | Bold | 34 | row titles, amounts, buttons, chips |
+| `Label/Regular 14` | 14 | Regular | 14 | row subtitles and card copy |
+| `Caption/Bold 12` | 12 | Bold | 4 | Today, Yesterday, the FX chip, the health score |
+| `Caption/Regular 12` | 12 | Regular | 7 | shortcut labels and small notes |
 
-`Display 32`, `Heading 20` and `Caption Bold` were made for this. The other six
-styles in the file were left alone on purpose. `Body/Bold` alone is on 108 text
-nodes elsewhere on the `test` page and `Label/Regular` is on 110, so editing
-`Display` from 36 down to 32 would have moved several hundred nodes on screens
-nobody asked about. New styles change one screen. Edited styles change the file.
+`Display/Bold 32`, `Heading/Bold 20` and `Caption/Bold 12` were made for this.
+The other nine styles were left alone on purpose. `Body/Bold 16` alone is on 108
+text nodes elsewhere on the `test` page and `Label/Regular 14` is on 110, so
+editing `Display/ExtraBold 36` down to 32 would have moved several hundred nodes
+on screens nobody asked about. New styles change one screen. Edited styles
+change the file.
 
 Three of the changes were not just a smaller number:
 
@@ -346,13 +347,14 @@ Three of the changes were not just a smaller number:
   some other file. It is 12px Plus Jakarta Sans on `Caption` now, so the screen
   is down to one family.
 
-Two frames on this screen have no auto layout, so their text does not reflow
-when its size changes and has to be re-seated by hand. `Button · Pay ` holds
-its label as three separate text nodes, `Pay `, `₦` and `8,000 now`, and `Group`
-holds the health score over its ring. Both were re-centred after the resize,
-and the button needed 3px put back between the word and the amount because a
-trailing space at 14px is only about three and a half pixels wide. Anything
-that changes type here has to check those two again.
+The Pay button used to hold its label as three separate text nodes, `Pay `, `₦`
+and `8,000 now`, placed by hand, so shrinking the type left gaps in the middle
+of the words. Figma trims the trailing space out of `"Pay "` when it measures
+the box, and auto layout can only give equal gaps, so three fragments could
+never be spaced correctly. It is one text node reading `Pay ₦8,000 now` in a
+horizontal auto-layout frame now, centred on both axes and still filling its
+row. `Group`, which holds the health score over its ring, is the one frame left
+without auto layout, because a number centred on a ring is not a stack.
 
 ### The nine screens drawn over the home screen
 
@@ -370,6 +372,49 @@ re-sending any of the seven: it strips the backdrop the converter built and
 clones theirs in behind the overlay instead. It finds the frames by name, so
 the node ids can change underneath it, and running it twice is the same as
 running it once.
+
+### One spacing grid, one icon system
+
+Every gap and every padding in `build.py` is a multiple of 4. Values round to
+the nearest one and ties go up, because the ask on this project has been for
+more air rather than less. That rule replaced 19 gap values and 13 paddings.
+The odd numbers in the Figma file, rows padded `15,0,15,0` and cards padded
+`13,16,13,16`, were never drawn by hand: `extract.mjs` reads the rendered CSS,
+so whatever `build.py` sets is what the file inherits. Fixing it here is the
+only fix that stays fixed.
+
+A 1px gap on a baseline-aligned row is kerning between a naira sign and its
+digits rather than layout, and it rounds to 0, which keeps money tight.
+
+Icons had drifted further than the spacing. `badge()` was called with twelve
+container sizes between 26 and 64, each with its own glyph, so two rows in one
+list could carry a 38 and a 44:
+
+| | Sizes |
+|---|---|
+| Badge containers | 32, 40, 48, 64 |
+| Badge glyphs | always exactly half the container |
+| Bare glyphs | 16, 20, 24, 28, 32, 56 |
+| Chevrons | 12, or 16 beside a full row |
+| Marks | 24, 32, 40 |
+| Tickmarks | 24, 56 |
+
+Both keypads drew the same delete glyph at two sizes, 26 and 30. Their keys are
+68 to 76 across, so both are 28.
+
+The whole pass was checked by building the screens twice and measuring all 92:
+78 grew, none shrank, the median screen gained 12px, and no screen gained any
+horizontal overflow. `193:1566` is not built by `build.py`, so it was brought
+onto the same grid by hand: 56 values moved, its feed icons all became 40 with a
+20px glyph, and seven rows whose padding grew past a fixed height were set to
+hug instead, which is what a row should have been doing anyway.
+
+**Still off the grid: the type ramp itself.** `tokens.py` defines twelve text
+styles across six sizes, but `build.py` writes raw `font-size` in its markup and
+emits 20 distinct sizes and 5 weights, from 9px to 40px. `snap()` exists to pull
+a size onto the ramp and most of the markup does not call it. That is why so
+many text nodes arrive in Figma bound to no style at all. It is the next thing
+worth fixing and it is bigger than this pass was.
 
 ### The components
 

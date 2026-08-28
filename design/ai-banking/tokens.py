@@ -140,25 +140,28 @@ FONT_WGHT  = "400 800"
 # it. Tracking is a percentage of the size, which is how Figma stores it and
 # what keeps it honest as the size changes.
 #
-#   Display        36 ExtraBold   a balance
-#   Heading 1      22 ExtraBold   the kobo beside one
-#   Heading 2      22 Bold        a page title, a heading over a group
-#   Body/Bold      16 Bold        a row title, a button, a value
-#   Body/Regular   16 Regular     a paragraph, a date rule
-#   Label/Bold     14 Bold        a nav title, a chip that filters
-#   Label/Regular  14 Regular     a second line, and everything the model says
-#   Caption        12 Regular     a note under a field
-#   Tag            10 Bold        a badge, an initial, an axis label
+#   Display/ExtraBold 36    a balance
+#   Display/Bold 32         a balance on the home screen
+#   Heading/ExtraBold 22    the kobo beside one
+#   Heading/Bold 22         a page title, a heading over a group
+#   Heading/Bold 20         a section head on the home screen
+#   Body/Bold 16            a row title, a button, a value
+#   Body/Regular 16         a paragraph, a date rule
+#   Label/Bold 14           a nav title, a chip that filters
+#   Label/Regular 14        a second line, and everything the model says
+#   Caption/Bold 12         a day separator, a small firm number
+#   Caption/Regular 12      a note under a field
+#   Tag/Bold 10             a badge, an initial, an axis label
 STYLE = {
-    (36, 800): ("Display",       "normal", -1.83),
-    (22, 800): ("Heading 1",     "normal", -3.0),
-    (22, 700): ("Heading 2",     "normal", -3.0),
-    (16, 700): ("Body/Bold",     "23.2px", -1.5),
-    (16, 400): ("Body/Regular",  "23.2px",  0.0),
-    (14, 700): ("Label/Bold",    "normal", -1.0),
-    (14, 400): ("Label/Regular", "normal",  0.0),
-    (12, 400): ("Caption",       "normal",  0.0),
-    (10, 700): ("Tag",           "normal",  0.0),
+    (36, 800): ("Display/ExtraBold 36",       "normal", -1.83),
+    (22, 800): ("Heading/ExtraBold 22",     "normal", -3.0),
+    (22, 700): ("Heading/Bold 22",     "normal", -3.0),
+    (16, 700): ("Body/Bold 16",     "23.2px", -1.5),
+    (16, 400): ("Body/Regular 16",  "23.2px",  0.0),
+    (14, 700): ("Label/Bold 14",    "normal", -1.0),
+    (14, 400): ("Label/Regular 14", "normal",  0.0),
+    (12, 400): ("Caption/Regular 12",       "normal",  0.0),
+    (10, 700): ("Tag/Bold 10",           "normal",  0.0),
 }
 TYPE = sorted({fs for fs, _ in STYLE})
 # Which weights a size is allowed to take. Asking for one that does not exist
