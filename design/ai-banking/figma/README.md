@@ -386,6 +386,14 @@ only fix that stays fixed.
 A 1px gap on a baseline-aligned row is kerning between a naira sign and its
 digits rather than layout, and it rounds to 0, which keeps money tight.
 
+`SPACE` and `RADII` in `tokens.py` were brought onto the same grid afterwards,
+because they had not been: `SPACE` still allowed 2 and 6, and `RADII` still
+allowed 10 and 14, so the code and the Figma file disagreed about a radius the
+file had already been snapped to. `SPACE` is now 4 8 12 16 20 24 32 40 56 72 and
+`RADII` is 12 16 20 24 28, which moved `R_TILE`, the rounded square behind a
+48px service icon, from 14 to 16. Radii below 8 are artwork and are never
+snapped, and anything round is written `PILL`.
+
 Icons had drifted further than the spacing. `badge()` was called with twelve
 container sizes between 26 and 64, each with its own glyph, so two rows in one
 list could carry a 38 and a 44:
@@ -539,6 +547,40 @@ Three kinds of text were left loose on purpose:
   without rewriting the labels would make the sheet state one thing and show
   another. They are untouched and now describe a ramp the file no longer uses,
   which is worth rebuilding rather than patching.
+
+### The three design system sheets
+
+`Design System — Typography`, `— Color` and `— Spacing & Radius` sit on the
+`test` page at 1280 wide. They are documentation rather than product, and they
+were left out of the retype at first because the typography one is a specimen
+sheet: one text node per style beside a label naming it, so retyping the
+specimens without rewriting the labels would have made it state one thing and
+show another. They were rebuilt properly instead.
+
+**Typography.** Nine rows became seven, one per live style, in size order from
+the 36 ceiling down to `Caption/Regular 12`. Each specimen is now *bound* to the
+style it documents, so the sheet cannot go stale again: change a style and the
+sheet follows. Each row names the style, its size, line height and tracking, and
+what it carries. The meta column was widened from 200 to 300 and set to hug,
+because three lines at 200 clipped.
+
+**Spacing & Radius.** The spacing rows are the ten values in `SPACE`, from 4 to
+72, with the 2 gone. The radius examples are the five in `RADII` plus the pill.
+
+**Color.** The values were all still correct, so this one only needed its own
+type bringing onto the ramp, except for two things that were wrong. `error` was
+`#FF3B8E`, which is pink; the error colour is `WARN`, `#FF3B30`. And the three
+surfaces that go with it on a payment that did not go through, `WARN_SOFT`,
+`WARN_EDGE` and `WARN_TEXT`, were missing entirely. All four are right now.
+
+The swatches also carried no visible labels at all, so reading a hex meant
+clicking the layer. All 47 now show their token name and hex, in black or white
+depending on the swatch's own luminance, and the two narrow ramps read
+vertically because a 44px column cannot hold `#FAFAFA` on one line.
+
+All three sheets are on the ramp themselves now, so they are examples of the
+system as well as descriptions of it: four sizes, two weights, no Medium
+anywhere.
 
 ### The components
 

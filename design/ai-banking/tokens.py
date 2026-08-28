@@ -179,12 +179,15 @@ MONEY_MIN_PX = 14
 WEIGHT = {400: 400, 500: 400, 600: 700, 700: 700, 800: 700}
 
 # ---------------------------------------------------------------- shape
-# A 4px rhythm, with 2 and 6 kept for the gap between an icon and its label.
-# 56 and 72 are structural, not rhythm. 72 is where a page starts, which
-# clears the status bar and leaves the breathing room the reference has.
-SPACE = [2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 56, 72]
-# Seven radii. Anything round is written as PILL and never snapped.
-RADII = [10, 12, 14, 16, 20, 24, 28]
+# A 4px rhythm, and nothing off it. 2 and 6 used to be kept for the gap between
+# an icon and its label and are gone: every gap and padding in this file rounds
+# to a multiple of 4 now, ties going up. 56 and 72 are structural, not rhythm.
+# 72 is where a page starts, which clears the status bar and leaves the
+# breathing room the reference has.
+SPACE = [4, 8, 12, 16, 20, 24, 32, 40, 56, 72]
+# Five radii, on the same 4px grid. 10 and 14 are gone with 2 and 6. Anything
+# round is written as PILL and never snapped.
+RADII = [12, 16, 20, 24, 28]
 PILL  = "999px"
 
 R_CARD   = "24px"   # the normal card, a flat grey fill
@@ -192,7 +195,7 @@ R_CARDLG = "28px"   # the payment card object
 R_CARDXL = "28px"   # the answer card
 R_PANEL  = "24px"   # a list of rows
 R_INNER  = "16px"   # a panel inside a card, including the model's own
-R_TILE   = "14px"   # the rounded square behind a 48px service icon
+R_TILE   = "16px"   # the rounded square behind a 48px service icon
 R_ACT    = PILL     # a round action button
 R_BUNDLE = "16px"   # a bundle or amount chip
 R_FIELD  = "16px"   # a field the model filled in, and grouped plain rows
