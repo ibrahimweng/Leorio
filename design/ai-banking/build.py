@@ -933,10 +933,12 @@ def page(inner, gap=16, top=72, center=False, wash_h=0):
             + 'padding: ' + str(top) + 'px 20px 0 20px; display: flex; flex-direction: column; gap: '
             + str(gap) + 'px">\n<div class="pgin" style="position: relative; display: flex; flex-direction: column; gap: '
             + str(gap) + 'px">' + inner + '</div>\n</div>')
-def tx(name, ic, sub, amount, incoming=False, last=False):
+def tx(name, ic, sub, amount, incoming=False, last=False, go=""):
+    """A line in the feed. It leads to the record of itself, because a receipt
+    you can only see in the seconds after paying is half a record."""
     col = IN_TEXT if incoming else INK
     sign = "+" if incoming else "&#8722;"
-    return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 14px; height: 70px">'
+    return ('<div' + (hook(go) if go else hook("", "soon")) + ' style="display: flex; align-items: center; gap: 14px; height: 70px">'
       + badge(ic, None, 40, R_ICON, 20)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
       '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
@@ -1029,8 +1031,8 @@ home_inner = (
   + '<div style="display: flex; flex-direction: column; gap: 20px">'
     + daygroup("Today",
         LEAD
-        + txgroup(tx("Sarah Adeyemi", "send", "Flat deposit &#183; 09:14", "&#8358;50,000")
-                + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500"))
+        + txgroup(tx("Sarah Adeyemi", "send", "Rent part payment &#183; 09:14", "&#8358;20,000", False, False, "DoneSend")
+                + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500", False, False, "Done"))
         + aisay("Your data is nearly gone", "Your data usually runs out about now. The same 5GB is &#8358;2,500.",
       '<div style="display: flex; align-items: center; gap: 12px; height: 64px; border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 14px">'
       + badge("data", None, 38, R_ICON, 19, on=FILL)
@@ -1041,20 +1043,20 @@ home_inner = (
       '<div' + hook("Airtime") + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + FILL
       + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
         '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">Buy it again</span>' + chev(12, INK, 2.2) + '</div>')
-        + tx("Holiday goal", "pot", "Round ups &#183; 07:30", "&#8358;280")
+        + tx("Holiday goal", "pot", "Round ups &#183; 07:30", "&#8358;280", False, False, "Goal")
         + aisay("Three changes you made", "They save you &#8358;1,800 every month. The data plan, the DStv package, and the transfer you moved off your card.",
             '<div' + hook("", "soon") + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + FILL
             + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
               '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">See the three</span>' + chev(12, INK, 2.2) + '</div>'))
     + daygroup("Yesterday",
         promorow("Your card is ready", "Spend online anywhere", "card", "Card")
-        + txgroup(tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True)
-                + tx("Ikeja Electric", "power", "Meter 4457 8891 &#183; 11:22", "&#8358;8,000"))
+        + txgroup(tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True, False, "DoneIn")
+                + tx("Ikeja Electric", "power", "Meter 4457 8891 &#183; 11:22", "&#8358;8,000", False, False, "Power"))
         + aisay("Where your money went", "You spent &#8358;18,900 on airtime and data last month. That is your highest month this year.",
             '<div' + hook("Answer") + ' style="height: 44px; border-radius: ' + PILL + '; background: ' + FILL
             + '; display: flex; align-items: center; justify-content: center; gap: 6px">'
               '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">Show me what would help</span>' + chev(12, INK, 2.2) + '</div>')
-        + tx("Netflix", "card", "Virtual card &#183; 09:00", "&#8358;5,200"))
+        + tx("Netflix", "card", "Virtual card &#183; 09:00", "&#8358;5,200", False, False, "DoneCard"))
   + '</div>')
 
 home = page(home_inner, 16) + askbar("Ask, or just say what you need")
@@ -1177,7 +1179,7 @@ def rid(k, v):
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
       + icon("copy", 16, INK2, 1.9) + '</div></div>')
 
-def rhero(amount, line, status="Successful"):
+def rhero(amount, line, status="Successful", color=INK):
     """The figure and the tick on one row, with the word beside them. The word
     matters as much as the tick: a green circle is what an app thinks happened,
     and Successful is what a person can read out."""
@@ -1187,7 +1189,7 @@ def rhero(amount, line, status="Successful"):
       '<span style="font-size: 13px; font-weight: 700; color: ' + IN_TEXT + '">' + status + '</span></div>')
     return ('<div style="display: flex; align-items: center; gap: 16px">' + tickmark("", 52)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
-      + money(amount, "", 38)
+      + money(amount, "", 38, color)
       + '<span style="font-size: 15px; font-weight: 500; color: ' + INK2 + '">' + line + '</span></div>'
       + pill + '</div>')
 
@@ -1262,22 +1264,28 @@ airtime += confirmbar(slide("Slide to buy &#8358;2,500", "done|Airtime", "aSlide
 write("Airtime", airtime, "", True)
 
 # ================= ELECTRICITY, PAID =================
+# The token is the thing a person came back for, so it sits above the record
+# rather than at the end of it. Everything else is the same receipt.
 power = page(
-  T("Bill paid", "Ikeja Electric, a moment ago")
-  + '<div style="display: flex; flex-direction: column; gap: 14px; align-items: flex-start">'
-    + tickmark("", 56)
-    + '<div style="display: flex; flex-direction: column; gap: 5px">' + money("&#8358;8,000", "", 40)
-      + '<span style="font-size: 14px; color: ' + INK2 + '">Paid to Ikeja Electric</span></div></div>'
-  + aline("Type this into your meter. I have sent it to your messages as well.", "16.5px")
+  T("Bill paid", "27 August 2026 at 11:22 AM")
+  + rhero("&#8358;8,000", "Ikeja Electric")
   + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
-    + sectionhead("Meter token")
+    + '<span style="font-size: 12px; font-weight: 500; color: ' + INK2 + '">Meter token</span>'
     + '<span class="num chrome" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
-    + '<div' + hook("", "copy") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: ' + PILL + '; background: ' + SURF + '">'
+    + '<div' + hook("", "copy|Token") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: ' + PILL + '; background: ' + SURF + '">'
       + icon("copy", 18, INK, 1.8) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
-  + '<div style="display: flex; flex-direction: column">'
-    + plainrow("Meter", "0102 4457 8891", True) + '</div>'
-  + offer("Want me to pay this every month?", "Set it up", "Rule")
-  + wrongrow("The token did not work?"), 15)
+  + receipt([
+      rline(rfield("To", "Ikeja Electric", "Meter 0102 4457 8891"),
+            rfield("From", "Everyday", "0102 4457 88")),
+      rcut(),
+      rline(rfield("Amount", "&#8358;8,000.00"), rfield("Fee", "Free")),
+      rline(rfield("Total charged", "&#8358;8,000.00", "", True),
+            rfield("Balance after", "&#8358;22,826.88")),
+      rcut(),
+      rid("Ikeja reference", "IKJ 4457 8891 2208")])
+  + sharebtn("SharePower")
+  + offerrow("Pay this every month, without asking?", "Set it up", "Rule")
+  + wrongrow("The token did not work?"), 20)
 power += dockback("Ask about this payment")
 write("Power", power)
 
@@ -1995,7 +2003,7 @@ write("PowerPay", powerpay, "", True)
 
 # ================= DONE, THE RECEIPT FOR A PURCHASE =================
 done = page(
-  T("All done", "28 August 2026 at 2:19 PM")
+  T("All done", "28 August 2026 at 8:02 AM")
   + rhero("&#8358;2,500", "5GB sent to Mum")
   + '<div id="dnCard">' + receipt([
       rline(rfield("To", "Mum", "0803 214 4471 &#183; MTN"),
@@ -2004,7 +2012,7 @@ done = page(
       rcut(),
       rline(rfield("Amount", "&#8358;2,500.00"), rfield("Fee", "Free")),
       rline(rfield("Total charged", "&#8358;2,500.00", "", True),
-            rfield("Balance after", "&#8358;637,800.00")),
+            rfield("Balance after", "&#8358;660,326.88")),
       rcut(),
       rid("MTN reference", "MTN 88231 4471 0392")]) + '</div>'
   + sharebtn("ShareBuy")
@@ -2180,13 +2188,13 @@ activity = page(
     + txstate("Sarah Adeyemi", "Still on its way &#183; 14:22", "&#8358;20,000", "wait", "blue", "Pending")
     + txstate("Sarah Adeyemi", "Did not go &#183; 14:22", "&#8358;20,000", "warn", "red", "Failed")
     + txstate("Musa Danjuma", "Came back &#183; 16:22", "&#8358;20,000", "undo", "green", "Reversed")
-    + tx("Sarah Adeyemi", "send", "Flat deposit &#183; 09:14", "&#8358;50,000")
-    + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500") + '</div></div>'
+    + tx("Sarah Adeyemi", "send", "Rent part payment &#183; 09:14", "&#8358;20,000", False, False, "DoneSend")
+    + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500", False, False, "Done") + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 4px">' + sectionhead("Yesterday")
     + '<div style="display: flex; flex-direction: column">'
-    + tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True)
-    + tx("Ikeja Electric", "power", "Meter 4457 8891 &#183; 11:22", "&#8358;8,000")
-    + tx("Netflix", "card", "Virtual card &#183; 09:00", "&#8358;5,200") + '</div></div>'
+    + tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True, False, "DoneIn")
+    + tx("Ikeja Electric", "power", "Meter 4457 8891 &#183; 11:22", "&#8358;8,000", False, False, "Power")
+    + tx("Netflix", "card", "Virtual card &#183; 09:00", "&#8358;5,200", False, False, "DoneCard") + '</div></div>'
   + '<div style="' + bordered("16px", "24px") + '">'
     + aline("Your spending is &#8358;41,000 below this point last month.", "17px") + '</div>', 18)
 activity += dockback("Ask about any of these")
@@ -2447,7 +2455,7 @@ write("ConfirmMeter", confirmscreen("&#8358;8,000", "power", "Ikeja Electric", "
 # The fee is shown even when there is none, because a row that only appears on
 # the receipts where you were charged is a row people learn to dread.
 donesend = page(
-  T("All done", "28 August 2026 at 2:22 PM")
+  T("All done", "28 August 2026 at 9:14 AM")
   + rhero("&#8358;20,000", "Sent to Sarah Adeyemi")
   + receipt([
       rline(rfield("To", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"),
@@ -2458,7 +2466,7 @@ donesend = page(
       + rline(rfield("Amount", "&#8358;20,000.00"), rfield("Fee", "&#8358;26.88"))
       + rnote("Transfers under &#8358;10,000 carry none") + '</div>',
       rline(rfield("Total charged", "&#8358;20,026.88", "", True),
-            rfield("Balance after", "&#8358;620,273.12")),
+            rfield("Balance after", "&#8358;640,300.00")),
       rcut(),
       rid("Session ID", "000016 260828 142204 471803 926104")])
   + sharebtn("Share")
@@ -2489,8 +2497,54 @@ def share_inner(line):
       + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
       + '; text-wrap: pretty">Your balance is left off every copy that leaves the phone.</span></div>')
 
-write("Share", donesend + sheetup(share_inner("&#8358;20,000 to Sarah Adeyemi, 2:22 PM")))
-write("ShareBuy", done + sheetup(share_inner("&#8358;2,500 of data for Mum, 2:19 PM")))
+write("Share", donesend + sheetup(share_inner("&#8358;20,000 to Sarah Adeyemi, 9:14 AM")))
+write("ShareBuy", done + sheetup(share_inner("&#8358;2,500 of data for Mum, 8:02 AM")))
+write("SharePower", power + sheetup(share_inner("&#8358;8,000 to Ikeja Electric, 11:22 AM")))
+
+# ---- money that arrived ----
+# Half of banking is money coming in, and until now none of it had a record.
+# A credit has no fee and no narration of yours, so those two fields say what
+# the payer wrote and what it cost, which on money in is nothing.
+donein = page(
+  T("Money in", "27 August 2026 at 4:40 PM")
+  + rhero("&#8358;640,000", "From Pagrin Limited", "Cleared", IN_TEXT)
+  + receipt([
+      rline(rfield("From", "Pagrin Limited", "Zenith Bank &#183; 1014 2288 31"),
+            rfield("To", "Everyday", "0102 4457 88")),
+      rline(rfield("They wrote", "August salary")),
+      rcut(),
+      rline(rfield("Amount", "&#8358;640,000.00"), rfield("Fee", "None on money in")),
+      rline(rfield("Total credited", "&#8358;640,000.00", "", True),
+            rfield("Balance after", "&#8358;662,826.88")),
+      rcut(),
+      rid("Session ID", "000015 260827 164004 118220 774301")])
+  + sharebtn("ShareIn")
+  + offerrow("Put &#8358;50,000 away before it goes?", "Set it up", "Goal")
+  + wrongrow("Expecting more than this?"), 20)
+donein += dockback("Ask about this payment")
+write("DoneIn", donein)
+write("ShareIn", donein + sheetup(share_inner("&#8358;640,000 from Pagrin Limited, 4:40 PM")))
+
+# ---- what the card paid ----
+donecard = page(
+  T("Card payment", "27 August 2026 at 9:00 AM")
+  + rhero("&#8358;5,200", "Netflix")
+  + receipt([
+      rline(rfield("To", "Netflix", "netflix.com"),
+            rfield("From", "Virtual card", "&#8226;&#8226;&#8226;&#8226; 4471")),
+      rline(rfield("What", "Monthly subscription", "Renews 27 September")),
+      rcut(),
+      rline(rfield("Amount", "&#8358;5,200.00"), rfield("Fee", "Free")),
+      rline(rfield("Total charged", "&#8358;5,200.00", "", True),
+            rfield("Balance after", "&#8358;30,826.88")),
+      rcut(),
+      rid("Card reference", "NFX 4471 8823 0195")])
+  + sharebtn("ShareCard")
+  + offerrow("Freeze this card, or see what else it pays?", "Open the card", "Card")
+  + wrongrow("You did not make this payment?"), 20)
+donecard += dockback("Ask about this payment")
+write("DoneCard", donecard)
+write("ShareCard", donecard + sheetup(share_inner("&#8358;5,200 to Netflix, 9:00 AM")))
 
 
 # ================= WHEN IT DOES NOT GO =================

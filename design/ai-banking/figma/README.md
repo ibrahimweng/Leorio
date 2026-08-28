@@ -72,8 +72,15 @@ carried both go. After sending anything to Flows, rewire that section.
 
 A screen used by more than one flow is a component on the Components page, under
 the section called Screens, and every place it appears is an instance. There are
-eleven: Confirm, ConfirmBuy, Done, DoneSend, Sent, Receive, Pay, Nin, Who, Share
-and ShareBuy. Home screen is the founder's and lives on the test page.
+seventeen: Confirm, ConfirmBuy, Done, DoneSend, DoneIn, DoneCard, Power, Sent,
+Receive, Pay, Nin, Who, Share, ShareBuy, ShareIn, ShareCard and SharePower. Home
+screen is the founder's and lives on the test page.
+
+Six of those are records. Every line in History opens one, so a receipt is not
+something you see once in the seconds after paying and then lose. That is also
+why Power is a component now: a bill paid is reached from both bill flows and
+from History, and for a while both bill flows ended on the receipt for a data
+purchase instead.
 
 Share and ShareBuy are a sheet over a receipt, and the receipt under them is an
 instance of DoneSend and of Done rather than a copy. A receipt is the screen most

@@ -11,6 +11,9 @@ ANIME = open(os.path.join(OUT, "vendor", "anime.min.js")).read()
 ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "NoFace", "Services",
          "Airtime", "PowerPay", "Power", "Bills", "Loan", "Card", "Answer",
          "Pay", "Rules", "Goal", "Done", "Settings", "History", "Paused",
+         # Every line in the feed opens its own record, so these hang off
+         # History rather than off a flow.
+         "DoneIn", "ShareIn", "DoneCard", "ShareCard", "SharePower",
          # The nine flows. The same three destinations reached three ways,
          # so most of these are the second step of one of them.
          "Typed", "TypedAsk", "TypedBuy", "ChatTyped", "RequestTyped", "BuyTyped",
