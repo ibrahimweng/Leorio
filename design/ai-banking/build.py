@@ -1137,83 +1137,72 @@ def offer(text, action, go=""):
 # person keeps, sends to a landlord, and reads out to a bank when something has
 # gone wrong. So it carries what those three uses need and nothing else: who,
 # what it cost, what is left, and the number the bank will ask for.
+#
+# It is laid out as fields, not as rows. A label on the left with its figure
+# pushed to the right makes the eye cross a gap for every line it reads; a
+# label with its figure directly under it lets the eye go straight down, and
+# two or three of those side by side use the width the phone actually has.
 
-def rrow(k, v, sub="", strong=False, vcolor=None, dot=None):
-    """One line of a receipt. Label on the left in grey, figure on the right in
-    black. Every receipt a Nigerian has ever been handed already has this
-    shape, so this one does not get to invent a new one."""
-    d = ('<div style="width: 7px; height: 7px; border-radius: 999px; background: ' + dot
-         + '; flex-shrink: 0"></div>') if dot else ''
-    s2 = ('<span style="font-size: 12.5px; font-weight: 400; color: ' + INK3
-          + '; text-align: right; text-wrap: pretty">' + sub + '</span>') if sub else ''
-    return ('<div style="display: flex; align-items: flex-start; gap: 16px; padding: 4px 0">'
-      '<span style="font-size: 15px; font-weight: 400; color: ' + INK2 + '; white-space: nowrap">' + k + '</span>'
-      '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px">'
-      '<div style="display: flex; align-items: center; gap: 6px">' + d
-      + '<span class="num" style="font-size: ' + ('16px' if strong else '15.5px') + '; font-weight: '
-      + ('800' if strong else '600') + '; color: ' + (vcolor or INK) + '; text-align: right">' + v + '</span></div>'
-      + s2 + '</div></div>')
+def rfield(label, value, sub="", strong=False):
+    """One field: a small grey word, and the thing it names underneath."""
+    s2 = ('<span style="font-size: 12px; font-weight: 400; color: ' + INK3
+          + '; text-wrap: pretty">' + sub + '</span>') if sub else ''
+    return ('<div style="flex-grow: 1; flex-basis: 0; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
+      '<span style="font-size: 12px; font-weight: 500; color: ' + INK2 + '">' + label + '</span>'
+      '<span class="num" style="font-size: 16px; font-weight: ' + ('800' if strong else '700')
+      + '; letter-spacing: -0.02em; color: ' + INK + '">' + value + '</span>' + s2 + '</div>')
+
+def rline(*fields):
+    """Fields side by side, sharing the width evenly."""
+    return ('<div style="display: flex; gap: 16px; align-items: flex-start">' + "".join(fields) + '</div>')
+
+def rnote(t):
+    return ('<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '; text-wrap: pretty">' + t + '</span>')
 
 def rcut():
-    """The tear in the paper. It separates where the money went from what it
+    """The tear in the paper. It separates who the money went to from what it
     cost, and it is the one place this card is allowed a dashed line."""
-    return '<div style="height: 0; margin: 6px 0; border-top: 1px dashed ' + LINE2 + '"></div>'
+    return '<div style="height: 0; border-top: 1px dashed ' + LINE2 + '"></div>'
 
 def rid(k, v):
-    """The number the bank asks for when something has gone wrong. It is too
-    long to sit at the end of a row, so it takes a line of its own and a way to
-    copy it, which is the only thing anybody has ever done with one."""
-    return ('<div' + hook("", "copy|" + k) + ' style="display: flex; align-items: center; gap: 12px; padding: 4px 0">'
-      '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
-      '<span style="font-size: 12.5px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>'
-      '<span class="num" style="font-size: 13.5px; font-weight: 600; color: ' + INK + '">' + v + '</span></div>'
-      '<div style="width: 30px; height: 30px; border-radius: 999px; background: ' + FILL
+    """The number the bank asks for when something has gone wrong. It takes a
+    line of its own and a way to copy it, which is the only thing anybody has
+    ever done with one."""
+    return ('<div' + hook("", "copy|" + k) + ' style="display: flex; align-items: center; gap: 16px">'
+      '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
+      '<span style="font-size: 12px; font-weight: 500; color: ' + INK2 + '">' + k + '</span>'
+      '<span class="num" style="font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: ' + INK
+      + '">' + v + '</span></div>'
+      '<div style="width: 32px; height: 32px; border-radius: 999px; background: ' + FILL
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("copy", 15, INK2, 1.9) + '</div></div>')
+      + icon("copy", 16, INK2, 1.9) + '</div></div>')
 
 def rhero(amount, line, status="Successful"):
-    """The figure and the tick on one row, with the word beside them. Stacked,
-    they push the record itself below the fold, and the record is the point of
-    the screen. The word matters as much as the tick: a green circle is what an
-    app thinks happened, and Successful is what a person can read out."""
-    pill = ('<div style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; '
+    """The figure and the tick on one row, with the word beside them. The word
+    matters as much as the tick: a green circle is what an app thinks happened,
+    and Successful is what a person can read out."""
+    pill = ('<div style="display: flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; '
       'border-radius: 999px; background: ' + FILL + '; flex-shrink: 0">'
       '<div style="width: 7px; height: 7px; border-radius: 999px; background: ' + IC["green"] + '"></div>'
       '<span style="font-size: 13px; font-weight: 700; color: ' + IN_TEXT + '">' + status + '</span></div>')
-    return ('<div style="display: flex; align-items: center; gap: 12px">' + tickmark("", 46)
+    return ('<div style="display: flex; align-items: center; gap: 16px">' + tickmark("", 52)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
-      + money(amount, "", 34)
+      + money(amount, "", 38)
       + '<span style="font-size: 15px; font-weight: 500; color: ' + INK2 + '">' + line + '</span></div>'
       + pill + '</div>')
 
-def rmoney(amount, fee, total, note=""):
-    """The maths as a strip, not as three rows that look the same. What it
-    cost, what was added, and what actually left, read left to right the way
-    the sum is done on paper."""
-    cells = [("Amount", amount, "flex-start", False), ("Fee", fee, "center", False),
-             ("Total charged", total, "flex-end", True)]
-    cols = ''
-    for k, v, al, strong in cells:
-        cols += ('<div style="flex-grow: 1; flex-basis: 0; min-width: 0; display: flex; flex-direction: column; '
-          'gap: 4px; align-items: ' + al + '">'
-          '<span style="font-size: 12.5px; font-weight: 400; color: ' + INK2 + '; white-space: nowrap">' + k + '</span>'
-          '<span class="num" style="font-size: ' + ('16px' if strong else '15.5px') + '; font-weight: '
-          + ('800' if strong else '600') + '; color: ' + INK + '; white-space: nowrap">' + v + '</span></div>')
-    n = ('<span style="font-size: 12.5px; font-weight: 400; color: ' + INK3 + '; padding-top: 6px">' + note
-         + '</span>') if note else ''
-    return ('<div style="display: flex; flex-direction: column; padding: 4px 0">'
-      '<div style="display: flex; align-items: flex-end; gap: 12px">' + cols + '</div>' + n + '</div>')
-
-def receipt(rows):
+def receipt(blocks):
     """White, held by a hairline, so the record reads as a document laid on the
-    page rather than another grey card in the stack."""
-    return ('<div style="' + bordered("12px 16px", "24px") + ' display: flex; flex-direction: column">' + rows + '</div>')
+    page rather than another grey card in the stack. The gap between blocks is
+    what does the grouping; the dashed lines only mark the two big joins."""
+    return ('<div style="' + bordered("20px", "24px") + ' display: flex; flex-direction: column; gap: 20px">'
+      + "".join(blocks) + '</div>')
 
 def offerrow(text, action, go=""):
     """The assistant offering the next thing, on one row. The card version
-    costs a hundred pixels a receipt does not have, and two stacked blocks that
-    both speak in its voice are one block too many."""
-    return ('<div style="' + bordered("12px", "20px") + ' display: flex; align-items: center; gap: 12px">'
+    costs a hundred pixels, and two stacked blocks that both speak in its voice
+    are one block too many."""
+    return ('<div style="' + bordered("16px", "20px") + ' display: flex; align-items: center; gap: 12px">'
       + mark(28)
       + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 500; color: ' + INK
       + '; text-wrap: pretty">' + text + '</span>'
@@ -1223,7 +1212,7 @@ def offerrow(text, action, go=""):
       + chev(11, INK, 2.2) + '</div></div>')
 
 def sharebtn(go):
-    return pillbtn("Share receipt", go, "", "share", "black", True, 52)
+    return pillbtn("Share receipt", go, "", "share", "black", True, 56)
 
 def quote(t):
     return ('<div style="display: flex; flex-direction: column; gap: 6px">' + caption("You said")
@@ -2008,18 +1997,19 @@ write("PowerPay", powerpay, "", True)
 done = page(
   T("All done", "28 August 2026 at 2:19 PM")
   + rhero("&#8358;2,500", "5GB sent to Mum")
-  + '<div id="dnCard">' + receipt(
-      rrow("To", "Mum", "0803 214 4471 &#183; MTN")
-      + rrow("What", "5GB for 30 days", "Valid until 27 September")
-      + rrow("From", "Everyday &#183; 0102 4457 88")
-      + rcut()
-      + rmoney("&#8358;2,500.00", "Free", "&#8358;2,500.00")
-      + rrow("Balance after", "&#8358;637,800.00")
-      + rcut()
-      + rid("MTN reference", "MTN 88231 4471 0392")) + '</div>'
+  + '<div id="dnCard">' + receipt([
+      rline(rfield("To", "Mum", "0803 214 4471 &#183; MTN"),
+            rfield("From", "Everyday", "0102 4457 88")),
+      rline(rfield("What", "5GB for 30 days", "Valid until 27 September")),
+      rcut(),
+      rline(rfield("Amount", "&#8358;2,500.00"), rfield("Fee", "Free")),
+      rline(rfield("Total charged", "&#8358;2,500.00", "", True),
+            rfield("Balance after", "&#8358;637,800.00")),
+      rcut(),
+      rid("MTN reference", "MTN 88231 4471 0392")]) + '</div>'
   + sharebtn("ShareBuy")
   + '<div id="dnOffer">' + offerrow("Mum has it. Every month, without asking?", "Set it up", "Rule") + '</div>'
-  + wrongrow(), 12)
+  + wrongrow(), 20)
 done += dockback("Ask about this")
 write("Done", done)
 
@@ -2459,18 +2449,21 @@ write("ConfirmMeter", confirmscreen("&#8358;8,000", "power", "Ikeja Electric", "
 donesend = page(
   T("All done", "28 August 2026 at 2:22 PM")
   + rhero("&#8358;20,000", "Sent to Sarah Adeyemi")
-  + receipt(
-      rrow("To", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842")
-      + rrow("From", "Everyday &#183; 0102 4457 88")
-      + rrow("Narration", "Rent part payment")
-      + rcut()
-      + rmoney("&#8358;20,000.00", "&#8358;26.88", "&#8358;20,026.88", "Transfers under &#8358;10,000 carry none")
-      + rrow("Balance after", "&#8358;620,273.12")
-      + rcut()
-      + rid("Session ID", "000016 260828 142204 471803 926104"))
+  + receipt([
+      rline(rfield("To", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"),
+            rfield("From", "Everyday", "0102 4457 88")),
+      rline(rfield("Narration", "Rent part payment")),
+      rcut(),
+      '<div style="display: flex; flex-direction: column; gap: 6px">'
+      + rline(rfield("Amount", "&#8358;20,000.00"), rfield("Fee", "&#8358;26.88"))
+      + rnote("Transfers under &#8358;10,000 carry none") + '</div>',
+      rline(rfield("Total charged", "&#8358;20,026.88", "", True),
+            rfield("Balance after", "&#8358;620,273.12")),
+      rcut(),
+      rid("Session ID", "000016 260828 142204 471803 926104")])
   + sharebtn("Share")
   + offerrow("She has it. Rent again next month?", "Set it up", "Rule")
-  + wrongrow(), 12)
+  + wrongrow(), 20)
 donesend += dockback("Ask about this transfer")
 write("DoneSend", donesend)
 
