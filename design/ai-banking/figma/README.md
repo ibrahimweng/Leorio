@@ -574,9 +574,18 @@ surfaces that go with it on a payment that did not go through, `WARN_SOFT`,
 `WARN_EDGE` and `WARN_TEXT`, were missing entirely. All four are right now.
 
 The swatches also carried no visible labels at all, so reading a hex meant
-clicking the layer. All 47 now show their token name and hex, in black or white
-depending on the swatch's own luminance, and the two narrow ramps read
-vertically because a 44px column cannot hold `#FAFAFA` on one line.
+clicking the layer. All of them now show their token name and hex, in black or
+white depending on the swatch's own luminance, and the narrow ramps read
+vertically because a 35px column cannot hold `#FAFAFA` on one line.
+
+`FILL2` and `LINE2` were missing from the neutral ramp and are on it now, as
+`325` and `375`, which is where they fall by lightness. Putting them there shows
+something the code does not: **`FILL2` is 1.7 of 255 from `LINE`, and `LINE2` is
+1.0 from `FILL3`.** Both pairs are below what an eye can separate, so the ramp
+now carries two steps that are indistinguishable from the ones beside them.
+Neither is dead code, `FILL2` is used 9 times and `LINE2` 15, so this is a
+question about whether the system wants four greys in that band or two, and it
+is worth answering before more surfaces pick one.
 
 All three sheets are on the ramp themselves now, so they are examples of the
 system as well as descriptions of it: four sizes, two weights, no Medium
