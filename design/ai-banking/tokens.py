@@ -24,10 +24,13 @@ text. That was a deliberate call to match the reference exactly. INK2 at
 BG        = "#FFFFFF"   # the page, white everywhere
 SURF      = "#FFFFFF"   # a card that needs to sit on top of a grey one
 FILL      = "#F5F5F7"   # the normal card. Grey lives here only, never under the page.
-FILL2     = "#EDEDF0"   # a card's own footer strip
-FILL3     = "#DEDEE3"   # a quiet block INSIDE a grey card, where FILL would vanish
-LINE      = "#EFEFF1"   # the hairline round a bordered card
-LINE2     = "#DFDFE4"   # a dashed edge or a drag handle
+FILL3     = "#DEDEE3"   # a quiet block INSIDE a grey card where FILL would vanish, and
+                        # the edge of a dashed one. This used to be two tokens: the
+                        # other was #DFDFE4, one part in 255 from this, which no eye
+                        # can separate, so it went.
+LINE      = "#EFEFF1"   # the hairline round a bordered card, and a card's own footer
+                        # strip. Also used to be two: the other was #EDEDF0, under two
+                        # parts away.
 
 INK       = "#000000"   # every title and every figure
 INK2      = "#8E8E93"   # a label above a figure, a section heading
@@ -214,7 +217,7 @@ def pill(h=None):
 # outline, not by a shadow. Only three things lift off the page: the button
 # you press, the bar you type into, and a sheet.
 CARD_EDGE = "border: 1px solid " + LINE
-DASH      = "border: 1.5px dashed " + LINE2
+DASH      = "border: 1.5px dashed " + FILL3
 SHADOW    = ""
 SH_RAISE  = "box-shadow: 0 2px 10px rgba(0,0,0,0.05), 0 8px 30px rgba(0,0,0,0.06)"
 SH_BTN    = "box-shadow: 0 8px 24px rgba(0,0,0,0.24)"

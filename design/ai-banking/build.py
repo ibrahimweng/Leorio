@@ -590,7 +590,7 @@ def featcard(title, sub, lead, rows, foot="", footic="lock"):
           + '; padding-top: 8px; text-wrap: pretty">' + txt + '</span></div>')
     f = ''
     if foot:
-        f = ('<div style="margin-top: 20px; background: ' + FILL2 + '; border-radius: 0 0 ' + R_CARDLG + ' ' + R_CARDLG
+        f = ('<div style="margin-top: 20px; background: ' + LINE + '; border-radius: 0 0 ' + R_CARDLG + ' ' + R_CARDLG
           + '; height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px">'
           + icon(footic, 17, INK, 2.0)
           + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">' + foot + '</span></div>')
@@ -600,7 +600,7 @@ def featcard(title, sub, lead, rows, foot="", footic="lock"):
       + '<div style="display: flex; flex-direction: column; gap: 4px">'
         '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + title + '</span>'
         '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
-      '<div style="height: 0; border-top: 1.5px dashed ' + LINE2 + '"></div>'
+      '<div style="height: 0; border-top: 1.5px dashed ' + FILL3 + '"></div>'
       '<div style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 4px">' + rs + '</div></div>' + f + '</div>')
 
 def ghost(head, sub, btn, go="", act="", kind="blue", ic="down", height=250):
@@ -609,11 +609,11 @@ def ghost(head, sub, btn, go="", act="", kind="blue", ic="down", height=250):
     shapes = ('<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; filter: blur(16px); opacity: 0.55; '
       'pointer-events: none">'
       '<div style="position: absolute; left: 22px; top: 30px; width: 76px; height: 76px; border-radius: ' + PILL + '; background: ' + ACC + '; opacity: 0.5"></div>'
-      '<div style="position: absolute; left: 22px; top: 124px; width: 104px; height: 18px; border-radius: 9px; background: ' + FILL2 + '"></div>'
+      '<div style="position: absolute; left: 22px; top: 124px; width: 104px; height: 18px; border-radius: 9px; background: ' + LINE + '"></div>'
       '<div style="position: absolute; left: 22px; top: 186px; width: 46px; height: 46px; border-radius: 14px; background: ' + ACC + '; opacity: 0.35"></div>'
-      '<div style="position: absolute; left: 82px; top: 198px; width: 150px; height: 20px; border-radius: 10px; background: ' + FILL2 + '"></div>'
-      '<div style="position: absolute; right: 24px; top: 122px; width: 88px; height: 30px; border-radius: 15px; background: ' + FILL2 + '"></div>'
-      '<div style="position: absolute; right: 24px; top: 196px; width: 116px; height: 22px; border-radius: 11px; background: ' + FILL2 + '"></div></div>')
+      '<div style="position: absolute; left: 82px; top: 198px; width: 150px; height: 20px; border-radius: 10px; background: ' + LINE + '"></div>'
+      '<div style="position: absolute; right: 24px; top: 122px; width: 88px; height: 30px; border-radius: 15px; background: ' + LINE + '"></div>'
+      '<div style="position: absolute; right: 24px; top: 196px; width: 116px; height: 22px; border-radius: 11px; background: ' + LINE + '"></div></div>')
     return ('<div style="position: relative; height: ' + str(height) + 'px; display: flex; flex-direction: column; '
       'align-items: center; justify-content: center; gap: 8px">' + shapes
       + '<span style="position: relative; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '; text-align: center">' + head + '</span>'
@@ -741,7 +741,7 @@ def meter(done, total):
     segs = ''
     for i in range(total):
         segs += ('<div style="flex-grow: 1; height: 6px; border-radius: ' + R_TRACK + '; background: '
-                 + (ACC if i < done else FILL2) + '"></div>')
+                 + (ACC if i < done else LINE) + '"></div>')
     return '<div style="display: flex; gap: 4px">' + segs + '</div>'
 
 # ---------- the bottom bar, and what its black circle opens ----------
@@ -848,7 +848,7 @@ def grabber():
     """A sheet that came up from the bottom can go back down the same way, so
     it carries the bar you throw it by. Nothing else on the screen has one."""
     return ('<div style="display: flex; justify-content: center; padding: 4px 0 12px 0">'
-      '<div style="width: 44px; height: 5px; border-radius: ' + PILL + '; background: ' + LINE2 + '"></div></div>')
+      '<div style="width: 44px; height: 5px; border-radius: ' + PILL + '; background: ' + FILL3 + '"></div></div>')
 
 def sheetup(inner, done="Done", go="back", pad="12px 20px 20px 20px"):
     """A screen that came from one place and goes back to it is not a page. It
@@ -1162,7 +1162,7 @@ def rnote(t):
 def rcut():
     """The tear in the paper. It separates who the money went to from what it
     cost, and it is the one place this card is allowed a dashed line."""
-    return '<div style="height: 0; border-top: 1px dashed ' + LINE2 + '"></div>'
+    return '<div style="height: 0; border-top: 1px dashed ' + FILL3 + '"></div>'
 
 def rid(k, v):
     """The number the bank asks for when something has gone wrong. It takes a
@@ -1256,7 +1256,7 @@ airtime = page(
   + '<div style="display: flex; flex-direction: column; gap: 12px">' + sectionhead("You also top up")
     + '<div style="display: flex; gap: 16px; align-items: center">'
       + avatar("D", 46, act="who|Dad") + avatar("K", 46, act="who|Kemi") + avatar("B", 46, act="who|Bro") + avatar("T", 46, act="who|Tunde")
-      + '<div style="width: 46px; height: 46px; border-radius: 23px; border: 1px dashed ' + LINE2
+      + '<div style="width: 46px; height: 46px; border-radius: 23px; border: 1px dashed ' + FILL3
       + '; display: flex; align-items: center; justify-content: center">' + icon("plus", 20, INK3, 1.7) + '</div></div></div>', 15)
 airtime += confirmbar(slide("Slide to buy &#8358;2,500", "done|Airtime", "aSlide"))
 write("Airtime", airtime, "", True)
@@ -1436,7 +1436,7 @@ ask = ('<div class="behind">' + page(home_inner, 16) + askbar("Ask, or just say 
   + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; overflow: hidden; display: flex; flex-direction: column">'
   '<div style="height: 3px; width: 100%; overflow: hidden; flex-shrink: 0"><div class="sweep" style="height: 3px; width: 100%; background: linear-gradient(90deg, rgba(0,0,0,0) 0%, '
   + ACC + ' 50%, rgba(0,0,0,0) 100%)"></div></div>'
-  '<div style="display: flex; justify-content: center; padding: 12px 0 0 0"><div style="width: 38px; height: 4px; border-radius: 2px; background: ' + LINE2 + '"></div></div>'
+  '<div style="display: flex; justify-content: center; padding: 12px 0 0 0"><div style="width: 38px; height: 4px; border-radius: 2px; background: ' + FILL3 + '"></div></div>'
   '<div style="padding: 20px 20px 20px 20px; display: flex; flex-direction: column; gap: 20px">'
     '<div style="display: flex; align-items: center; gap: 8px">' + mark(24)
     + '<span style="font-size: 17px; font-weight: 700; color: ' + ACC_TEXT + '">Listening</span></div>'
@@ -1675,7 +1675,7 @@ def pindots(filled=2, total=4):
         on = i < filled
         ds += ('<div class="pindot" data-on="' + ("1" if on else "0") + '" style="width: 14px; height: 14px; border-radius: '
           + PILL + '; background: ' + (INK if on else "transparent")
-          + ('' if on else '; border: 1.5px solid ' + LINE2) + '"></div>')
+          + ('' if on else '; border: 1.5px solid ' + FILL3) + '"></div>')
     return '<div style="display: flex; justify-content: center; gap: 20px">' + ds + '</div>'
 
 def pinkey(t="", glyph="", act=""):
@@ -1835,10 +1835,10 @@ scan = ('<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; b
       + SURF + '; display: flex; flex-direction: column; gap: 4px; padding: 8px; flex-shrink: 0">'
       '<div style="display: flex; align-items: center; gap: 4px">'
         '<div style="width: 10px; height: 10px; border-radius: ' + PILL + '; background: ' + IC["green"] + '"></div>'
-        '<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+        '<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: ' + FILL3 + '"></div></div>'
       '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
       '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
-      '<div style="height: 4px; width: 62%; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+      '<div style="height: 4px; width: 62%; border-radius: 4px; background: ' + FILL3 + '"></div></div>'
     + '<div style="flex-grow: 1; display: flex; justify-content: center">'
       '<div' + hook("Found") + ' style="width: 72px; height: 72px; border-radius: ' + PILL
       + '; border: 4px solid #FFFFFF; display: flex; align-items: center; justify-content: center">'
@@ -2247,18 +2247,18 @@ def keyboard():
         pad = {0: 0, 1: 20, 2: 0}[i]
         cells = ''
         if i == 2:
-            cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + FILL2
+            cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + LINE
               + '; display: flex; align-items: center; justify-content: center">' + icon("up", 20, INK, 2.0) + '</div>')
         for ch in r:
             cells += ('<div style="width: 33px; height: 42px; border-radius: 6px; background: ' + SURF + '; ' + SH_RAISE
               + '; display: flex; align-items: center; justify-content: center">'
               '<span class="chrome" style="font-size: 22px; font-weight: 400; color: ' + INK + '">' + ch + '</span></div>')
         if i == 2:
-            cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + FILL2
+            cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + LINE
               + '; display: flex; align-items: center; justify-content: center">' + icon("del", 20, INK, 1.8) + '</div>')
         rows += ('<div style="display: flex; gap: 8px; justify-content: center; padding: 0 ' + str(pad) + 'px">' + cells + '</div>')
     rows += ('<div style="display: flex; gap: 8px; justify-content: center">'
-      '<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + FILL2
+      '<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + LINE
       + '; display: flex; align-items: center; justify-content: center">'
       '<span style="font-size: 14px; font-weight: 400; color: ' + INK + '">123</span></div>'
       '<div style="flex-grow: 1; height: 42px; border-radius: 6px; background: ' + SURF + '; ' + SH_RAISE + '"></div>'
@@ -2301,7 +2301,7 @@ def voicesheet(lead, tail, go, sugs):
       + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; overflow: hidden; display: flex; flex-direction: column">'
       '<div style="height: 3px; width: 100%; overflow: hidden; flex-shrink: 0"><div class="sweep" style="height: 3px; width: 100%; background: linear-gradient(90deg, rgba(0,0,0,0) 0%, '
       + ACC + ' 50%, rgba(0,0,0,0) 100%)"></div></div>'
-      '<div style="display: flex; justify-content: center; padding: 12px 0 0 0"><div style="width: 38px; height: 4px; border-radius: 2px; background: ' + LINE2 + '"></div></div>'
+      '<div style="display: flex; justify-content: center; padding: 12px 0 0 0"><div style="width: 38px; height: 4px; border-radius: 2px; background: ' + FILL3 + '"></div></div>'
       '<div style="padding: 20px 20px 20px 20px; display: flex; flex-direction: column; gap: 20px">'
         '<div style="display: flex; align-items: center; gap: 8px">' + mark(24)
         + '<span style="font-size: 17px; font-weight: 700; color: ' + ACC_TEXT + '">Listening</span></div>'
@@ -2875,10 +2875,10 @@ def camera(title, sub, shot, chip, foot, go):
           + SURF + '; display: flex; flex-direction: column; gap: 4px; padding: 8px; flex-shrink: 0">'
           '<div style="display: flex; align-items: center; gap: 4px">'
             '<div style="width: 10px; height: 10px; border-radius: ' + PILL + '; background: ' + IC["green"] + '"></div>'
-            '<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+            '<div style="flex-grow: 1; height: 4px; border-radius: 4px; background: ' + FILL3 + '"></div></div>'
           '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
           '<div style="height: 4px; border-radius: 4px; background: ' + INK4 + '"></div>'
-          '<div style="height: 4px; width: 62%; border-radius: 4px; background: ' + LINE2 + '"></div></div>'
+          '<div style="height: 4px; width: 62%; border-radius: 4px; background: ' + FILL3 + '"></div></div>'
         + '<div style="flex-grow: 1; display: flex; justify-content: center">'
           '<div' + hook(go) + ' style="width: 72px; height: 72px; border-radius: ' + PILL
           + '; border: 4px solid #FFFFFF; display: flex; align-items: center; justify-content: center">'
@@ -3486,7 +3486,7 @@ face = account(2,
   # the oval stays an oval and snap() leaves it alone.
   + '<div style="width: 138px; height: 168px; border-radius: 200px; border: 3px solid ' + ACC
     + '; margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 16px">'
-    + icon("person", 56, LINE2, 1.4) + '</div>'
+    + icon("person", 56, FILL3, 1.4) + '</div>'
   + '<span style="position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 14px; '
     'font-weight: 500; color: ' + INK2 + '">Hold still and look at the camera</span></div>',
   '<div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 12px">'
@@ -3514,7 +3514,7 @@ def canrow(t, on=True, last=False):
     return ('<div style="display: flex; align-items: center; gap: 12px; height: 50px'
       + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
       + (tickmark("", 24) if on
-         else '<div style="width: 20px; height: 20px; border-radius: ' + PILL + '; border: 1.5px dashed ' + LINE2
+         else '<div style="width: 20px; height: 20px; border-radius: ' + PILL + '; border: 1.5px dashed ' + FILL3
               + '; flex-shrink: 0"></div>')
       + '<span style="flex-grow: 1; font-size: 15px; font-weight: 500; color: ' + (INK if on else INK3) + '">' + t + '</span></div>')
 
@@ -3583,7 +3583,7 @@ def pickline(t, on=False, last=False):
     questions above it is bare, and an answer to one of them should not arrive
     looking heavier than the question."""
     mark = (tickmark("", 24) if on else
-      '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + LINE2
+      '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + FILL3
       + '; flex-shrink: 0"></div>')
     return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 16px; height: 56px'
       + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
@@ -3717,7 +3717,7 @@ def pocketpick(name, sub, ic, on=False, last=False, go=""):
     the tick, because a list of two with nothing marked is a question rather
     than an answer."""
     mark = (tickmark("", 24) if on else
-      '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + LINE2
+      '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + FILL3
       + '; flex-shrink: 0"></div>')
     return ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 16px; height: 76px'
       + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'

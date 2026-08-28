@@ -578,14 +578,21 @@ clicking the layer. All of them now show their token name and hex, in black or
 white depending on the swatch's own luminance, and the narrow ramps read
 vertically because a 35px column cannot hold `#FAFAFA` on one line.
 
-`FILL2` and `LINE2` were missing from the neutral ramp and are on it now, as
-`325` and `375`, which is where they fall by lightness. Putting them there shows
-something the code does not: **`FILL2` is 1.7 of 255 from `LINE`, and `LINE2` is
-1.0 from `FILL3`.** Both pairs are below what an eye can separate, so the ramp
-now carries two steps that are indistinguishable from the ones beside them.
-Neither is dead code, `FILL2` is used 9 times and `LINE2` 15, so this is a
-question about whether the system wants four greys in that band or two, and it
-is worth answering before more surfaces pick one.
+**`FILL2` and `LINE2` are gone.** Putting them on the ramp is what showed why:
+`FILL2` was 1.7 of 255 from `LINE` and `LINE2` was 1.0 from `FILL3`, both below
+what an eye can separate, in a ramp where every other step is 4 to 27 apart. The
+system was carrying four greys in a band that holds two. Neither was dead code,
+`FILL2` had 9 uses and `LINE2` 15, so this was a decision rather than a cleanup.
+
+`FILL2` folded into `LINE` and `LINE2` into `FILL3`, 24 references in `build.py`
+and one in `prototype.py`. The surviving comments absorbed the roles, because
+otherwise the names would lie: `LINE` is the hairline round a bordered card *and*
+a card's own footer strip, and `FILL3` is a quiet block inside a grey card *and*
+the edge of a dashed one, which is why `DASH` now reads `dashed FILL3`.
+
+In the file, 192 paints were repointed, 136 on Flows, 32 on Components and 24 on
+test, and the ramp went back to twelve steps. The two collapsed colours appear
+nowhere in the built screens or in any of the five pages.
 
 All three sheets are on the ramp themselves now, so they are examples of the
 system as well as descriptions of it: four sizes, two weights, no Medium

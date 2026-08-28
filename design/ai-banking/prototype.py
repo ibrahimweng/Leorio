@@ -354,7 +354,7 @@ function setDot(el, on){
   if(!el) return;
   el.dataset.on = on ? '1' : '0';
   el.style.background = on ? 'var(--ink)' : 'transparent';
-  el.style.border = on ? 'none' : '1.5px solid """ + build.LINE2 + """';
+  el.style.border = on ? 'none' : '1.5px solid """ + build.FILL3 + """';
 }
 function pop(el){
   if(REDUCED || !el) return;
