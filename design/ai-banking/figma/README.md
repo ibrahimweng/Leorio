@@ -18,6 +18,40 @@ appears in each of them, so a section can be read straight through without
 jumping pages, but only one of those is the drawing: the rest are instances of
 it. **Components** holds what they are instances of.
 
+## What each flow is for
+
+Every section on Flows carries a line in the empty band above its screens,
+saying what that flow is there to show. Twenty six of them:
+
+| Flow | What it is for |
+| --- | --- |
+| Send it by voice | The shortest route there is: say it once, check what it filled in, slide. |
+| Send it from a photo | Reading account details off a photograph, so nobody types eleven digits. |
+| Send it by typing | The same send for a room where talking out loud is not on. |
+| Send it by tapping | The route for anyone who does not trust a new way yet: the ordinary form, still ending in a slide. |
+| Ask to be paid, by voice | Turning what you are owed into a request the other person pays in one tap. |
+| Ask to be paid, by typing | The same request typed, so a noisy bus is not a reason to give up on it. |
+| Be paid, from home | The four ways money reaches you, and the one number you hand out. |
+| Buy something by voice | Buying data by saying it, with everything the model filled in shown before it goes. |
+| Buy something by typing | The same purchase typed, and the check that it got the number and the bundle right. |
+| Pay a bill from a photo | A meter number read off a paper bill, and the one question a photograph cannot settle. |
+| Pay a bill, the ordinary way | Electricity without a camera, ending on the token you actually came back for. |
+| The services drawer | Everything the app does that is not sending or receiving, in one drawer. |
+| Look at what happened | The record. Every line in the feed opens a receipt you can read, keep and send on. |
+| When it does not go | The four ways a payment stalls, and what the screen says instead of an error code. |
+| When it was wrong | The door out of a receipt: pull it back, correct it, or get a person onto it. |
+| What runs on its own | Standing instructions: what runs without asking, and where you go to stop it. |
+| The button | What the black circle opens, and the note it lets you write before anything moves. |
+| How the habits add up | One number for how the month is going, and what sits behind it. |
+| What you set | The controls: what opens the app, what it may spend, and which phones are allowed. |
+| Putting money away | A goal, the rule that feeds it, and stopping the rule without losing the goal. |
+| Opening an account | Four questions to a working account, with everything already answered kept on screen. |
+| Keep some in dollars | Holding dollars: where they live, what the rate is, and what you end up with. |
+| Pay from your dollars | Spending dollars on a naira payment, with the rate held while you decide. |
+| Finishing setting up | The optional half: what the higher limits cost you in questions. |
+| Signing in again | Coming back to a phone that already knows you. |
+| When the digits do not match | The identity check failing, and a way back that is not a call centre. |
+
 ## The page is walkable
 
 Every section on Flows is a flow you can click through. Each screen carries one

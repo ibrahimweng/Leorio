@@ -2546,6 +2546,75 @@ donecard += dockback("Ask about this payment")
 write("DoneCard", donecard)
 write("ShareCard", donecard + sheetup(share_inner("&#8358;5,200 to Netflix, 9:00 AM")))
 
+# ---------- the three the home feed names and nothing answered ----------
+# These are reached from the founder's home screen, so their balances chain
+# down that feed and the last one lands on the total it shows.
+doneflat = page(
+  T("All done", "28 August 2026 at 9:14 AM")
+  + rhero("&#8358;50,000", "Sent to Sarah Adeyemi")
+  + receipt([
+      rline(rfield("To", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"),
+            rfield("From", "Everyday", "0102 4457 88")),
+      rline(rfield("Narration", "Flat deposit")),
+      rcut(),
+      '<div style="display: flex; flex-direction: column; gap: 6px">'
+      + rline(rfield("Amount", "&#8358;50,000.00"), rfield("Fee", "&#8358;26.88"))
+      + rnote("Transfers under &#8358;10,000 carry none") + '</div>',
+      rline(rfield("Total charged", "&#8358;50,026.88", "", True),
+            rfield("Balance after", "&#8358;259,820.75")),
+      rcut(),
+      rid("Session ID", "000016 260828 091402 338291 774022")])
+  + sharebtn("ShareFlat")
+  + offerrow("She has it. The same on the first of every month?", "Set it up", "Rule")
+  + wrongrow(), 20)
+doneflat += dockback("Ask about this transfer")
+write("DoneFlat", doneflat)
+write("ShareFlat", doneflat + sheetup(share_inner("&#8358;50,000 to Sarah Adeyemi, 9:14 AM")))
+
+# The one that shows what the free band is for.
+doneshop = page(
+  T("All done", "28 August 2026 at 10:45 AM")
+  + rhero("&#8358;8,000", "Sent to John Doe")
+  + receipt([
+      rline(rfield("To", "John Doe", "Access Bank &#183; 0044 8821"),
+            rfield("From", "Everyday", "0102 4457 88")),
+      rline(rfield("Narration", "Grocery shopping")),
+      rcut(),
+      '<div style="display: flex; flex-direction: column; gap: 6px">'
+      + rline(rfield("Amount", "&#8358;8,000.00"), rfield("Fee", "Free"))
+      + rnote("Because it is under &#8358;10,000") + '</div>',
+      rline(rfield("Total charged", "&#8358;8,000.00", "", True),
+            rfield("Balance after", "&#8358;251,820.75")),
+      rcut(),
+      rid("Session ID", "000016 260828 104511 902744 118635")])
+  + sharebtn("ShareShop")
+  + offerrow("Grocery money every Friday?", "Set it up", "Rule")
+  + wrongrow(), 20)
+doneshop += dockback("Ask about this transfer")
+write("DoneShop", doneshop)
+write("ShareShop", doneshop + sheetup(share_inner("&#8358;8,000 to John Doe, 10:45 AM")))
+
+# The second Netflix charge on the same card, at the plan price.
+donesub = page(
+  T("Card payment", "28 August 2026 at 12:00 PM")
+  + rhero("&#8358;3,500", "Netflix")
+  + receipt([
+      rline(rfield("To", "Netflix", "netflix.com"),
+            rfield("From", "Virtual card", "&#8226;&#8226;&#8226;&#8226; 4471")),
+      rline(rfield("What", "Monthly subscription", "Renews 28 September")),
+      rcut(),
+      rline(rfield("Amount", "&#8358;3,500.00"), rfield("Fee", "Free")),
+      rline(rfield("Total charged", "&#8358;3,500.00", "", True),
+            rfield("Balance after", "&#8358;248,320.75")),
+      rcut(),
+      rid("Card reference", "NFX 4471 8823 1104")])
+  + sharebtn("ShareSub")
+  + offerrow("Netflix takes this every month. Stop it?", "Open the card", "Card")
+  + wrongrow("You did not make this payment?"), 20)
+donesub += dockback("Ask about this payment")
+write("DoneSub", donesub)
+write("ShareSub", donesub + sheetup(share_inner("&#8358;3,500 to Netflix, 12:00 PM")))
+
 
 # ================= WHEN IT DOES NOT GO =================
 # Nine flows of everything working is a brochure. These are the four ways a

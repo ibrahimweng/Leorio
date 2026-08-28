@@ -14,6 +14,7 @@ ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "NoFace", "S
          # Every line in the feed opens its own record, so these hang off
          # History rather than off a flow.
          "DoneIn", "ShareIn", "DoneCard", "ShareCard", "SharePower",
+         "DoneFlat", "ShareFlat", "DoneShop", "ShareShop", "DoneSub", "ShareSub",
          # The nine flows. The same three destinations reached three ways,
          # so most of these are the second step of one of them.
          "Typed", "TypedAsk", "TypedBuy", "ChatTyped", "RequestTyped", "BuyTyped",
