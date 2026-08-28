@@ -330,7 +330,7 @@ def avatar(t, size=38, bg=FILL, fg=INK, act="", eid=""):
       + '; display: flex; align-items: center; justify-content: center; font-size: 15px'
       + '; font-weight: 700; color: ' + fg + '; flex-shrink: 0">' + t + '</div>')
 
-def chev(size=15, color=INK4, sw=2.1):
+def chev(size=16, color=INK4, sw=2.1):
     color = _attr(color)
     s = str(size)
     return ('<svg width="' + s + '" height="' + s + '" viewBox="0 0 14 14" fill="none" style="flex-shrink: 0">'
@@ -338,15 +338,15 @@ def chev(size=15, color=INK4, sw=2.1):
 
 def chevbtn(size=24):
     """A row's chevron. Bare and pale, the way the reference draws it."""
-    return chev(15, INK4, 2.1)
+    return chev(16, INK4, 2.1)
 
-def chevdark(size=34):
+def chevdark(size=32):
     """The filled circle chevron the reference puts on a promotion row."""
     s = str(size)
     return ('<div style="width: ' + s + 'px; height: ' + s + 'px; border-radius: ' + PILL + '; background: ' + BTN
-      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + chev(13, "#FFFFFF", 2.3) + '</div>')
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + chev(12, "#FFFFFF", 2.3) + '</div>')
 
-def badge(ic, t=None, size=44, radius=None, isz=None, dark=False, color=None, on=BG):
+def badge(ic, t=None, size=40, radius=None, isz=None, dark=False, color=None, on=BG):
     """An icon in a quiet square. The square used to carry the service's own
     colour, so you found electricity before you read the word. On a page with
     eighteen of them that was not finding, it was the page shouting, and a
@@ -578,7 +578,7 @@ def dashtile(name, sub, ic, go="", act="", height=128):
 def promorow(title, sub, ic, go="", act="", dark=True):
     """The bordered white row with a filled chevron on the right."""
     return ('<div' + hook(go, act) + ' style="' + bordered("14px 16px", "20px")
-      + ' display: flex; align-items: center; gap: 16px">' + badge(ic, None, 44, R_ICON, 22, dark)
+      + ' display: flex; align-items: center; gap: 16px">' + badge(ic, None, 40, R_ICON, 20, dark)
       + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px">'
       '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + title + '</span>'
       '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
@@ -655,12 +655,12 @@ def panel(text, size="17px", aid=""):
 
 def aline(text, size="17px", aid=""):
     """The model speaking, beside its badge. Always from its own soft panel."""
-    return ('<div style="display: flex; gap: 12px; align-items: flex-start">' + mark(34)
+    return ('<div style="display: flex; gap: 12px; align-items: flex-start">' + mark(32)
         + panel(text, size, aid) + '</div>')
 
 def aicard(text, head="", size="17px", aid=""):
     """The model speaking with its panel run full width, badge on the row above."""
-    h = ('<div style="display: flex; align-items: center; gap: 8px; padding: 0 0 0 0">' + mark(28)
+    h = ('<div style="display: flex; align-items: center; gap: 8px; padding: 0 0 0 0">' + mark(32)
          + '<span style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em; color: ' + INK + '">' + head + '</span></div>')
     return h + panel(text, size, aid)
 
@@ -695,7 +695,7 @@ def statpill(t):
 
 def pagehead(title, sub="", ic=""):
     """A detail page names itself with a small icon and the title on one line."""
-    lead = (badge(ic, None, 40, R_ICON, 21) + '') if ic else ''
+    lead = (badge(ic, None, 40, R_ICON, 20) + '') if ic else ''
     p = ''
     if sub:
         p = ('<div style="font-size: 16px; font-weight: 400; color: ' + INK3
@@ -756,7 +756,7 @@ def dock(placeholder, back_btn=False, height=104):
     the ask bar takes the width and the circle keeps the corner."""
     left = back() if back_btn else ('<div' + hook("Settings") + ' style="width: 44px; height: 44px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("gear", 22, INK, 1.8) + '</div>')
+      + icon("gear", 24, INK, 1.8) + '</div>')
     ask = ('<div' + hook("ask") + ' class="askpill" style="flex-grow: 1; min-width: 0; height: 48px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; gap: 8px; padding: 0 16px 0 8px">'
       + mark(32) + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK2
@@ -765,8 +765,8 @@ def dock(placeholder, back_btn=False, height=104):
       # same prompt as one spoken, so the camera belongs in the bar the other
       # two live in, not in a button on one screen.
       + '<div' + hook("Scan") + ' class="camtap" style="width: 22px; height: 22px; display: flex; align-items: center; '
-        'justify-content: center; flex-shrink: 0">' + icon("camera", 18, INK2, 1.8) + '</div>'
-      + icon("mic", 18, INK2, 1.8) + '</div>')
+        'justify-content: center; flex-shrink: 0">' + icon("camera", 20, INK2, 1.8) + '</div>'
+      + icon("mic", 20, INK2, 1.8) + '</div>')
     fab = ('<div class="fab"' + hook("", "actions") + ' style="width: 56px; height: 56px; border-radius: ' + PILL
       + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
       '<svg class="fabx" width="24" height="24" viewBox="0 0 24 24" fill="none">'
@@ -960,7 +960,7 @@ def sortbtn():
     that changes the order rather than the contents."""
     return ('<div' + hook("", "soon") + ' class="sortbtn" style="width: 36px; height: 36px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
-      + icon("sort", 18, INK2, 1.9) + '</div>')
+      + icon("sort", 20, INK2, 1.9) + '</div>')
 
 def seeall(go=""):
     """The call to action, on the title line where the eye already is."""
@@ -1037,7 +1037,7 @@ home_inner = (
                 + tx("Netflix", "card", "Monthly Subscription &#183; 12:00", "&#8358;3,500", False, False, "DoneSub"))
         + aisay("Your data is nearly gone", "Your data usually runs out about now. The same 5GB is &#8358;2,500.",
       '<div style="display: flex; align-items: center; gap: 12px; height: 64px; border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 16px">'
-      + badge("data", None, 38, R_ICON, 19, on=FILL)
+      + badge("data", None, 40, R_ICON, 20, on=FILL)
       + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 0">'
         '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em">5GB for 30 days</span>'
         '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">MTN &#183; your line</span></div>'
@@ -1072,7 +1072,7 @@ write("Actions", page(home_inner, 16) + askbar("Ask, or just say what you need")
 # ================= ALL SERVICES =================
 def grid_tile(name, ic, go="", act=""):
     return ('<div' + hook(go, act) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 12px">'
-      + badge(ic, None, 62, "16px", 28)
+      + badge(ic, None, 64, "16px", 32)
       + '<span style="font-size: 15px; font-weight: 700; color: ' + INK + '; text-align: center">' + name + '</span></div>')
 
 def listrow(name, ic, sub="", last=False, go="", act="soon"):
@@ -1126,7 +1126,7 @@ def wrongrow(t="Something wrong with this?"):
     person has when a payment reached the wrong place is the call centre."""
     return ('<div' + hook("Wrong") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px">'
       '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">' + t + '</span>'
-      + chev(11, ACC_TEXT_HEX, 2.2) + '</div>')
+      + chev(12, ACC_TEXT_HEX, 2.2) + '</div>')
 
 def offer(text, action, go=""):
     return ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
@@ -1189,7 +1189,7 @@ def rhero(amount, line, status="Successful", color=INK):
       'border-radius: 999px; background: ' + FILL + '; flex-shrink: 0">'
       '<div style="width: 7px; height: 7px; border-radius: 999px; background: ' + IC["green"] + '"></div>'
       '<span style="font-size: 13px; font-weight: 700; color: ' + IN_TEXT + '">' + status + '</span></div>')
-    return ('<div style="display: flex; align-items: center; gap: 16px">' + tickmark("", 52)
+    return ('<div style="display: flex; align-items: center; gap: 16px">' + tickmark("", 56)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
       + money(amount, "", 38, color)
       + '<span style="font-size: 15px; font-weight: 500; color: ' + INK2 + '">' + line + '</span></div>'
@@ -1207,13 +1207,13 @@ def offerrow(text, action, go=""):
     costs a hundred pixels, and two stacked blocks that both speak in its voice
     are one block too many."""
     return ('<div style="' + bordered("16px", "20px") + ' display: flex; align-items: center; gap: 12px">'
-      + mark(28)
+      + mark(32)
       + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 500; color: ' + INK
       + '; text-wrap: pretty">' + text + '</span>'
       + '<div' + hook(go, "" if go else "soon") + ' style="height: 38px; padding: 0 16px; border-radius: 999px; background: '
       + FILL + '; display: flex; align-items: center; gap: 8px; flex-shrink: 0">'
       '<span style="font-size: 14px; font-weight: 700; color: ' + INK + '">' + action + '</span>'
-      + chev(11, INK, 2.2) + '</div></div>')
+      + chev(12, INK, 2.2) + '</div></div>')
 
 def sharebtn(go):
     return pillbtn("Share receipt", go, "", "share", "black", True, 56)
@@ -1223,7 +1223,7 @@ def quote(t):
       + '<span style="font-size: 17px; font-style: italic; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
 
 def plainrow(k, v, last=False, vcolor=INK, chevron=False, vid="", go=""):
-    c = chevbtn(22) if chevron else ""
+    c = chevbtn(24) if chevron else ""
     return ('<div' + (hook(go) if go else '') + ' style="display: flex; align-items: center; height: 56px; gap: 12px">'
       '<span style="flex-grow: 1; font-size: 17px; font-weight: 400; color: ' + INK3 + '">' + k + '</span>'
       '<span' + (' id="' + vid + '"' if vid else '') + ' class="num" style="font-size: 17px; font-weight: 700; color: '
@@ -1246,7 +1246,7 @@ airtime = page(
           '<span id="bWho" style="font-size: 15px; font-weight: 600">Mum</span>'
           '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">0803 214 4471 &#183; MTN</span></div>' + chev() + '</div>',
         "The number you top up most", on=FILL)
-    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("data", 21, INK2, 1.6)
+    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("data", 20, INK2, 1.6)
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px">'
           '<span id="bSize" style="font-size: 15px; font-weight: 600">5GB for 30 days</span>'
           '<span style="font-size: 12.5px; color: ' + INK2 + '">It will not renew on its own</span></div>'
@@ -1261,7 +1261,7 @@ airtime = page(
     + '<div style="display: flex; gap: 16px; align-items: center">'
       + avatar("D", 46, act="who|Dad") + avatar("K", 46, act="who|Kemi") + avatar("B", 46, act="who|Bro") + avatar("T", 46, act="who|Tunde")
       + '<div style="width: 46px; height: 46px; border-radius: 23px; border: 1px dashed ' + LINE2
-      + '; display: flex; align-items: center; justify-content: center">' + icon("plus", 18, INK3, 1.7) + '</div></div></div>', 15)
+      + '; display: flex; align-items: center; justify-content: center">' + icon("plus", 20, INK3, 1.7) + '</div></div></div>', 15)
 airtime += confirmbar(slide("Slide to buy &#8358;2,500", "done|Airtime", "aSlide"))
 write("Airtime", airtime, "", True)
 
@@ -1275,7 +1275,7 @@ power = page(
     + '<span style="font-size: 12px; font-weight: 500; color: ' + INK2 + '">Meter token</span>'
     + '<span class="num chrome" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
     + '<div' + hook("", "copy|Token") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: ' + PILL + '; background: ' + SURF + '">'
-      + icon("copy", 18, INK, 1.8) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
+      + icon("copy", 20, INK, 1.8) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
   + receipt([
       rline(rfield("To", "Ikeja Electric", "Meter 0102 4457 8891"),
             rfield("From", "Everyday", "0102 4457 88")),
@@ -1323,7 +1323,7 @@ bills = page(
       + bill("LAWMA waste", "waste", "Paid 2 August", "&#8358;2,000", '', False, True)
       + bill("MTN 5GB", "data", "Paid 4 August", "&#8358;2,500", '', True, True) + '</div></div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 17, INK, 2)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK, 2)
     + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Add a bill</span></div>'
   + offer("DStv and Spectranet are not covered. Shall I pay them?", "Set both up", "Rule"), 14) + dockback("Ask about your bills")
 write("Bills", bills)
@@ -1355,10 +1355,10 @@ loan = page(
     + sectionhead("How much you want")
     + '<div style="display: flex; align-items: center; gap: 16px">'
       '<div' + hook("", "loan|-") + ' style="width: 44px; height: 44px; border-radius: ' + PILL + '; background: ' + SURF
-      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("minus", 19, INK, 2.2) + '</div>'
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("minus", 20, INK, 2.2) + '</div>'
       '<div id="lnAmt" style="flex-grow: 1; display: flex; justify-content: center">' + money("&#8358;150,000", "", 40) + '</div>'
       '<div' + hook("", "loan|+") + ' style="width: 44px; height: 44px; border-radius: ' + PILL + '; background: ' + SURF
-      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("plus", 19, INK, 2.2) + '</div></div>'
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("plus", 20, INK, 2.2) + '</div></div>'
     + '<div style="display: flex; flex-direction: column; gap: 8px">'
       '<div style="height: 6px; border-radius: 3px; background: ' + FILL3 + '; overflow: hidden"><div id="lnBar" style="width: 60%; height: 6px; border-radius: 3px; background: ' + ACC + '"></div></div>'
       '<div style="display: flex; justify-content: space-between"><span class="num" style="font-size: 12.5px; color: ' + INK3 + '">&#8358;10,000</span>'
@@ -1412,7 +1412,7 @@ vcard = page(
     + '<div style="height: 7px; border-radius: 4px; background: ' + FILL3 + '; overflow: hidden"><div style="width: 42%; height: 7px; border-radius: 4px; background: ' + ACC + '"></div></div>'
     + '<span class="num" style="font-size: 12.5px; color: ' + INK3 + '">&#8358;29,000 left before it stops working</span></div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 17, INK, 2)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK, 2)
     + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Make another card</span></div>', 14) + dockback("Ask about this card")
 write("Card", vcard)
 
@@ -1498,7 +1498,7 @@ answer = page(
       + barm(38,"Feb") + barm(50,"Mar") + barm(41,"Apr") + barm(56,"May") + barm(47,"Jun") + barm(68,"Jul", True) + '</div>'
     + '<div style="display: flex; flex-wrap: wrap; gap: 8px">' + qchip("Airtime and data") + qchip("Last month") + '</div>'
     + '<div' + hook("", "soon") + ' style="border-top: 1px solid ' + LINE + '; display: flex; align-items: center; gap: 8px; height: 48px">'
-      + icon("list", 15, INK3, 1.5)
+      + icon("list", 16, INK3, 1.5)
       + '<span class="num" style="flex-grow: 1; font-size: 12.5px; color: ' + INK3 + '">Added up from 14 top ups, 1 to 31 July</span>' + chev() + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 12px">' + sectionhead("Where it went")
     + '<div style="display: flex; flex-direction: column; gap: 16px">'
@@ -1597,7 +1597,7 @@ def toolrow(state, k, v, vcolor=INK, first=False, num=False, go=""):
     cls = ' class="num"' if num else ''
     tail = ('<div' + hook(go) + ' style="flex-grow: 1; display: flex; align-items: center; justify-content: flex-end; gap: 4px">'
             + '<span' + cls + ' style="font-size: 14px; font-weight: 700; color: ' + vcolor + '">' + v + '</span>'
-            + chev(11, INK3, 2.2) + '</div>') if go else (
+            + chev(12, INK3, 2.2) + '</div>') if go else (
             '<span' + cls + ' style="flex-grow: 1; text-align: right; font-size: 14px; font-weight: 700; color: ' + vcolor + '">' + v + '</span>')
     return ('<div style="' + edge + 'display: flex; align-items: center; gap: 12px; height: 44px">' + stepdot(state)
       + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>' + tail + '</div>')
@@ -1605,7 +1605,7 @@ def toolrow(state, k, v, vcolor=INK, first=False, num=False, go=""):
 def toolpanel(name, status, rows, cta="", go=""):
     """The tool's own surface, running inside the chat."""
     head = ('<div style="height: 48px; background: ' + FILL + '; border-bottom: 1px solid ' + LINE
-      + '; display: flex; align-items: center; gap: 12px; padding: 0 16px">' + badge("send", None, 26, "10px", 15, on=FILL)
+      + '; display: flex; align-items: center; gap: 12px; padding: 0 16px">' + badge("send", None, 32, "12px", 16, on=FILL)
       + '<span style="flex-grow: 1; font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: ' + INK + '">' + name + '</span>'
       '<div style="display: flex; align-items: center; gap: 8px; height: 24px; padding: 0 12px; border-radius: ' + PILL
       + '; background: ' + SURF + '">'
@@ -1632,8 +1632,8 @@ def chatbar(placeholder="Reply, or just keep talking", height=104):
       + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK2
       + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + placeholder + '</span>'
       + '<div' + hook("Scan") + ' class="camtap" style="width: 22px; height: 22px; display: flex; align-items: center; '
-        'justify-content: center; flex-shrink: 0">' + icon("camera", 18, INK2, 1.8) + '</div>'
-      + icon("mic", 18, INK2, 1.8) + '</div>')
+        'justify-content: center; flex-shrink: 0">' + icon("camera", 20, INK2, 1.8) + '</div>'
+      + icon("mic", 20, INK2, 1.8) + '</div>')
     send = ('<div' + hook("", "soon") + ' class="fab" style="width: 56px; height: 56px; border-radius: ' + PILL
       + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
       + icon("up", 24, "#FFFFFF", 2.4) + '</div>')
@@ -1697,7 +1697,7 @@ def pinpad():
     for r in (["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]):
         out += '<div style="display: flex; gap: 24px; justify-content: center">' + "".join(pinkey(k) for k in r) + '</div>'
     out += ('<div style="display: flex; gap: 24px; justify-content: center">'
-      + pinkey("", icon("faceid", 34, ACC_TEXT_HEX, 1.7), "faceid") + pinkey("0")
+      + pinkey("", icon("faceid", 32, ACC_TEXT_HEX, 1.7), "faceid") + pinkey("0")
       + pinkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
     return '<div style="display: flex; flex-direction: column; gap: 16px">' + out + '</div>'
 
@@ -1858,7 +1858,7 @@ def acctrow(bank, num, who, color=None, last=False):
     colours; they are told apart by the number, which is the thing being
     checked, and the colours were only ever decorating the check."""
     return ('<div' + hook("Found") + ' style="display: flex; align-items: center; gap: 16px; height: 72px'
-      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + badge("bank", None, 44, R_ICON, 22)
+      + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">' + badge("bank", None, 40, R_ICON, 20)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
       '<span class="num" style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + num + '</span>'
       '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + bank + ' &#183; ' + who + '</span></div>'
@@ -1887,7 +1887,7 @@ def namecheck():
     the one thing a photograph cannot settle, so it is put to the person
     rather than decided for them."""
     return ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
-      '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 18, WARN_TEXT, 2.0)
+      '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 20, WARN_TEXT, 2.0)
       + '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
       + '">Is this the person you mean?</span></div>'
       + '<div style="' + cardstyle("8px 14px", "16px") + ' display: flex; flex-direction: column">'
@@ -1946,7 +1946,7 @@ def rule(title, desc, log, link, on, act="toggle"):
       + switch(on, act) + '</div>' + foot + '</div>')
 
 def never(t):
-    return ('<div style="display: flex; align-items: center; gap: 12px">' + badge("lock", "neutral", 32, "11px", 16)
+    return ('<div style="display: flex; align-items: center; gap: 12px">' + badge("lock", "neutral", 32, "12px", 16)
       + '<span style="font-size: 14.5px; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
 
 TIGHT = ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
@@ -1973,7 +1973,7 @@ rules = page(
     + never("Anything over &#8358;20,000")
     + never("Taking a loan on your behalf") + '</div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 17, INK, 2)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK, 2)
     + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Add an instruction</span></div>', 14)
 rules += dockback("Ask me to set one up")
 write("Rules", rules)
@@ -1984,7 +1984,7 @@ powerpay = page(
   + quote("pay my light bill")
   + aline("Ikeja Electric, the meter you always use.")
   + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 12px">'
-    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("power", 21, INK2, 1.6)
+    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("power", 20, INK2, 1.6)
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px">'
           '<span style="font-size: 15px; font-weight: 600">Ikeja Electric</span>'
           '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">Prepaid &#183; 0102 4457 8891</span></div>' + chev() + '</div>',
@@ -2060,7 +2060,7 @@ goal = page(
   # screen where it occurs to them rather than buried in a help page.
   + '<div' + hook("Paused") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 40px">'
     '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">What happens if money gets tight?</span>'
-    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>', 20)
+    + chev(12, ACC_TEXT_HEX, 2.2) + '</div>', 20)
 goal += dockback("Ask about this goal")
 write("Goal", goal)
 
@@ -2208,7 +2208,7 @@ write("History", activity)
 # ================= ADD MONEY, AS A SHEET =================
 def sheetrow(name, ic, sub, last=False, go=""):
     return ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 16px; height: 72px">'
-      + badge(ic, None, 44, R_ICON, 22)
+      + badge(ic, None, 40, R_ICON, 20)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
       '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
       '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
@@ -2218,7 +2218,7 @@ def sheetrow(name, ic, sub, last=False, go=""):
 # can be thrown back down by the handle. A back arrow would be a second way to
 # do what the handle and the word at the bottom already do.
 receive_inner = ('<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 20px 0">'
-  + badge("down", None, 64, "20px", 30)
+  + badge("down", None, 64, "20px", 32)
   + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '; margin-top: 8px">Receive</span>'
   + '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
     'Pick how you want the money to reach you</span></div>'
@@ -2252,7 +2252,7 @@ def keyboard():
         cells = ''
         if i == 2:
             cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + FILL2
-              + '; display: flex; align-items: center; justify-content: center">' + icon("up", 18, INK, 2.0) + '</div>')
+              + '; display: flex; align-items: center; justify-content: center">' + icon("up", 20, INK, 2.0) + '</div>')
         for ch in r:
             cells += ('<div style="width: 33px; height: 42px; border-radius: 6px; background: ' + SURF + '; ' + SH_RAISE
               + '; display: flex; align-items: center; justify-content: center">'
@@ -2284,7 +2284,7 @@ def typedbar(text, go=""):
       '<div style="width: 2px; height: 20px; background: ' + ACC + '"></div></div>'
       + '<div' + hook(go) + ' style="width: 48px; height: 48px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("up", 22, "#FFFFFF", 2.4) + '</div></div>')
+      + icon("up", 24, "#FFFFFF", 2.4) + '</div></div>')
 
 def typedscreen(text, go):
     # No dimming. A phone does not grey out the page when the keyboard is up.
@@ -2400,10 +2400,10 @@ mycode = page(
       '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">Leorio &#183; 0102 4457 88</span></div></div></div>'
   + '<div style="display: flex; gap: 12px">'
     + '<div' + hook("", "soon") + ' class="pbtn" style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("send", 18, "#FFFFFF", 2.0)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("send", 20, "#FFFFFF", 2.0)
     + '<span style="font-size: 16px; font-weight: 700; color: #FFFFFF">Share it</span></div>'
     + '<div' + hook("", "soon") + ' class="pbtn" style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("down", 18, INK, 2.0)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("down", 20, INK, 2.0)
     + '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">Save it</span></div></div>'
   + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
@@ -2434,7 +2434,7 @@ meter = page(
   T("What I found", "Read from your photo, 4:02 PM")
   + photo("meter")
   + '<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
-    '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 18, WARN_TEXT, 2.0)
+    '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 20, WARN_TEXT, 2.0)
     + '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
     + '">Is this your meter?</span></div>'
     + '<div style="' + cardstyle("8px 14px", "16px") + ' display: flex; flex-direction: column">'
@@ -2486,7 +2486,7 @@ write("DoneSend", donesend)
 # balance is left off every copy that leaves the phone.
 def share_inner(line):
     return ('<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 20px 0">'
-      + badge("share", None, 64, "20px", 28)
+      + badge("share", None, 64, "20px", 32)
       + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK
         + '; margin-top: 8px">Share this receipt</span>'
       + '<span style="font-size: 17px; font-weight: 400; color: ' + INK3
@@ -2635,7 +2635,7 @@ def limitrow(ic, col, t):
     """What the model did, and what it cannot do, told apart by their marks.
     The same padlock on all three would say it failed at all three."""
     return ('<div style="display: flex; align-items: flex-start; gap: 12px">'
-      + badge(ic, None, 30, "10px", 16)
+      + badge(ic, None, 32, "12px", 16)
       + '<span style="flex-grow: 1; font-size: 14px; font-weight: 400; line-height: 1.45; color: '
       + INK2 + '; text-wrap: pretty">' + t + '</span></div>')
 
@@ -2662,7 +2662,7 @@ def waylist(items):
     for i, (name, sub, ic, col, go) in enumerate(items):
         out += ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 16px; height: 72px'
           + ('' if i == 0 else '; border-top: 1px solid ' + LINE) + '">'
-          + badge(ic, None, 44, R_ICON, 22, on=FILL)
+          + badge(ic, None, 40, R_ICON, 20, on=FILL)
           + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
           '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em">' + name + '</span>'
           '<span style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
@@ -2810,7 +2810,7 @@ def numpad():
     out += ('<div style="display: flex; gap: 24px; justify-content: center">'
       + numkey("000") + numkey("0")
       + '<div class="pinkey"' + hook("", "amend") + ' style="width: 74px; height: 74px; display: flex; align-items: center; justify-content: center">'
-      + icon("del", 30, INK2, 1.8) + '</div></div>')
+      + icon("del", 28, INK2, 1.8) + '</div></div>')
     return ('<div style="display: flex; flex-direction: column; gap: 20px; align-items: center">' + out + '</div>')
 
 amend = page(
@@ -2903,7 +2903,7 @@ def chip(t, strong=False):
     return ('<div' + hook("Amend") + ' style="height: 34px; padding: 0 12px; border-radius: ' + PILL
       + '; background: ' + (ACC_SOFT if strong else FILL) + '; display: flex; align-items: center; gap: 4px; flex-shrink: 0">'
       '<span style="font-size: 14px; font-weight: 700; color: ' + (ACC_INK if strong else INK) + '">' + t + '</span>'
-      + chev(10, ACC_INK if strong else INK3, 2.2) + '</div>')
+      + chev(12, ACC_INK if strong else INK3, 2.2) + '</div>')
 
 def draftbar(text):
     """The ask bar holding a sentence that has not gone anywhere yet, with the
@@ -2921,7 +2921,7 @@ def draftbar(text):
       '<div style="width: 2px; height: 20px; background: ' + ACC + '"></div></div>'
       + '<div' + hook("Chat") + ' style="width: 48px; height: 48px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("up", 22, "#FFFFFF", 2.4) + '</div></div></div>')
+      + icon("up", 24, "#FFFFFF", 2.4) + '</div></div></div>')
 
 write("Draft", '<div class="behind">' + page(home_inner, 16) + '</div>' + draftbar("send sarah 20k") + keyboard())
 
@@ -3012,7 +3012,7 @@ limitstop = page(
                + '">Five letters to go. Exactly those three words, nothing shorter.</span></div>') + '</div>'
   + '<div' + hook("Confirm") + ' style="display: flex; align-items: center; gap: 12px; height: 62px; '
     'border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 16px">'
-    + badge("send", None, 34, "11px", 18, color=ACC_TEXT_HEX, on=FILL)
+    + badge("send", None, 32, "12px", 16, color=ACC_TEXT_HEX, on=FILL)
     + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 0">'
       '<span style="font-size: 15px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">Send &#8358;100,000 instead</span>'
       '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">The rest tomorrow, no typing</span></div>'
@@ -3035,7 +3035,7 @@ def devrow(name, where, ic, col, tag="", tcol=None, first=False):
           + ("#FFFFFF" if tcol else INK2) + '">' + tag + '</span></div>')
     return ('<div' + hook("", "soon") + ' style="' + ('' if first else 'border-top: 1px solid ' + LINE + '; ')
       + 'display: flex; align-items: center; gap: 12px; height: 74px">'
-      + badge(ic, None, 42, R_ICON, 21, on=FILL)
+      + badge(ic, None, 40, R_ICON, 20, on=FILL)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
       '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
       '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + where + '</span></div>' + t + '</div>')
@@ -3068,7 +3068,7 @@ write("Devices", devices)
 def habitrow(name, note, val, ic, col, first=False):
     return ('<div' + hook("", "soon") + ' style="' + ('' if first else 'border-top: 1px solid ' + LINE + '; ')
       + 'display: flex; align-items: center; gap: 12px; height: 72px">'
-      + badge(ic, None, 38, R_ICON, 20, on=FILL)
+      + badge(ic, None, 40, R_ICON, 20, on=FILL)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
       '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
       '<span style="font-size: 13px; font-weight: 400; color: ' + INK3 + '">' + note + '</span></div>'
@@ -3079,7 +3079,7 @@ health = page(
   T("Money health", "One number for how you are handling it")
   + '<div style="' + cardstyle("20px") + '; display: flex; flex-direction: column; align-items: center; gap: 16px">'
     + ring(72, 180, 14, "", "out of 100", "")
-    + '<div style="display: flex; align-items: center; gap: 8px">' + icon("up", 15, IN_TEXT, 2.6)
+    + '<div style="display: flex; align-items: center; gap: 8px">' + icon("up", 16, IN_TEXT, 2.6)
       + '<span style="font-size: 15px; font-weight: 700; color: ' + IN_TEXT + '">Up 4 since July</span></div></div>'
   + aline("Steadier than you were. The one thing holding it down is spending, which is up 18% on last month. "
           "Everything else is going the right way.", "16px")
@@ -3119,7 +3119,7 @@ def saverow(name, sub, gain, ic, col, on=True, first=False, action=""):
 
 saverule_inner = (
   '<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 20px 0">'
-  + badge("pot", None, 60, "19px", 29)
+  + badge("pot", None, 64, "20px", 32)
   + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '; margin-top: 8px">Feed the Holiday goal</span>'
   + '<span style="font-size: 16px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
     'Pick something that runs without you thinking about it</span></div>'
@@ -3212,7 +3212,7 @@ convert = page(
     + pocketrow("To", "Dollars", "$412.60 there", True)
     + '<div style="position: absolute; right: 16px; top: 50%; margin-top: -18px; width: 36px; height: 36px; '
       'border-radius: ' + PILL + '; background: ' + SURF + '; ' + SH_RAISE + '; display: flex; align-items: center; '
-      'justify-content: center">' + icon("swap", 18, INK, 1.9) + '</div></div>'
+      'justify-content: center">' + icon("swap", 20, INK, 1.9) + '</div></div>'
   + '<div style="' + cardstyle("18px") + '; display: flex; flex-direction: column; gap: 8px">'
     + caption("You are converting", INK2, 14)
     + '<div style="display: flex; align-items: baseline; gap: 0">'
@@ -3245,7 +3245,7 @@ converted = page(
           "Set it up", "SaveRule")
   + '<div' + hook("Dollars") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 44px">'
     '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">See your dollars</span>'
-    + chev(11, ACC_TEXT_HEX, 2.2) + '</div>'
+    + chev(12, ACC_TEXT_HEX, 2.2) + '</div>'
   + wrongrow("Something wrong with this?"), 16)
 converted += dockback("Ask me about this")
 write("Converted", converted)
@@ -3328,7 +3328,7 @@ def qopen(name, sub, ic, color):
 
 def qdone(name, sub):
     """The end of it. One tick, green, and the only one in the flow."""
-    return ('<div style="display: flex; gap: 16px; padding: 4px 0">' + tickmark("", 26)
+    return ('<div style="display: flex; gap: 16px; padding: 4px 0">' + tickmark("", 24)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
       '<span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
       '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
@@ -3412,7 +3412,7 @@ def numpad():
         out += '<div style="display: flex; gap: 20px; justify-content: center">' + "".join(obkey(k) for k in r) + '</div>'
     out += ('<div style="display: flex; gap: 20px; justify-content: center">'
       '<div style="width: 68px; height: 68px; flex-shrink: 0"></div>' + obkey("0")
-      + obkey("", icon("del", 26, INK2, 1.8), "pin|del") + '</div>')
+      + obkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
     return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: '
       + str(NUMPAD_H) + 'px; padding: 16px 20px 20px 20px; background: ' + BG
       + '; display: flex; flex-direction: column; gap: 8px">' + out + '</div>')
@@ -3458,7 +3458,7 @@ code = account(0, '<div style="display: flex; justify-content: flex-start">' + p
   sub="Six digits, sent to 0803 214 4471 a moment ago.", foot=NUMPAD_H, tail=
   '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 8px; height: 38px">'
   '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
-  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
+  + chev(12, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
 write("Code", code, "", True)
 
 # ---------- three ----------
@@ -3476,7 +3476,7 @@ who = account(1,
   + rowline("On the record as", "IBRAHIM MUSA WENG", True) + '</div>',
   '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 8px; height: 40px">'
   '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Something here is wrong</span>'
-  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>',
+  + chev(12, ACC_TEXT_HEX, 2.2) + '</div>',
   sub="This came back from the record against those digits. I did not type it.")
 who += obfoot("Yes, that is me", "Face")
 write("Who", who)
@@ -3490,7 +3490,7 @@ face = account(2,
   # the oval stays an oval and snap() leaves it alone.
   + '<div style="width: 138px; height: 168px; border-radius: 200px; border: 3px solid ' + ACC
     + '; margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 16px">'
-    + icon("person", 58, LINE2, 1.4) + '</div>'
+    + icon("person", 56, LINE2, 1.4) + '</div>'
   + '<span style="position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 14px; '
     'font-weight: 500; color: ' + INK2 + '">Hold still and look at the camera</span></div>',
   '<div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 12px">'
@@ -3517,7 +3517,7 @@ write("Opening", opening, "", True)
 def canrow(t, on=True, last=False):
     return ('<div style="display: flex; align-items: center; gap: 12px; height: 50px'
       + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
-      + (tickmark("", 20) if on
+      + (tickmark("", 24) if on
          else '<div style="width: 20px; height: 20px; border-radius: ' + PILL + '; border: 1.5px dashed ' + LINE2
               + '; flex-shrink: 0"></div>')
       + '<span style="flex-grow: 1; font-size: 15px; font-weight: 500; color: ' + (INK if on else INK3) + '">' + t + '</span></div>')
@@ -3586,7 +3586,7 @@ def pickline(t, on=False, last=False):
     """One of a few answers, drawn as bare rows rather than tiles. The list of
     questions above it is bare, and an answer to one of them should not arrive
     looking heavier than the question."""
-    mark = (tickmark("", 22) if on else
+    mark = (tickmark("", 24) if on else
       '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + LINE2
       + '; flex-shrink: 0"></div>')
     return ('<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 16px; height: 56px'
@@ -3656,7 +3656,7 @@ def plaintop(title, sub, ic=None, color=None, wash="#2A6AF5"):
     return (steplight(wash)
       + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; padding-top: 24px; '
         'display: flex; flex-direction: column; gap: 8px">'
-      + (fglyph(ic, 30, color, BG) if ic else mark(30))
+      + (fglyph(ic, 30, color, BG) if ic else mark(32))
       + '<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; color: '
       + INK + '">' + title + '</span>'
       + '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
@@ -3680,7 +3680,7 @@ signcode = plainpage(
   + '<div style="padding-top: 16px; display: flex; justify-content: flex-start">' + pindots(4, 6) + '</div>'
   + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 8px; height: 38px">'
     '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
-  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
+  + chev(12, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
 write("Signcode", signcode, "", True)
 
 # ---------- when the digits come back with nobody attached ----------
@@ -3702,7 +3702,7 @@ nomatch = account(1,
         "same eleven digits from a different register.", "16px")
   + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 8px; height: 40px">'
     '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Talk to someone</span>'
-  + chev(11, ACC_TEXT_HEX, 2.2) + '</div>',
+  + chev(12, ACC_TEXT_HEX, 2.2) + '</div>',
   sub="Eleven digits from your NIN or your BVN. These ones did not match anything.",
   foot=118, steps=STEPS)
 nomatch += obfoot("Try again", "Nin")
@@ -3720,12 +3720,12 @@ def pocketpick(name, sub, ic, on=False, last=False, go=""):
     """A place the money can leave from. The one it is leaving from now carries
     the tick, because a list of two with nothing marked is a question rather
     than an answer."""
-    mark = (tickmark("", 22) if on else
+    mark = (tickmark("", 24) if on else
       '<div style="width: 22px; height: 22px; border-radius: ' + PILL + '; border: 1.5px solid ' + LINE2
       + '; flex-shrink: 0"></div>')
     return ('<div' + hook(go, "" if go else "soon") + ' style="display: flex; align-items: center; gap: 16px; height: 76px'
       + ('' if last else '; border-bottom: 1px solid ' + LINE) + '">'
-      + badge(ic, None, 44, R_ICON, 22)
+      + badge(ic, None, 40, R_ICON, 20)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
         '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">' + name + '</span>'
         '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
@@ -3733,7 +3733,7 @@ def pocketpick(name, sub, ic, on=False, last=False, go=""):
 
 payfrom_inner = (
   '<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 20px 0">'
-  + badge("send", None, 60, "19px", 29)
+  + badge("send", None, 64, "20px", 32)
   + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '; margin-top: 8px">Pay from</span>'
   + '<span style="font-size: 16px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
     'Two places the money can leave</span></div>'
