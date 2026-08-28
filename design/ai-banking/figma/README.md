@@ -285,7 +285,7 @@ There are two things in this repo that look like a home screen and only one of
 them is the home screen.
 
 **`193:1566` on the `test` page is the home screen.** The founder drew it. It
-is a component, it is 393 by 2219, and every `Home screen` on the Flows page is
+is a component, it is 393 by 2077, and every `Home screen` on the Flows page is
 an instance of it: eighteen of them, at the head of seventeen flows and behind
 nine overlays. It is what anybody opening the file sees.
 
@@ -312,6 +312,47 @@ rows live; print them with a few lines of node against the extracted JSON.
 `TARGET` is `Frame 5`, the column inside the home screen that holds Activities
 and the feed, so `AT=0` puts a row above Activities and under the dark header.
 Running it again removes what it added last time, so it is safe to repeat.
+
+### The home screen has four font sizes
+
+The type on `193:1566` runs on four sizes and two weights, and nothing else.
+Every one of its 62 text nodes is bound to a style, so there is no loose type
+left on it.
+
+| Style | Size | Weight | Nodes | What it carries |
+|---|---|---|---|---|
+| `Display 32` | 32 | Bold | 1 | the balance |
+| `Heading 20` | 20 | Bold | 2 | the kobo tail, and Activities |
+| `Label/Bold` | 14 | Bold | 34 | row titles, amounts, buttons, chips |
+| `Label/Regular` | 14 | Regular | 14 | row subtitles and card copy |
+| `Caption Bold` | 12 | Bold | 4 | Today, Yesterday, the FX chip, the health score |
+| `Caption` | 12 | Regular | 7 | shortcut labels and small notes |
+
+`Display 32`, `Heading 20` and `Caption Bold` were made for this. The other six
+styles in the file were left alone on purpose. `Body/Bold` alone is on 108 text
+nodes elsewhere on the `test` page and `Label/Regular` is on 110, so editing
+`Display` from 36 down to 32 would have moved several hundred nodes on screens
+nobody asked about. New styles change one screen. Edited styles change the file.
+
+Three of the changes were not just a smaller number:
+
+- The balance was 36 ExtraBold and is 32 Bold. That is what takes ExtraBold off
+  the screen, and it is why there are two weights now instead of three.
+- `Today` and `Yesterday` were 16 Regular. At 14 Regular they would have been
+  the same size and weight as the timestamp under every row, which is the one
+  line they have to be told apart from, so they are 12 Bold. Small and firm
+  reads as a separator. The same size as a row does not.
+- `Up 4 since July` was 11px SF Pro on `Caption2/Regular`, a style belonging to
+  some other file. It is 12px Plus Jakarta Sans on `Caption` now, so the screen
+  is down to one family.
+
+Two frames on this screen have no auto layout, so their text does not reflow
+when its size changes and has to be re-seated by hand. `Button · Pay ` holds
+its label as three separate text nodes, `Pay `, `₦` and `8,000 now`, and `Group`
+holds the health score over its ring. Both were re-centred after the resize,
+and the button needed 3px put back between the word and the amount because a
+trailing space at 14px is only about three and a half pixels wide. Anything
+that changes type here has to check those two again.
 
 ### The nine screens drawn over the home screen
 
