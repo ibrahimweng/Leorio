@@ -510,6 +510,36 @@ the chunks and parsing the JSON. It is the restore map for the day a real
 re-send is needed, and it should be re-captured before that day, because it is a
 snapshot rather than a live record.
 
+### The drafts on the test page
+
+The `test` page holds the founder's own drawings rather than anything
+`build.py` makes: the home screen component, a newer home frame, five copies of
+`Main11111 mine`, and roughly thirty hand-drawn screens that predate the
+pipeline. They were brought onto the ramp too, in two passes, because they
+needed different treatment.
+
+The first pass was the same six style swaps as everywhere else and moved 245
+nodes. The second pass had to deal with 1,228 text nodes bound to no style at
+all, because the drafts were drawn by hand and never used the system. Those
+cannot be swapped, so they were snapped: size to the nearest of 12, 14, 20 and
+32 with ties going down, weight through the same table `build.py` uses, and then
+forced to Bold at 20 and 32 because those sizes have no regular. 1,196 were
+bound that way, with 435 gaps, 484 paddings, 97 radii and 91 icon containers
+brought over as well.
+
+Three kinds of text were left loose on purpose:
+
+- **27 nodes at 22 Regular**, which is the on-screen keyboard and the payment
+  card. Those are chrome in the built screens too, so they stay off the ramp.
+- **5 italics**, the spoken phrases like *2k data for mum*. The ramp has no
+  italic style to bind, so only their size was snapped, 16 down to 14.
+- **The three `Design System —` sheets**, on Typography, Color, and Spacing and
+  Radii. These are documentation, not product. The typography sheet holds one
+  specimen per style sitting beside a label naming it, so retyping the specimens
+  without rewriting the labels would make the sheet state one thing and show
+  another. They are untouched and now describe a ramp the file no longer uses,
+  which is worth rebuilding rather than patching.
+
 ### The components
 
 Three pages now, not two. **Components** holds the design system, in three
