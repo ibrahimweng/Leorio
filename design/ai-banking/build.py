@@ -895,7 +895,7 @@ def healthstrip(n=72, moved="Up 4 since July"):
         '<span style="font-size: 14px; font-weight: 400; color: ' + IN_TEXT + '">' + moved + '</span></div>'
       + chevbtn() + '</div>')
 
-def dollarstrip(usd="$412.60", ngn="&#8358;640,300 today"):
+def dollarstrip(usd="$412.60", ngn="&#8358;640,355 today"):
     """The second pocket, on home, as one row and nothing more. Naira keeps the
     big figure at the top because that is what nearly every day is spent in.
     Dollars are a thing you hold rather than a thing you spend, so they sit
@@ -1006,7 +1006,7 @@ home_inner = (
   '<div style="font-size: 14px; font-weight: 700; letter-spacing: -0.03em; color: ' + INK + '">Wallet</div>'
   + '<div style="display: flex; flex-direction: column; gap: 4px; padding-top: 16px">'
     + '<div style="display: flex; align-items: center; gap: 8px">' + caption("Total balance") + statpill("+9% this month") + '</div>'
-    + '<div id="mBal">' + money("&#8358;248,320", ".75", 36) + '</div></div>'
+    + '<div id="mBal">' + money("&#8358;595,320", ".75", 36) + '</div></div>'
   + '<div style="padding: 4px 0 8px 0">' + ctabtn("Receive", "", "receive", "down", "black", 44) + '</div>'
   + quickrow([("Airtime", "airtime", "Airtime", IC["blue"]), ("Bills", "power", "Bills", IC["amber"]),
               ("Savings", "pot", "Goal", IC["green"]), ("Services", "grid", "Services", IC["purple"])])
@@ -1031,8 +1031,10 @@ home_inner = (
   + '<div style="display: flex; flex-direction: column; gap: 20px">'
     + daygroup("Today",
         LEAD
-        + txgroup(tx("Sarah Adeyemi", "send", "Rent part payment &#183; 09:14", "&#8358;20,000", False, False, "DoneSend")
-                + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500", False, False, "Done"))
+        + txgroup(tx("Sarah Adeyemi", "send", "Flat deposit &#183; 09:14", "&#8358;50,000", False, False, "DoneFlat")
+                + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500", False, False, "Done")
+                + tx("John Doe", "person", "Grocery Shopping &#183; 10:45", "&#8358;8,000", False, False, "DoneShop")
+                + tx("Netflix", "card", "Monthly Subscription &#183; 12:00", "&#8358;3,500", False, False, "DoneSub"))
         + aisay("Your data is nearly gone", "Your data usually runs out about now. The same 5GB is &#8358;2,500.",
       '<div style="display: flex; align-items: center; gap: 12px; height: 64px; border-radius: ' + R_INNER + '; background: ' + FILL + '; padding: 0 14px">'
       + badge("data", None, 38, R_ICON, 19, on=FILL)
@@ -1280,7 +1282,7 @@ power = page(
       rcut(),
       rline(rfield("Amount", "&#8358;8,000.00"), rfield("Fee", "Free")),
       rline(rfield("Total charged", "&#8358;8,000.00", "", True),
-            rfield("Balance after", "&#8358;22,826.88")),
+            rfield("Balance after", "&#8358;39,654.51")),
       rcut(),
       rid("Ikeja reference", "IKJ 4457 8891 2208")])
   + sharebtn("SharePower")
@@ -1516,12 +1518,12 @@ write("Answer", answer)
 # receipt has been told, not asked.
 
 def paypage(fx=False):
-    frm = plainrow("From", "Dollars &#183; $412.60" if fx else "Everyday &#183; &#8358;640,300",
+    frm = plainrow("From", "Dollars &#183; $412.60" if fx else "Everyday &#183; &#8358;595,320",
                    False, INK, True, "", "PayFrom")
     # What it costs in dollars belongs on the amount, not in a row of its own.
     # The eye is already on the big number, and a rate the person reads there is
     # a rate they were asked about rather than told about afterwards.
-    note = ("About $32.07 from your dollars, at &#8358;1,559 to $1"
+    note = ("About $32.22 from your dollars, at &#8358;1,552 to $1"
             if fx else "I took this from your message")
     foot = ("The rate is held for sixty seconds once you slide, and nothing moves until then."
             if fx else "Nothing moves until you slide.")
@@ -2012,7 +2014,7 @@ done = page(
       rcut(),
       rline(rfield("Amount", "&#8358;2,500.00"), rfield("Fee", "Free")),
       rline(rfield("Total charged", "&#8358;2,500.00", "", True),
-            rfield("Balance after", "&#8358;660,326.88")),
+            rfield("Balance after", "&#8358;656,847.63")),
       rcut(),
       rid("MTN reference", "MTN 88231 4471 0392")]) + '</div>'
   + sharebtn("ShareBuy")
@@ -2188,8 +2190,11 @@ activity = page(
     + txstate("Sarah Adeyemi", "Still on its way &#183; 14:22", "&#8358;20,000", "wait", "blue", "Pending")
     + txstate("Sarah Adeyemi", "Did not go &#183; 14:22", "&#8358;20,000", "warn", "red", "Failed")
     + txstate("Musa Danjuma", "Came back &#183; 16:22", "&#8358;20,000", "undo", "green", "Reversed")
-    + tx("Sarah Adeyemi", "send", "Rent part payment &#183; 09:14", "&#8358;20,000", False, False, "DoneSend")
-    + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500", False, False, "Done") + '</div></div>'
+    + tx("Netflix", "card", "Monthly Subscription &#183; 12:00", "&#8358;3,500", False, False, "DoneSub")
+    + tx("John Doe", "person", "Grocery Shopping &#183; 10:45", "&#8358;8,000", False, False, "DoneShop")
+    + tx("Sarah Adeyemi", "send", "Flat deposit &#183; 09:14", "&#8358;50,000", False, False, "DoneFlat")
+    + tx("MTN", "data", "5GB for Mum &#183; 08:02", "&#8358;2,500", False, False, "Done")
+    + tx("Sarah Adeyemi", "send", "Rent part payment &#183; 07:55", "&#8358;20,000", False, False, "DoneSend") + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 4px">' + sectionhead("Yesterday")
     + '<div style="display: flex; flex-direction: column">'
     + tx("Pagrin Limited", "bank", "August salary &#183; 16:40", "&#8358;640,000", True, False, "DoneIn")
@@ -2455,7 +2460,7 @@ write("ConfirmMeter", confirmscreen("&#8358;8,000", "power", "Ikeja Electric", "
 # The fee is shown even when there is none, because a row that only appears on
 # the receipts where you were charged is a row people learn to dread.
 donesend = page(
-  T("All done", "28 August 2026 at 9:14 AM")
+  T("All done", "28 August 2026 at 7:55 AM")
   + rhero("&#8358;20,000", "Sent to Sarah Adeyemi")
   + receipt([
       rline(rfield("To", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"),
@@ -2466,7 +2471,7 @@ donesend = page(
       + rline(rfield("Amount", "&#8358;20,000.00"), rfield("Fee", "&#8358;26.88"))
       + rnote("Transfers under &#8358;10,000 carry none") + '</div>',
       rline(rfield("Total charged", "&#8358;20,026.88", "", True),
-            rfield("Balance after", "&#8358;640,300.00")),
+            rfield("Balance after", "&#8358;659,347.63")),
       rcut(),
       rid("Session ID", "000016 260828 142204 471803 926104")])
   + sharebtn("Share")
@@ -2497,7 +2502,7 @@ def share_inner(line):
       + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
       + '; text-wrap: pretty">Your balance is left off every copy that leaves the phone.</span></div>')
 
-write("Share", donesend + sheetup(share_inner("&#8358;20,000 to Sarah Adeyemi, 9:14 AM")))
+write("Share", donesend + sheetup(share_inner("&#8358;20,000 to Sarah Adeyemi, 7:55 AM")))
 write("ShareBuy", done + sheetup(share_inner("&#8358;2,500 of data for Mum, 8:02 AM")))
 write("SharePower", power + sheetup(share_inner("&#8358;8,000 to Ikeja Electric, 11:22 AM")))
 
@@ -2515,7 +2520,7 @@ donein = page(
       rcut(),
       rline(rfield("Amount", "&#8358;640,000.00"), rfield("Fee", "None on money in")),
       rline(rfield("Total credited", "&#8358;640,000.00", "", True),
-            rfield("Balance after", "&#8358;662,826.88")),
+            rfield("Balance after", "&#8358;679,654.51")),
       rcut(),
       rid("Session ID", "000015 260827 164004 118220 774301")])
   + sharebtn("ShareIn")
@@ -2536,7 +2541,7 @@ donecard = page(
       rcut(),
       rline(rfield("Amount", "&#8358;5,200.00"), rfield("Fee", "Free")),
       rline(rfield("Total charged", "&#8358;5,200.00", "", True),
-            rfield("Balance after", "&#8358;30,826.88")),
+            rfield("Balance after", "&#8358;47,654.51")),
       rcut(),
       rid("Card reference", "NFX 4471 8823 0195")])
   + sharebtn("ShareCard")
@@ -2561,7 +2566,7 @@ doneflat = page(
       + rline(rfield("Amount", "&#8358;50,000.00"), rfield("Fee", "&#8358;26.88"))
       + rnote("Transfers under &#8358;10,000 carry none") + '</div>',
       rline(rfield("Total charged", "&#8358;50,026.88", "", True),
-            rfield("Balance after", "&#8358;259,820.75")),
+            rfield("Balance after", "&#8358;606,820.75")),
       rcut(),
       rid("Session ID", "000016 260828 091402 338291 774022")])
   + sharebtn("ShareFlat")
@@ -2584,7 +2589,7 @@ doneshop = page(
       + rline(rfield("Amount", "&#8358;8,000.00"), rfield("Fee", "Free"))
       + rnote("Because it is under &#8358;10,000") + '</div>',
       rline(rfield("Total charged", "&#8358;8,000.00", "", True),
-            rfield("Balance after", "&#8358;251,820.75")),
+            rfield("Balance after", "&#8358;598,820.75")),
       rcut(),
       rid("Session ID", "000016 260828 104511 902744 118635")])
   + sharebtn("ShareShop")
@@ -2605,7 +2610,7 @@ donesub = page(
       rcut(),
       rline(rfield("Amount", "&#8358;3,500.00"), rfield("Fee", "Free")),
       rline(rfield("Total charged", "&#8358;3,500.00", "", True),
-            rfield("Balance after", "&#8358;248,320.75")),
+            rfield("Balance after", "&#8358;595,320.75")),
       rcut(),
       rid("Card reference", "NFX 4471 8823 1104")])
   + sharebtn("ShareSub")
@@ -3170,7 +3175,7 @@ def twoup(a, b):
 dollars = page(
   T("Dollars", "Steady when the naira is not, and yours to turn back any day")
   + '<div style="' + cardstyle("18px") + '; display: flex; flex-direction: column; gap: 16px">'
-    + bigmoney("$412.60", "&#8358;640,300 at today&#8217;s rate")
+    + bigmoney("$412.60", "&#8358;640,355 at today&#8217;s rate")
     + twoup(pillbtn("Convert", "Convert", "", "swap", "black", True, 50),
             pillbtn("Send", "Pay", "", "send", "white", True, 50)) + '</div>'
   + raterow("&#8358;1,552 to the dollar today", "Up &#8358;18")
@@ -3203,7 +3208,7 @@ def pocketrow(name, sub, amount, last=False):
 convert = page(
   T("Convert", "Naira into dollars, at the rate on this screen")
   + '<div style="position: relative; ' + cardstyle("2px 16px") + '">'
-    + pocketrow("From", "Everyday", "&#8358;640,300 there")
+    + pocketrow("From", "Everyday", "&#8358;595,320 there")
     + pocketrow("To", "Dollars", "$412.60 there", True)
     + '<div style="position: absolute; right: 16px; top: 50%; margin-top: -18px; width: 36px; height: 36px; '
       'border-radius: ' + PILL + '; background: ' + SURF + '; ' + SH_RAISE + '; display: flex; align-items: center; '
@@ -3733,8 +3738,8 @@ payfrom_inner = (
   + '<span style="font-size: 16px; font-weight: 400; color: ' + INK3 + '; text-align: center; text-wrap: pretty">'
     'Two places the money can leave</span></div>'
   + '<div style="display: flex; flex-direction: column">'
-  + pocketpick("Everyday", "&#8358;640,300 in naira", "bank", True)
-  + pocketpick("Dollars", "$412.60, about &#8358;640,300 today", "dollar", False, True, "PayDollars") + '</div>'
+  + pocketpick("Everyday", "&#8358;595,320 in naira", "bank", True)
+  + pocketpick("Dollars", "$412.60, about &#8358;640,355 today", "dollar", False, True, "PayDollars") + '</div>'
   + '<div style="padding-top: 14px">'
   + aline("Sarah is paid in naira either way. From dollars I convert at the rate on the "
           "next screen, and you see it before anything moves.", "16px") + '</div>')

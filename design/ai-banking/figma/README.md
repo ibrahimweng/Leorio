@@ -18,6 +18,37 @@ appears in each of them, so a section can be read straight through without
 jumping pages, but only one of those is the drawing: the rest are instances of
 it. **Components** holds what they are instances of.
 
+## One ledger
+
+Every figure in the file comes from one account read in order. A receipt's
+balance is not chosen, it is what the one above it leaves. Change a number here
+and the ones below it have to move with it.
+
+| When | What | Moves | Everyday is left with | Screen |
+| --- | --- | --- | --- | --- |
+| 27 Aug 09:00 | Netflix, on the virtual card | −5,200.00 | 47,654.51 | DoneCard |
+| 27 Aug 11:22 | Ikeja Electric | −8,000.00 | 39,654.51 | Power |
+| 27 Aug 16:40 | Pagrin Limited, August salary | +640,000.00 | 679,654.51 | DoneIn |
+| 28 Aug 07:30 | Holiday goal, round ups | −280.00 | 679,374.51 | no receipt |
+| 28 Aug 07:55 | Sarah Adeyemi, rent part payment | −20,026.88 | 659,347.63 | DoneSend |
+| 28 Aug 08:02 | MTN, 5GB for Mum | −2,500.00 | 656,847.63 | Done |
+| 28 Aug 09:14 | Sarah Adeyemi, flat deposit | −50,026.88 | 606,820.75 | DoneFlat |
+| 28 Aug 10:45 | John Doe, grocery shopping | −8,000.00 | 598,820.75 | DoneShop |
+| 28 Aug 12:00 | Netflix, monthly subscription | −3,500.00 | 595,320.75 | DoneSub |
+
+So **Everyday holds ₦595,320.75**, and that is the figure the home screen, the
+Pay screens, the pocket picker and the convert screen all show.
+
+The dollars are a second pocket: **$412.60**, which is ₦640,355 at ₦1,552, the
+one rate the file uses. The three conversions on the Dollars screen add up to
+$412.60 exactly. The Holiday pot holds ₦82,400, and its three feeds add up to
+that. Nothing else on any screen is a balance: the ₦29,000 on Limits is what is
+left of a daily cap, and the ₦15,000 on Rules is a floor.
+
+One screen sits outside this on purpose. **Short** shows ₦12,480 in Everyday
+because it is the scene where there is not enough, and its own four figures add
+up. It is a different moment, not a contradiction.
+
 ## What each flow is for
 
 Every section on Flows carries a line in the empty band above its screens,
