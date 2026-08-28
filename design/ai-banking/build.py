@@ -177,6 +177,7 @@ ICONS = {
  "power": '<path d="M13 3 6 13.2h5.2L11 21l7-10.2h-5.2z"/>',
  "tv": '<rect x="3" y="6.6" width="18" height="11.4" rx="2.2"/><path d="M8.6 21h6.8M9.4 3.4 12 6.6l2.6-3.2"/>',
  "send": '<path d="M7.4 16.6 16.6 7.4M9.6 7.4h7v7"/>',
+ "share": '<path d="M12 3.6v11.2M8.3 7.3 12 3.6l3.7 3.7"/><path d="M7.2 11.2H5.6A1.6 1.6 0 0 0 4 12.8v6.2a1.6 1.6 0 0 0 1.6 1.6h12.8a1.6 1.6 0 0 0 1.6-1.6v-6.2a1.6 1.6 0 0 0-1.6-1.6h-1.6"/>',
  "more": '<circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="8" cy="16" r="1.5" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="1.5" fill="currentColor" stroke="none"/>',
  "grid": '<rect x="3.4" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="3.4" width="7.4" height="7.4" rx="2.2"/><rect x="3.4" y="13.2" width="7.4" height="7.4" rx="2.2"/><rect x="13.2" y="13.2" width="7.4" height="7.4" rx="2.2"/>',
  "card": '<rect x="2.6" y="5.4" width="18.8" height="13.2" rx="2.6"/><path d="M2.6 10.2h18.8"/>',
@@ -1131,6 +1132,99 @@ def offer(text, action, go=""):
       '<span style="font-size: 14.5px; font-weight: 700; color: ' + INK + '">' + action + '</span>'
       + chev(12, INK, 2.2) + '</div></div>')
 
+# ---------- a receipt ----------
+# A receipt is not a screen that says a payment worked. It is the record a
+# person keeps, sends to a landlord, and reads out to a bank when something has
+# gone wrong. So it carries what those three uses need and nothing else: who,
+# what it cost, what is left, and the number the bank will ask for.
+
+def rrow(k, v, sub="", strong=False, vcolor=None, dot=None):
+    """One line of a receipt. Label on the left in grey, figure on the right in
+    black. Every receipt a Nigerian has ever been handed already has this
+    shape, so this one does not get to invent a new one."""
+    d = ('<div style="width: 7px; height: 7px; border-radius: 999px; background: ' + dot
+         + '; flex-shrink: 0"></div>') if dot else ''
+    s2 = ('<span style="font-size: 12.5px; font-weight: 400; color: ' + INK3
+          + '; text-align: right; text-wrap: pretty">' + sub + '</span>') if sub else ''
+    return ('<div style="display: flex; align-items: flex-start; gap: 16px; padding: 4px 0">'
+      '<span style="font-size: 15px; font-weight: 400; color: ' + INK2 + '; white-space: nowrap">' + k + '</span>'
+      '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px">'
+      '<div style="display: flex; align-items: center; gap: 6px">' + d
+      + '<span class="num" style="font-size: ' + ('16px' if strong else '15.5px') + '; font-weight: '
+      + ('800' if strong else '600') + '; color: ' + (vcolor or INK) + '; text-align: right">' + v + '</span></div>'
+      + s2 + '</div></div>')
+
+def rcut():
+    """The tear in the paper. It separates where the money went from what it
+    cost, and it is the one place this card is allowed a dashed line."""
+    return '<div style="height: 0; margin: 6px 0; border-top: 1px dashed ' + LINE2 + '"></div>'
+
+def rid(k, v):
+    """The number the bank asks for when something has gone wrong. It is too
+    long to sit at the end of a row, so it takes a line of its own and a way to
+    copy it, which is the only thing anybody has ever done with one."""
+    return ('<div' + hook("", "copy|" + k) + ' style="display: flex; align-items: center; gap: 12px; padding: 4px 0">'
+      '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">'
+      '<span style="font-size: 12.5px; font-weight: 400; color: ' + INK2 + '">' + k + '</span>'
+      '<span class="num" style="font-size: 13.5px; font-weight: 600; color: ' + INK + '">' + v + '</span></div>'
+      '<div style="width: 30px; height: 30px; border-radius: 999px; background: ' + FILL
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
+      + icon("copy", 15, INK2, 1.9) + '</div></div>')
+
+def rhero(amount, line, status="Successful"):
+    """The figure and the tick on one row, with the word beside them. Stacked,
+    they push the record itself below the fold, and the record is the point of
+    the screen. The word matters as much as the tick: a green circle is what an
+    app thinks happened, and Successful is what a person can read out."""
+    pill = ('<div style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; '
+      'border-radius: 999px; background: ' + FILL + '; flex-shrink: 0">'
+      '<div style="width: 7px; height: 7px; border-radius: 999px; background: ' + IC["green"] + '"></div>'
+      '<span style="font-size: 13px; font-weight: 700; color: ' + IN_TEXT + '">' + status + '</span></div>')
+    return ('<div style="display: flex; align-items: center; gap: 12px">' + tickmark("", 46)
+      + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
+      + money(amount, "", 34)
+      + '<span style="font-size: 15px; font-weight: 500; color: ' + INK2 + '">' + line + '</span></div>'
+      + pill + '</div>')
+
+def rmoney(amount, fee, total, note=""):
+    """The maths as a strip, not as three rows that look the same. What it
+    cost, what was added, and what actually left, read left to right the way
+    the sum is done on paper."""
+    cells = [("Amount", amount, "flex-start", False), ("Fee", fee, "center", False),
+             ("Total charged", total, "flex-end", True)]
+    cols = ''
+    for k, v, al, strong in cells:
+        cols += ('<div style="flex-grow: 1; flex-basis: 0; min-width: 0; display: flex; flex-direction: column; '
+          'gap: 4px; align-items: ' + al + '">'
+          '<span style="font-size: 12.5px; font-weight: 400; color: ' + INK2 + '; white-space: nowrap">' + k + '</span>'
+          '<span class="num" style="font-size: ' + ('16px' if strong else '15.5px') + '; font-weight: '
+          + ('800' if strong else '600') + '; color: ' + INK + '; white-space: nowrap">' + v + '</span></div>')
+    n = ('<span style="font-size: 12.5px; font-weight: 400; color: ' + INK3 + '; padding-top: 6px">' + note
+         + '</span>') if note else ''
+    return ('<div style="display: flex; flex-direction: column; padding: 4px 0">'
+      '<div style="display: flex; align-items: flex-end; gap: 12px">' + cols + '</div>' + n + '</div>')
+
+def receipt(rows):
+    """White, held by a hairline, so the record reads as a document laid on the
+    page rather than another grey card in the stack."""
+    return ('<div style="' + bordered("12px 16px", "24px") + ' display: flex; flex-direction: column">' + rows + '</div>')
+
+def offerrow(text, action, go=""):
+    """The assistant offering the next thing, on one row. The card version
+    costs a hundred pixels a receipt does not have, and two stacked blocks that
+    both speak in its voice are one block too many."""
+    return ('<div style="' + bordered("12px", "20px") + ' display: flex; align-items: center; gap: 12px">'
+      + mark(28)
+      + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 500; color: ' + INK
+      + '; text-wrap: pretty">' + text + '</span>'
+      + '<div' + hook(go, "" if go else "soon") + ' style="height: 38px; padding: 0 16px; border-radius: 999px; background: '
+      + FILL + '; display: flex; align-items: center; gap: 6px; flex-shrink: 0">'
+      '<span style="font-size: 14px; font-weight: 700; color: ' + INK + '">' + action + '</span>'
+      + chev(11, INK, 2.2) + '</div></div>')
+
+def sharebtn(go):
+    return pillbtn("Share receipt", go, "", "share", "black", True, 52)
+
 def quote(t):
     return ('<div style="display: flex; flex-direction: column; gap: 6px">' + caption("You said")
       + '<span style="font-size: 17px; font-style: italic; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
@@ -1910,19 +2004,22 @@ powerpay = page(
 powerpay += confirmbar(slide("Slide to pay &#8358;8,000", "Power", "pwSlide"))
 write("PowerPay", powerpay, "", True)
 
-# ================= DONE =================
+# ================= DONE, THE RECEIPT FOR A PURCHASE =================
 done = page(
-  T("All done", "Your receipt is below, and in your messages")
-  + '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
-    + tickmark("dnMark", 56)
-    + '<div style="display: flex; flex-direction: column; gap: 6px">'
-      '<div id="dnAmt">' + money("&#8358;2,500", "", 40) + '</div>'
-      '<span id="dnWhat" style="font-size: 15px; color: ' + INK2 + '">5GB sent to Mum</span></div></div>'
-  + '<div id="dnCard" style="display: flex; flex-direction: column">'
-    + plainrow("From", "Everyday &#183; 0102 4457 88")
-    + plainrow("Reference", "MTN-88231-4471", True) + '</div>'
-  + '<div id="dnOffer">' + offer("Want me to do this every month without asking?", "Set it up", "Rule") + '</div>'
-  + wrongrow(), 16)
+  T("All done", "28 August 2026 at 2:19 PM")
+  + rhero("&#8358;2,500", "5GB sent to Mum")
+  + '<div id="dnCard">' + receipt(
+      rrow("To", "Mum", "0803 214 4471 &#183; MTN")
+      + rrow("What", "5GB for 30 days", "Valid until 27 September")
+      + rrow("From", "Everyday &#183; 0102 4457 88")
+      + rcut()
+      + rmoney("&#8358;2,500.00", "Free", "&#8358;2,500.00")
+      + rrow("Balance after", "&#8358;637,800.00")
+      + rcut()
+      + rid("MTN reference", "MTN 88231 4471 0392")) + '</div>'
+  + sharebtn("ShareBuy")
+  + '<div id="dnOffer">' + offerrow("Mum has it. Every month, without asking?", "Set it up", "Rule") + '</div>'
+  + wrongrow(), 12)
 done += dockback("Ask about this")
 write("Done", done)
 
@@ -2357,21 +2454,50 @@ write("Meter", meter)
 write("ConfirmMeter", confirmscreen("&#8358;8,000", "power", "Ikeja Electric", "Meter 0102 4457 8891", IC["amber"]))
 
 # ---------- the receipt for money that left ----------
+# The fee is shown even when there is none, because a row that only appears on
+# the receipts where you were charged is a row people learn to dread.
 donesend = page(
-  T("All done", "Your receipt is below, and in your messages")
-  + '<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
-    + tickmark("", 56)
-    + '<div style="display: flex; flex-direction: column; gap: 6px">' + money("&#8358;20,000", "", 40)
-      + '<span style="font-size: 15px; color: ' + INK2 + '">Sent to Sarah Adeyemi</span></div></div>'
-  + '<div style="display: flex; flex-direction: column">'
-    + plainrow("From", "Everyday &#183; 0102 4457 88")
-    + plainrow("To", "GTBank &#183; 0123 4457 8842")
-    + plainrow("Reference", "Rent part payment", True) + '</div>'
-  + aline("She has it. GTBank confirmed in four seconds.", "16px")
-  + offer("Rent again next month?", "Set it up", "Rule")
-  + wrongrow(), 16)
+  T("All done", "28 August 2026 at 2:22 PM")
+  + rhero("&#8358;20,000", "Sent to Sarah Adeyemi")
+  + receipt(
+      rrow("To", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842")
+      + rrow("From", "Everyday &#183; 0102 4457 88")
+      + rrow("Narration", "Rent part payment")
+      + rcut()
+      + rmoney("&#8358;20,000.00", "&#8358;26.88", "&#8358;20,026.88", "Transfers under &#8358;10,000 carry none")
+      + rrow("Balance after", "&#8358;620,273.12")
+      + rcut()
+      + rid("Session ID", "000016 260828 142204 471803 926104"))
+  + sharebtn("Share")
+  + offerrow("She has it. Rent again next month?", "Set it up", "Rule")
+  + wrongrow(), 12)
 donesend += dockback("Ask about this transfer")
 write("DoneSend", donesend)
+
+# ---------- sending the receipt on ----------
+# A receipt nobody can send is not a receipt here. It goes to a landlord, to
+# the person who asked for the money, or into a folder for an office, and the
+# balance is left off every copy that leaves the phone.
+def share_inner(line):
+    return ('<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 20px 0">'
+      + badge("share", None, 64, "20px", 28)
+      + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK
+        + '; margin-top: 8px">Share this receipt</span>'
+      + '<span style="font-size: 17px; font-weight: 400; color: ' + INK3
+        + '; text-align: center; text-wrap: pretty">' + line + '</span></div>'
+    + '<div style="display: flex; flex-direction: column">'
+      + sheetrow("WhatsApp", "chat", "The picture, ready to send")
+      + sheetrow("Save to photos", "camera", "It stays on this phone")
+      + sheetrow("Save as PDF", "receipt", "The full record, for an office")
+      + sheetrow("Somewhere else", "grid", "Messages, mail, anywhere you share")
+      + '</div>'
+    + '<div style="display: flex; gap: 8px; align-items: flex-start; padding: 12px 4px 0 4px">'
+      + icon("eye", 16, INK3, 1.7, "; margin-top: 2px")
+      + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
+      + '; text-wrap: pretty">Your balance is left off every copy that leaves the phone.</span></div>')
+
+write("Share", donesend + sheetup(share_inner("&#8358;20,000 to Sarah Adeyemi, 2:22 PM")))
+write("ShareBuy", done + sheetup(share_inner("&#8358;2,500 of data for Mum, 2:19 PM")))
 
 
 # ================= WHEN IT DOES NOT GO =================

@@ -72,8 +72,13 @@ carried both go. After sending anything to Flows, rewire that section.
 
 A screen used by more than one flow is a component on the Components page, under
 the section called Screens, and every place it appears is an instance. There are
-nine: Confirm, ConfirmBuy, Done, DoneSend, Sent, Receive, Pay, Nin and Who. Home
-screen is the founder's and lives on the test page.
+eleven: Confirm, ConfirmBuy, Done, DoneSend, Sent, Receive, Pay, Nin, Who, Share
+and ShareBuy. Home screen is the founder's and lives on the test page.
+
+Share and ShareBuy are a sheet over a receipt, and the receipt under them is an
+instance of DoneSend and of Done rather than a copy. A receipt is the screen most
+likely to change, and a share sheet holding a stale copy of one is the exact
+failure the shelf exists to prevent.
 
 This is not tidiness. Receive and Pay were two frames apiece for a while and a
 change to either left the other quietly stale, which is the one failure nobody
