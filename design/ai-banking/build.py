@@ -439,14 +439,64 @@ def dashedcard(pad="18px", radius=R_CARD, bg=SURF, extra=""):
     """A dashed outline, which is how the reference draws somewhere to go next."""
     return 'background: ' + bg + '; ' + DASH + '; border-radius: ' + radius + '; padding: ' + pad + ';' + extra
 
+# ---------- two tone glyphs ----------
+# The founder's reference draws an action as a filled silhouette in two flat
+# tones of one colour, with no outline and no gradient. The darker tone is
+# always the part that would fold under or fall into shadow, which is what
+# gives a flat shape its depth. This is the whole trick and it is worth stating
+# plainly, because doing it with a gradient instead looks cheap immediately.
+#
+# It is used in one place: the four shortcuts on home. They are the only icons
+# in the product meant to be picked out at a glance rather than read in order,
+# so they are the only ones that earn colour.
+
+def _dark(hexcol, pct=58):
+    """The second tone. The same hue carried toward black, never a different
+    hue, or the two halves stop reading as one object."""
+    h = hexcol.lstrip("#")
+    f = pct / 100.0
+    return "#%02X%02X%02X" % tuple(round(int(h[i:i+2], 16) * f) for i in (0, 2, 4))
+
+TWOTONE = {
+ # a phone, lit from the right, split down the middle
+ # a phone. Without the screen it is only a rectangle, so the screen is the
+ # light tone and the body around it is the dark one.
+ "airtime": '<rect x="6.2" y="2" width="11.6" height="20" rx="3.2" fill="DIM"/>'
+            '<rect x="8.3" y="4.6" width="7.4" height="12.6" rx="1.5" fill="CUR"/>'
+            '<rect x="10.3" y="18.6" width="3.4" height="1.5" rx="0.75" fill="CUR"/>',
+ # a bolt, with its lower arm turned away
+ "power":   '<path d="M13 3 6 13.2h5.2L11 21l7-10.2h-5.2z" fill="CUR"/>'
+            '<path d="M11.2 13.2 11 21l7-10.2h-5.2z" fill="DIM"/>',
+ # money shut away: the body catches the light, the shackle does not
+ "pot":     '<path d="M4.6 9.8h14.8v7.8a3.6 3.6 0 0 1-3.6 3.6H8.2a3.6 3.6 0 0 1-3.6-3.6z" fill="CUR"/>'
+            '<path d="M7.9 10.6V7.4a4.1 4.1 0 0 1 8.2 0v3.2h-2.9V7.4a1.2 1.2 0 0 0-2.4 0v3.2z" fill="DIM"/>',
+ # all of them, as a checker rather than four of the same square
+ "grid":    '<rect x="4.4" y="4.4" width="6.4" height="6.4" rx="2.1" fill="CUR"/>'
+            '<rect x="13.2" y="4.4" width="6.4" height="6.4" rx="2.1" fill="DIM"/>'
+            '<rect x="4.4" y="13.2" width="6.4" height="6.4" rx="2.1" fill="DIM"/>'
+            '<rect x="13.2" y="13.2" width="6.4" height="6.4" rx="2.1" fill="CUR"/>',
+}
+
+def ttglyph(name, size=22, hue=ACC_HEX):
+    return ('<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" '
+            'fill="none" style="flex-shrink: 0">'
+            + TWOTONE[name].replace("CUR", hue).replace("DIM", _dark(hue)) + '</svg>')
+
 def quickrow(items, card=True):
-    """A row of shortcuts. An action is drawn as a bare line glyph with no tile
-    behind it, which is the rule the reference follows: the square is kept
-    for a thing that exists, like a bill or a service in the catalogue."""
+    """A row of shortcuts. No tile behind the glyph, which is the rule the
+    reference follows: the square is kept for a thing that exists, like a bill
+    or a service in the catalogue.
+
+    A fourth value on an item is a colour, and it makes the glyph two tone
+    rather than a black line. These four are the only icons in the product that
+    are meant to be picked out at a glance, so they are the only ones with it."""
     cells = ''
-    for name, ic, go in items:
+    for it in items:
+        name, ic, go = it[0], it[1], it[2]
+        hue = it[3] if len(it) > 3 else None
+        glyph = ttglyph(ic, 22, hue) if hue else icon(ic, 22, INK, 1.9)
         cells += ('<div' + hook(go) + ' class="qcell" style="flex-grow: 1; flex-basis: 0; min-width: 0; display: flex; '
-          'flex-direction: column; align-items: center; gap: 10px; padding: 2px 0">' + icon(ic, 22, INK, 1.9)
+          'flex-direction: column; align-items: center; gap: 10px; padding: 2px 0">' + glyph
           + '<span style="font-size: 12px; font-weight: 400; color: ' + INK + '; white-space: nowrap; '
             'overflow: hidden; text-overflow: ellipsis; max-width: 100%">' + name + '</span></div>')
     inner = '<div style="display: flex; gap: 4px">' + cells + '</div>'
@@ -894,8 +944,8 @@ home_inner = (
     + '<div style="display: flex; align-items: center; gap: 8px">' + caption("Total balance") + statpill("+9% this month") + '</div>'
     + '<div id="mBal">' + money("&#8358;248,320", ".75", 36) + '</div></div>'
   + '<div style="padding: 4px 0 8px 0">' + ctabtn("Receive", "", "receive", "down", "black", 44) + '</div>'
-  + quickrow([("Airtime", "airtime", "Airtime"), ("Bills", "power", "Bills"),
-              ("Savings", "pot", "Goal"), ("Services", "grid", "Services")])
+  + quickrow([("Airtime", "airtime", "Airtime", IC["blue"]), ("Bills", "power", "Bills", IC["amber"]),
+              ("Savings", "pot", "Goal", IC["green"]), ("Services", "grid", "Services", IC["purple"])])
   # One number for how the money is being handled, sitting between what you
   # have and what you did with it. This is the only place it appears and the
   # only place the model volunteers anything, because advice you did not ask
