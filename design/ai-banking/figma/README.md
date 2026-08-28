@@ -598,6 +598,48 @@ All three sheets are on the ramp themselves now, so they are examples of the
 system as well as descriptions of it: four sizes, two weights, no Medium
 anywhere.
 
+### The Icon set, and how the glyphs got their names
+
+Every glyph in the file is an instance of one component set, `Icon`, in the
+`Icons` section on the Components page. 66 variants, one property, `glyph`.
+Colour and size stay overrides on the instance, because the same icon is drawn
+black on a row, white on a dark button and coloured on a tile.
+
+Finding them was the interesting part. A glyph arrives from `emit.mjs` as a
+frame called `Glyph` holding vectors, with nothing to say which icon it is. But
+the vectors come from one `ICONS` dict, so **stripping every number out of the
+path data leaves a fingerprint that is stable across sizes.** On the Flows page
+that collapsed 466 glyph frames into 56 clusters, against 52 icons plus 4
+two-tone in the code, which is close enough to trust.
+
+Naming them took two passes. A contact sheet of one glyph per cluster names most
+of them by eye, except that white icons vanish on a white sheet, so the five
+that came back blank were re-shot on grey: `check` (used 136 times, the most
+used icon in the app), `up`, `plus`, `grid` and `star`. Then each cluster was
+matched to the text sitting nearest its uses, which settles the ones a thumbnail
+cannot: the lightning next to *Ikeja Electric* is `power`, the wifi next to
+*MTN 5GB* is `data`. That pass also caught a misnaming: what looked like `copy`
+beside the account rows is a cyan `clock`, and the real `copy`, two overlapping
+pages, only appears inside the screen components beside *Copy the token*.
+
+Icons living only inside a component never show up in a page-level walk, so the
+set grew in three rounds: 56 from Flows, then `share`, `copy`, `more`, `pot-tone`
+and `grid-tone` from the Components page, then `gear`, `sort`, `bell`, `minus`
+and `gift-outline` from the founder's drafts on `test`.
+
+**Swapping cost the prototype twice, and the capture paid for itself twice.**
+The glyph promoted into a component happened to be a control that navigated, so
+every instance inherited a reaction; stripping it took 21 real links with it.
+Later, restructuring the 23 screen components discarded override reactions on
+their instances across the Flows page, losing 41 more. Both were restored from
+the 785-row capture in the document's shared plugin data, keyed by section,
+screen and child-index path. Anything that restructures a component should
+expect this and check the count afterwards: Flows should read 785 with no dead
+destinations.
+
+The three design system sheets moved off `test` into a `Design system` section
+on the same page, so the whole system is in one place.
+
 ### The components
 
 Three pages now, not two. **Components** holds the design system, in three
