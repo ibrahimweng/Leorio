@@ -461,6 +461,55 @@ Counting the raw literals in `build.py` and calling that the shipped type is a
 mistake, and one this README made until it was measured against the built
 screens instead.
 
+### Retyping the file without sending it again
+
+The file was brought onto this ramp by editing the frames that were already
+there, not by sending the screens again. Sending them again was the plan until
+the two versions were compared: **every one of the 92 screens had a byte
+identical element tree to the one last sent.** Nothing had been added, removed
+or re-nested. Only sizes had changed. So there was nothing a rebuild could do
+that an edit could not, and a rebuild costs a great deal.
+
+What it costs is the point. `emit.mjs` removes a frame and builds a new one, so
+every reaction pointing at it and every reaction it carried are gone. Flows
+holds **785 of them** across 26 sections, and 23 of the screens are components
+with instances scattered through those sections, which a rebuild would also
+break and which would then need remaking and re-instancing.
+
+The edit was possible because the bindings already carried the answer. Every
+line the old ramp covered was bound to one of its styles and chrome was bound to
+none, so the whole retype is six style-to-style swaps, and `setTextStyleIdAsync`
+carries size, weight, tracking and line height across together:
+
+| From | To |
+|---|---|
+| `Display/ExtraBold 36` | `Display/Bold 32` |
+| `Heading/ExtraBold 22` | `Heading/Bold 20` |
+| `Heading/Bold 22` | `Heading/Bold 20` |
+| `Body/Bold 16` | `Label/Bold 14` |
+| `Body/Regular 16` | `Label/Regular 14` |
+| `Tag/Bold 10` | `Caption/Bold 12` |
+
+907 text nodes moved, 243 gaps, 55 paddings and 73 corner radii snapped to the
+4-point grid, and 91 icon containers resized with their glyphs. The walk stops
+at every INSTANCE, so a component drives its own copies rather than collecting
+overrides, and it only enters SECTION children, so the founder's résumé frames
+and images sitting on the same page are never touched. Radius is snapped on
+boxes only and never on a VECTOR, because a vector's corner radius is artwork.
+
+Afterwards: **785 reactions, no dead destinations, nothing left on a retired
+style.** The sizes still off the ramp are the payment card and the keyboard,
+which are chrome and are meant to be.
+
+**The wiring is now written into the file.** Before any of this ran, every
+reaction was captured with a stable key, the section name, the screen name and
+the chain of child indices from the screen frame down to the control, and stored
+in the document's shared plugin data under the namespace `leorio`, in `wire0`
+and `wire1`, with `wireRows` holding the count. Read it back by concatenating
+the chunks and parsing the JSON. It is the restore map for the day a real
+re-send is needed, and it should be re-captured before that day, because it is a
+snapshot rather than a live record.
+
 ### The components
 
 Three pages now, not two. **Components** holds the design system, in three
