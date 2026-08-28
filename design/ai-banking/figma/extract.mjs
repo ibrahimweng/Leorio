@@ -249,6 +249,13 @@ const EXTRACT = () => {
       const cc = (col(cs.color) || '000000').split('|')[0];
       const n = { t: 2, n: 'Glyph', x: rx(b.left), y: ry(b.top), w: rw(b.width), h: rw(b.height),
                   s: el.outerHTML.replace(/currentColor/g, '#' + cc) };
+      // The glow lives in a CSS filter, and the packer strips the style
+      // attribute before Figma sees the drawing. So it travels as a shadow of
+      // its own, the same shape a box-shadow takes, and is applied as an
+      // effect on the imported frame.
+      const dsh = (cs.filter && cs.filter !== 'none')
+        ? cs.filter.match(/drop-shadow\(([^()]|\([^()]*\))*\)/g) : null;
+      if (dsh) n.sh = dsh.map(f => shadow(f.slice(12, -1)));
       if (op < 1) n.o = r2(op);
       return [n];
     }

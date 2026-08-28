@@ -53,6 +53,12 @@ function dress(nd,n){
       nd.strokeTopWeight=n.sw[0];nd.strokeRightWeight=n.sw[1];nd.strokeBottomWeight=n.sw[2];nd.strokeLeftWeight=n.sw[3]; }
     if(n.sd) nd.dashPattern=[4,4];
   }
+  fx(nd,n);
+}
+
+// A glyph has no fill, no radius and no stroke of its own, but it can still
+// glow, so the effects come out on their own and both kinds of node call them.
+function fx(nd,n){
   const ef=[];
   if(n.sh) for(const s of n.sh){const c=C(s.c);
     ef.push({type:'DROP_SHADOW',color:{r:c.c.r,g:c.c.g,b:c.c.b,a:c.o},offset:{x:s.x,y:s.y},radius:s.b,spread:s.s,visible:true,blendMode:'NORMAL'});}
@@ -69,6 +75,7 @@ function build(n,parent){
       nd=figma.createNodeFromSvg(V[n.s]);
       nd.name=n.n||'Glyph';
       if(Math.abs(nd.width-n.w)>0.5 && nd.width>0) nd.rescale(n.w/nd.width);
+      fx(nd,n);
     } else if(n.t===1){
       nd=figma.createText();
       nd.fontName={family:F,style:n.i?'Italic':ST(n.fw)};

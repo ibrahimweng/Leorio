@@ -450,37 +450,98 @@ def dashedcard(pad="18px", radius=R_CARD, bg=SURF, extra=""):
 # in the product meant to be picked out at a glance rather than read in order,
 # so they are the only ones that earn colour.
 
-def _dark(hexcol, pct=58):
-    """The second tone. The same hue carried toward black, never a different
-    hue, or the two halves stop reading as one object."""
+def _hsl(hexcol):
     h = hexcol.lstrip("#")
-    f = pct / 100.0
-    return "#%02X%02X%02X" % tuple(round(int(h[i:i+2], 16) * f) for i in (0, 2, 4))
+    r, g, b = (int(h[i:i+2], 16) / 255 for i in (0, 2, 4))
+    mx, mn = max(r, g, b), min(r, g, b)
+    l = (mx + mn) / 2
+    if mx == mn:
+        return 0.0, 0.0, l
+    d = mx - mn
+    s = d / (2 - mx - mn) if l > 0.5 else d / (mx + mn)
+    if mx == r:   hh = ((g - b) / d) % 6
+    elif mx == g: hh = (b - r) / d + 2
+    else:         hh = (r - g) / d + 4
+    return hh * 60, s, l
 
+def _rgb(hh, s, l):
+    c = (1 - abs(2 * l - 1)) * s
+    x = c * (1 - abs(((hh / 60) % 2) - 1))
+    m = l - c / 2
+    r, g, b = [(c, x, 0), (x, c, 0), (0, c, x), (0, x, c), (x, 0, c), (c, 0, x)][int(hh // 60) % 6]
+    return "#%02X%02X%02X" % tuple(round((v + m) * 255) for v in (r, g, b))
+
+def _deep(hexcol, l=0.58, s=1.18):
+    """The second tone. Darker, but not muddier: the lightness comes down and
+    the saturation goes up a little, so the fold stays as vivid as the face.
+    Multiplying the channels toward black instead is what turns an orange into
+    a brown, and that is the difference between this and a cheap looking icon."""
+    hh, ss, ll = _hsl(hexcol)
+    return _rgb(hh, min(1.0, ss * s), max(0.0, ll * l))
+
+def _vivid(hexcol, s=1.20, l=1.06):
+    """The face, pushed a little brighter than the flat token. These four are
+    the only icons carrying colour, so they carry it properly."""
+    hh, ss, ll = _hsl(hexcol)
+    return _rgb(hh, min(1.0, ss * s), min(0.92, ll * l))
+
+def _pale(hexcol, s=0.60, l=1.58):
+    """The lit face: the same hue washed nearly to white. It is what makes a
+    screen read as glass and a keyhole read as a hole rather than a dent."""
+    hh, ss, ll = _hsl(hexcol)
+    return _rgb(hh, min(1.0, ss * s), min(0.93, ll * l))
+
+def _rgba(hexcol, a):
+    h = hexcol.lstrip("#")
+    return "rgba(%d, %d, %d, %s)" % (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16), a)
+
+# Every corner is round. A filled path has no way to round its own joins, so
+# the shape is drawn a little small and then stroked in its own paint with a
+# round join, which fattens it back out with every point turned soft. This is
+# the whole reason these read as drawn rather than as clip art.
+_R = ' stroke-width="2.1" stroke-linejoin="round" stroke-linecap="round"'
+
+# GRD is the light falling down the glyph, PAL the lit face, DIM the part
+# turned away. Every glyph is lit from the same place, which is what makes four
+# different objects look like one set.
 TWOTONE = {
- # a phone, lit from the right, split down the middle
- # a phone. Without the screen it is only a rectangle, so the screen is the
- # light tone and the body around it is the dark one.
- "airtime": '<rect x="6.2" y="2" width="11.6" height="20" rx="3.2" fill="DIM"/>'
-            '<rect x="8.3" y="4.6" width="7.4" height="12.6" rx="1.5" fill="CUR"/>'
-            '<rect x="10.3" y="18.6" width="3.4" height="1.5" rx="0.75" fill="CUR"/>',
- # a bolt, with its lower arm turned away
- "power":   '<path d="M13 3 6 13.2h5.2L11 21l7-10.2h-5.2z" fill="CUR"/>'
-            '<path d="M11.2 13.2 11 21l7-10.2h-5.2z" fill="DIM"/>',
- # money shut away: the body catches the light, the shackle does not
- "pot":     '<path d="M4.6 9.8h14.8v7.8a3.6 3.6 0 0 1-3.6 3.6H8.2a3.6 3.6 0 0 1-3.6-3.6z" fill="CUR"/>'
-            '<path d="M7.9 10.6V7.4a4.1 4.1 0 0 1 8.2 0v3.2h-2.9V7.4a1.2 1.2 0 0 0-2.4 0v3.2z" fill="DIM"/>',
- # all of them, as a checker rather than four of the same square
- "grid":    '<rect x="4.4" y="4.4" width="6.4" height="6.4" rx="2.1" fill="CUR"/>'
-            '<rect x="13.2" y="4.4" width="6.4" height="6.4" rx="2.1" fill="DIM"/>'
-            '<rect x="4.4" y="13.2" width="6.4" height="6.4" rx="2.1" fill="DIM"/>'
-            '<rect x="13.2" y="13.2" width="6.4" height="6.4" rx="2.1" fill="CUR"/>',
+ # A phone. Without a screen it is only a rectangle, so the screen is the pale
+ # tone and the body around it takes the light.
+ "airtime": '<rect x="5.2" y="1.6" width="13.6" height="20.8" rx="4.4" fill="GRD"/>'
+            '<rect x="7.7" y="4.7" width="8.6" height="12.2" rx="2.6" fill="PAL"/>'
+            '<rect x="10.2" y="18.6" width="3.6" height="1.8" rx="0.9" fill="PAL"/>',
+ # A bolt. One shape, so the light does all of the shading.
+ "power":   '<path d="M14.4 3.2 6.9 13.1h4.1l-0.9 7.7 7.5-9.9h-4.1z" fill="GRD" stroke="GRD"' + _R + '/>',
+ # Money shut away. The shackle sits behind the body, which is what makes it a
+ # lock rather than a bag, and being behind is why it takes the darker tone.
+ "pot":     '<path d="M8.9 11.2V7.6a3.1 3.1 0 0 1 6.2 0v3.6" fill="none" stroke="DIM" stroke-width="3" stroke-linecap="round"/>'
+            '<rect x="4.2" y="9.4" width="15.6" height="12.4" rx="4.4" fill="GRD"/>'
+            '<path d="M12 13.9a1.7 1.7 0 0 0-0.92 3.13l-0.34 1.67a0.6 0.6 0 0 0 0.59 0.72h1.34a0.6 0.6 0 0 0 0.59-0.72'
+            'l-0.34-1.67A1.7 1.7 0 0 0 12 13.9z" fill="PAL"/>',
+ # All of them. Four squares on one gradient read as one object lit from above;
+ # four squares each lit on their own read as four objects.
+ "grid":    '<rect x="3.9" y="3.9" width="7" height="7" rx="2.6" fill="GRD"/>'
+            '<rect x="13.1" y="3.9" width="7" height="7" rx="2.6" fill="GRD"/>'
+            '<rect x="3.9" y="13.1" width="7" height="7" rx="2.6" fill="GRD"/>'
+            '<rect x="13.1" y="13.1" width="7" height="7" rx="2.6" fill="GRD"/>',
 }
 
 def ttglyph(name, size=22, hue=ACC_HEX):
-    return ('<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" '
-            'fill="none" style="flex-shrink: 0">'
-            + TWOTONE[name].replace("CUR", hue).replace("DIM", _dark(hue)) + '</svg>')
+    """A glyph lit from above, with a glow of its own colour under it. The glow
+    is the third thing the reference does, after the light and the round
+    corners, and it is what lifts the icon off the card instead of printing it
+    on. The gradient is named after the colour and not after the glyph, so two
+    icons of the same hue share one definition and the file stays small."""
+    face, fold, pale = _vivid(hue), _deep(hue), _pale(hue)
+    gid = "lg" + hue.lstrip("#")
+    grad = ('<defs><linearGradient id="' + gid + '" x1="0" y1="2" x2="0" y2="22" '
+            'gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="' + face + '"/>'
+            '<stop offset="1" stop-color="' + fold + '"/></linearGradient></defs>')
+    body = (TWOTONE[name].replace("GRD", "url(#" + gid + ")")
+            .replace("CUR", face).replace("DIM", fold).replace("PAL", pale))
+    return ('<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" fill="none" '
+            'style="flex-shrink: 0; filter: drop-shadow(0 3px 7px ' + _rgba(face, "0.45") + ')">'
+            + grad + body + '</svg>')
 
 def quickrow(items, card=True):
     """A row of shortcuts. No tile behind the glyph, which is the rule the
