@@ -7,10 +7,22 @@
 const PAGE = 'Flows';
 
 const SPACE  = [0, 4, 8, 12, 16, 20, 24, 32, 40, 56, 72];
-const RADII  = [0, 12, 16, 20, 24, 28, 999];
+// Under 8 a radius is a hairline or a chart bar, and snap() in build.py leaves
+// those alone on purpose, so they belong on the list rather than in the report.
+const RADII  = [0, 2, 3, 4, 5, 6, 12, 16, 20, 24, 28];
 const TYPE   = [12, 14, 20, 32, 36];
-const ICON   = [11, 12, 15, 16, 18, 20, 24, 28, 32, 34, 36, 40, 48, 56, 64];
-const STROKE = [1.5, 1.7, 2];          // apparent px, what the eye sees
+const ICON   = [12, 16, 18, 20, 22, 24, 28, 32, 40, 48, 56];
+
+// What the eye should see, as a share of the icon's own size. A glyph has a
+// body, a mark is a bare path and needs more weight to read as the same. Held
+// between 1.1 and 3.2px. This is build.py's stroke_for(), said again here so
+// the file can be checked without running the build.
+const SW_GLYPH = 0.075, SW_MARK = 0.10, SW_MIN = 1.1, SW_MAX = 3.2;
+const MARKS = ['check','close','plus','minus','up','down','chevron','back',
+  'check-small','up-small','close-small','sheet-close','fab-plus','fab-close','slide-arrow'];
+// Drawn marks, not glyphs: they carry their own weight and their own size.
+const KEEP  = ['ring','dial','step-done','step-todo','step-work','wait'];
+
 const HOLDER = { FRAME: 1, COMPONENT: 1, INSTANCE: 1, GROUP: 1, COMPONENT_SET: 1, SECTION: 1 };
 const near = (v, list) => list.some(x => Math.abs(x - v) < 0.51);
 
@@ -67,14 +79,21 @@ for (const sec of page.children) {
     for (const f of scr.findAllWithCriteria({ types: ['FRAME', 'COMPONENT', 'INSTANCE'] })) {
       let c = f.parent, inInst = false;
       while (c && c.type !== 'PAGE') { if (c.type === 'INSTANCE') { inInst = true; break; } c = c.parent; }
-      if (isIcon(f)) {
+      const glyph = isIcon(f) ? f.mainComponent.name.replace('glyph=', '') : null;
+      if (glyph !== null) {
+        if (KEEP.indexOf(glyph) !== -1 || f.width > 100) continue;   // an illustration
         const w = Math.round(f.width * 10) / 10;
         if (!near(w, ICON)) bump(offIcon, String(w), where);
+        if (/-(filled|tone)$/.test(glyph)) continue;   // detail inside a filled shape
+        const share = MARKS.indexOf(glyph) !== -1 ? SW_MARK : SW_GLYPH;
+        const want = Math.round(Math.min(SW_MAX, Math.max(SW_MIN, share * w)) * 100) / 100;
         for (const v of f.findAll(x => x.strokes && x.strokes.length && x.strokeWeight)) {
           // strokeWeight on a resized instance is already what the eye sees.
-          // Figma scales it with the instance; do not scale it a second time.
-          const apparent = Math.round(v.strokeWeight * 100) / 100;
-          if (!near(apparent, STROKE)) bump(offStroke, apparent + ' at ' + w + 'px', where);
+          const paint = v.strokes[0];
+          if (paint && paint.type === 'SOLID'
+              && paint.color.r > 0.97 && paint.color.g > 0.97 && paint.color.b > 0.97) continue;
+          if (Math.abs(v.strokeWeight - want) > 0.02)
+            bump(offStroke, Math.round(v.strokeWeight * 100) / 100 + ' at ' + w + ' (want ' + want + ')', where);
         }
         continue;
       }
@@ -88,7 +107,7 @@ for (const sec of page.children) {
       if (f.layoutMode !== 'NONE') for (const p of [f.paddingTop, f.paddingRight, f.paddingBottom, f.paddingLeft])
         if (!near(p, SPACE)) bump(offPad, String(p), where);
       const r = f.cornerRadius;
-      if (typeof r === 'number' && !near(r, RADII) && !(Math.abs(f.height / 2 - r) < 1)) bump(offRadius, String(r), where);
+      if (typeof r === 'number' && !near(r, RADII) && !(Math.abs(Math.min(f.width, f.height) / 2 - r) < 1.5) && r < 100) bump(offRadius, String(r), where);
     }
   }
 }

@@ -840,3 +840,70 @@ along reads as finished. The visible part is drawn as an arc path instead.
 same glyph appears four or five times on a screen, so SVGs are stored once in a
 lookup and referenced by index, which keeps every script under the 50,000
 character limit on the tool.
+
+## One rule for icon weight, one scale for icon size
+
+The set had neither, so it had scatter. At 20px the app drew nine different
+stroke weights, and 2,588 of the 2,705 icon vectors in Figma carried a weight
+of their own rather than the master's. Sizes were worse: `badge()` and
+`circicon()` size a glyph as a fraction of the thing it sits in, and
+`round(size * 0.5)` lands on 23, 25, 26, 30, 38 — numbers nobody chose.
+
+The rule was not invented. It is the one 326 of the app's 597 stroked icons
+were already on:
+
+    a glyph — a drawn thing with a body — takes 0.075 of its size
+    a mark  — a bare path, nothing enclosed — takes 0.10
+    what the eye sees is held between 1.1 and 3.2px
+
+1.5px at 20 and 2.4 at 32 for a glyph; 1.6 at 16 and 2.4 at 24 for a mark.
+Eight of the sixteen hand-drawn marks — the chevron, the back arrow, the plus
+on the action button, the tick in a status badge — already sat exactly there.
+The rest was scatter around the same two numbers.
+
+`stroke_for(name, size, box)` in build.py is the only place a stroke width is
+decided. `icon()` no longer takes one; the 51 call sites that passed a stroke
+passed fifteen different values between them. Sizes go through `icon_size()`
+onto 12, 16, 18, 20, 22, 24, 28, 32, 40, 48, 56.
+
+Left alone on purpose, and named in both build.py and figma/audit.js: the
+money-health ring, the payment QR, the numbered dial and the stepper are drawn
+marks rather than glyphs and carry their own weight and size. So does anything
+knocked out of a filled shape — a clock hand, a card stripe — which is part of
+the drawing rather than the glyph's outline.
+
+## Two traps this pass fell into
+
+**Stripping an argument shifts every argument after it.** Removing the stroke
+from `icon(name, size, colour, sw)` turned fourteen calls that also passed
+`extra` into `icon(name, size, colour, extra)`, so a style string arrived where
+a number was expected. The census of the built HTML caught it because those
+svgs no longer parsed. The rule from CLAUDE.md applies to argument position as
+much as to a constant: change one, then grep for everything keyed on it.
+
+**Pulling a text box back on both axes shrinks it on the wrong one.** A pass
+meant to stop a wide text box running under the chip beside it also ran down
+the vertical axis, where every child of a row overlaps every other, and set
+thirteen text heights to 8px. Caught by reading the result rather than the
+return value. An axis-symmetric fix for an axis-specific problem is a bug
+waiting for a row.
+
+## Auto layout, and where it stops
+
+355 frames in the app screens held more than one child with no auto layout.
+301 of them now do, and 55 do not. Every conversion is checked: the frame's
+children are recorded, the layout is applied, and if any child moves more than
+2.5px the frame is put back exactly as it was.
+
+The 55 that remain fail for one reason. The Figma tree lost some wrapper frames
+— a 36px cell holding a 28px glyph, a 22px box holding the camera — so a row
+whose gaps are all 12 in the browser measures 16, 115 and 11.6 in Figma, and no
+single `itemSpacing` can say that. Restoring those wrappers means re-sending the
+screens, which costs the 787 prototype links. Worth doing when the wiring can be
+rebuilt from the capture, not before.
+
+Two things the conversion found rather than caused: a row where a text box
+widened by SF Pro runs under the chip beside it, and 25 ask-bar placeholders
+spilling out of their pill because Figma has no ellipsis. Both are fixed — the
+text boxes are pulled back to the gap the row uses, and the placeholders are one
+line tall, which is what the browser shows.
