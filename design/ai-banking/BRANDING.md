@@ -72,51 +72,75 @@ There is also one narrow way the butterfly survives, and it is worth knowing:
 mark already drawn 181 times in this app. If you want the wing, that is the
 door.
 
+### The test
+
+A name here has to live inside sentences the product already writes. Judge every
+candidate by reading these aloud, not by looking at it:
+
+    Ask ___.
+    ___ Transfers        ___ Requests        ___ Airtime
+    Get ___ Plus
+    ___ · 0102 4457 88
+    Or send a screenshot straight to ___ from WhatsApp.
+
+A name that is beautiful on a page and awkward in "Get ___ Plus" is the wrong
+name, because the product says that and never says the other thing.
+
+### A correction to the last draft
+
+**Iroko is not available in Nigeria.** iROKOtv is one of the best known Nigerian
+technology companies. I recommended it before checking, which was careless. The
+tree is still the right idea; that word is not.
+
 ### Shortlist
 
-**A. A person, rooted in Nigeria** — best fit for a name that is also the
-assistant.
+**The three I would actually put in front of a room**
 
-| Name | Meaning | Read |
+| Name | Where it comes from | Why it is strong |
 |---|---|---|
-| **Amara** | Igbo, *grace* | Warm, a real person, easy to say anywhere. "Ask Amara" is natural. Strongest in this group. |
-| **Ayo** | Yoruba, *joy* | Short, warm, unmistakably Nigerian. Very easy to say. |
-| **Ife** | Yoruba, *love*; also the ancestral city | Deeply rooted. Mispronounced outside Nigeria. |
-| **Ada** | Igbo, *first daughter* | Short and Nigerian, but it is also a programming language. |
+| **Amana** | Hausa, from Arabic *amānah* — a thing given to someone for safekeeping | The meaning is the product. Not "trust" as an adjective, but a specific old word for *money you are holding for someone else*. Warm, four syllables of nothing, reads as a person and as an institution at once. "Ask Amana." "Amana · 0102 4457 88." |
+| **Shea** | The West African tree. Its butter is called women's gold | Nature, comfort and prosperity in one object, and a shea tree takes fifteen years to fruit and then gives for two hundred. That is *reliable every time* as a living thing. Short, soft, and already a person's name. |
+| **Alafia** | Yoruba, and Hausa *lafiya*, from Arabic — peace, health, being well | It is a **greeting**. Across West Africa you say it to ask whether someone is well. A bank named after the question "are you alright?" is a good bank. Slightly long in "Get Alafia Plus". |
 
-**B. Nature, comfort and permanence** — best fit for the position.
+**Also worth saying aloud**
 
-| Name | Meaning | Read |
+| Name | Meaning | Honest read |
 |---|---|---|
-| **Iroko** | The Nigerian hardwood. Sacred, long-lived, immovable | Says *reliable every time* better than anything else here. Nigerian, drawable, and it makes your four words true rather than decorative. Works spoken. |
-| **Odan** | Yoruba, the big shade tree people gather under | Short, specific, drawable, and the image is comfort itself. |
-| **Baobab** | Shelter, longevity, the tree of life | Pan-African rather than Nigerian. Long. |
-| **Grove** | A stand of trees | Calm and safe, but it is not a person. |
+| **Odan** | Yoruba, the big shade tree people gather under | Short, drawable, and the image *is* comfort. Less familiar than Iroko, which is now an advantage. |
+| **Ìtura** | Yoruba, comfort and relief | Precisely one of your four words. Does not explain itself to a non-Yoruba speaker. |
+| **Udo** | Igbo, peace | Short and strong. Also a common German first name. |
+| **Èso** | Yoruba, fruit | Three letters, prosperity from a tree, very clean in "Eso Transfers". Collides with Spanish *eso* and a large video game. |
+| **Ìrì** | Yoruba, dew | Dew arrives every morning without fail, quietly. Lovely and tiny; possibly too slight to carry a bank. |
+| **Gida** | Hausa, home | Safety and comfort, plainly. Home-named banks are a crowded genre. |
 
-**C. The flower and wing direction**
+**Do not use**
 
-| Name | Meaning | Read |
-|---|---|---|
-| **Iris** | A flower, *and* the coloured ring of the eye, *and* the messenger of the gods | The tightest fit to the mark already drawn: a ring inside a shape. Also the assistant's job is to notice and to carry word. Widely used in biometrics, which is a check to run. |
-| **Aster** | A flower whose name means *star* | Pretty, short, works spoken. |
-| **Monarch** | The butterfly, and royalty | Already a US budgeting app. |
+| Name | Why |
+|---|---|
+| Iroko | iROKOtv |
+| Palm, anything palm | PalmPay |
+| Anchor | Anchor is a Nigerian banking-as-a-service company |
+| Obi | Igbo for *heart* and *home*, and perfect — but politically loaded in Nigeria right now |
+| Ndidi | Igbo for *patience*, which is the position exactly, but every Nigerian hears the footballer |
+| Zuma | Hausa for *honey*, and Zuma Rock, but the political reading swamps both |
+| Monarch, Sage, Bloom, Petal | Already fintechs elsewhere |
 
-### What I would pick, and why
+### What I would pick
 
-**Iroko**, if the position is the priority. A tree that is there every time you
-come back is the position, said in one word. It is Nigerian without explaining
-itself, it draws well at 32px, and it turns "not fast, just reliable" from a
-line in a document into the name on the phone.
+**Amana.** Of everything here it is the only name whose meaning is the business
+rather than a metaphor for it. A bank is a thing that holds what is not its own,
+and there is a word for that which millions of Nigerians already know. It works
+spoken, it works as the assistant, it is short enough for an app icon, and it
+carries no cuteness that will look silly in five years.
 
-**Amara**, if the assistant is the priority. The product talks like a person who
-knows you; a person's name makes that literal, and *grace* is the right register
-for money that never shouts.
+**Shea** is the one to pick if you want the nature to be literal and visible —
+it gives you a tree, a fruit, a butter and a colour, which is a lot of material
+for a mark.
 
-**Iris**, if you want to keep the mark you already have. The ring is drawn 181
-times; this name makes that ring mean something.
-
-Three checks before committing to any of them: the domain, the trademark
-register, and whether a Nigerian speaker hears anything you did not intend.
+One check on Amana before committing: it reads as Islamic finance to some ears,
+and there are Amana banks in Tanzania and Sri Lanka and an Amana fund in the US.
+In a country that is half Muslim and half Christian, decide deliberately whether
+that reading is a welcome or a narrowing.
 
 ---
 
