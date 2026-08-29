@@ -709,8 +709,8 @@ and `DoneSend` (x5) down to the eight `Share ...` and `Done ...` receipts that
 differ only in what they are a receipt for. **Parts** are the seventeen things
 that appear in more than one screen: the passcode key and the keypad it fills,
 the keyboard, the three docks, the four ask bars, the three tool panels, the
-sheet row, `Field · typing`, and the `Button`, `Bubble`, `Page head` and
-`Top bar` sets. **Icons** holds
+sheet row, `Answer head`, `Status pill`, `Field · typing`, and the `Button`,
+`Bubble`, `Page head`, `Top bar`, `Tool row` and `Tool panel` sets. **Icons** holds
 the `Icon` set and the mark, at the two sizes it is drawn at.
 
 `Bubble` is now the most used component in the file: 61 instances directly, and
@@ -726,6 +726,33 @@ auto layout at all: `tune()` had measured too much drift and fallen back to
 absolute placement, so when SF Pro Text made the words taller the frame did not
 follow and the tint ran short of the last line. An instance of a hugging
 component cannot do that.
+
+**What the model renders is four things.** `Tool panel` is the tool's own
+surface running inside the chat, and the three that existed separately are one
+set of three variants now. Inside it, `Tool row` is a field the model filled in:
+the glyph on the left says how far along it is, so it is swapped for step-done,
+step-work or step-todo rather than being a variant, and `go=yes` carries the
+chevron for a value that can be corrected. `Status pill` is the dot and the word
+beside the tool's name. `Answer head` is the line that says Leorio is the one
+talking, the mark at 28 over what the card is about, and at 96 instances it is
+the second most used component in the file.
+
+The answer card itself is deliberately not a component. Its shell is always a
+bordered white card holding a head and a Bubble, but what comes after that is a
+row of actions, or a card and a button, or nothing, and Figma cannot add a child
+by override. A component that only fitted a third of them would be worse than
+none.
+
+**Two things went wrong here and are worth remembering.** The `go=no` row was
+cloned from a screen where `tune()` had fallen back to absolute placement, so
+the master had no auto layout and its value could not move to the right edge
+when the row was widened; every panel clipped until the master was given a real
+horizontal layout with the value on FILL and aligned right. And the four rows
+that navigate lost their link, because a swap carries text and glyphs across but
+not reactions. Flows dropped to 783 before it went back to 787. The link cannot
+live on the master either: Figma rejects a NAVIGATE whose destination is on
+another page, and the masters are on **Components** while `Amend` is on
+**Flows**, so it stays an override on the four instances.
 
 **Headers are two things, not one.** `Page head` is what a page says it is: the
 title at Heading/Semibold 20 over the line under it at Label/Regular 14, eight
