@@ -1,7 +1,7 @@
 # AI banking screens
 
 Eighteen iPhone screens for a Nigerian personal banking app built around a
-language model. They are a design brainstorm, not code for the Leorio app.
+language model. They are a design brainstorm, not code for the Amana app.
 
 There are three things to build.
 

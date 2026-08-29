@@ -26,7 +26,7 @@ The person moves money between the two on one screen, called Convert. That
 screen shows the rate, the fee, and what they will get. It ends with the same
 slide control every other payment in the app ends with.
 
-Dollars can also go to another Leorio user. They cannot go to an outside wallet
+Dollars can also go to another Amana user. They cannot go to an outside wallet
 address. That decision is what keeps the product simple. There is no address to
 copy, no network to pick, and no way to send money to a place it cannot come
 back from. You can open this up later. You cannot easily close it again.

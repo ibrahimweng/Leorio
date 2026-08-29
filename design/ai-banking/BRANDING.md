@@ -4,6 +4,10 @@ Working document. Started 29 August 2026 from four answers: the name is open,
 the position is peace and reliability, the design system stays as it is, and the
 blue stays.
 
+**The name is Amana**, chosen the same day. Section 3 keeps the reasoning and
+the names it beat, because the next person to ask "why not something else?"
+deserves the answer rather than the conclusion.
+
 ---
 
 ## 1. What is already settled
@@ -14,12 +18,15 @@ one spacing scale, one icon rule. Nothing in this document changes it.
 
 **The blue stays.** `#2A6AF5`. One honest note and then it is closed: this is
 the iOS system blue, and PalmPay and Moniepoint are also blue. Two ways to keep
-it and still own it — shift it a few degrees so it is Leorio's blue rather than
+it and still own it — shift it a few degrees so it is Amana's blue rather than
 Apple's, or keep it exactly and let the mark and the voice do the work. Either
 is fine. The blue is not the problem.
 
 **The voice exists and is the best thing in the file.** It was written, not
 designed. Section 5 writes down the rules it is already following.
+
+**The name is Amana**, and it is already in the product — 13 strings in
+`build.py`, 17 screens, and every text node in Figma. See section 3.
 
 ---
 
@@ -40,18 +47,23 @@ that will be the same when I come back?**
 
 ## 3. The name
 
+**Settled: Amana.** Hausa, from Arabic *amānah* — a thing given to someone for
+safekeeping. The rest of this section is why, and what it beat.
+
 ### A constraint that has not been stated
 
 The name is not just the company. It is **the assistant's name**. The chat
-header says it. The tool panels say `Leorio Transfers`, `Leorio Requests`,
-`Leorio Airtime`. The paid tier is `Leorio Plus`. The account is held at it.
+header says it. The tool panels say `Amana Transfers`, `Amana Requests`,
+`Amana Airtime`. The paid tier is `Amana Plus`. The account is held at it.
 
 So the name has to survive being spoken to: *Ask ___. ___ found three accounts.
 ___ moves them on the 28th.* That rules out a lot of good nouns. `Ask Canopy`
 does not work. `Ask Amara` does.
 
-A rename costs 13 strings in `build.py`, 17 built screens and the Figma text.
-Cheap today, expensive after launch.
+A rename cost 13 strings in `build.py`, 17 built screens and 37 text nodes in
+Figma — half a morning, done the day the name was picked. It would not have
+been half a morning after launch, when the name is also on cards, statements,
+an App Store listing and other people's bank apps.
 
 ### On butterflies and flowers
 
@@ -98,7 +110,7 @@ tree is still the right idea; that word is not.
 
 | Name | Where it comes from | Why it is strong |
 |---|---|---|
-| **Amana** | Hausa, from Arabic *amānah* — a thing given to someone for safekeeping | The meaning is the product. Not "trust" as an adjective, but a specific old word for *money you are holding for someone else*. Warm, four syllables of nothing, reads as a person and as an institution at once. "Ask Amana." "Amana · 0102 4457 88." |
+| **Amana** | Hausa, from Arabic *amānah* — a thing given to someone for safekeeping | The meaning is the product. Not "trust" as an adjective, but a specific old word for *money you are holding for someone else*. Warm, three syllables of nothing, reads as a person and as an institution at once. "Ask Amana." "Amana · 0102 4457 88." |
 | **Shea** | The West African tree. Its butter is called women's gold | Nature, comfort and prosperity in one object, and a shea tree takes fifteen years to fruit and then gives for two hundred. That is *reliable every time* as a living thing. Short, soft, and already a person's name. |
 | **Alafia** | Yoruba, and Hausa *lafiya*, from Arabic — peace, health, being well | It is a **greeting**. Across West Africa you say it to ask whether someone is well. A bank named after the question "are you alright?" is a good bank. Slightly long in "Get Alafia Plus". |
 
@@ -137,10 +149,12 @@ carries no cuteness that will look silly in five years.
 it gives you a tree, a fruit, a butter and a colour, which is a lot of material
 for a mark.
 
-One check on Amana before committing: it reads as Islamic finance to some ears,
-and there are Amana banks in Tanzania and Sri Lanka and an Amana fund in the US.
-In a country that is half Muslim and half Christian, decide deliberately whether
-that reading is a welcome or a narrowing.
+One thing to hold on to now that it is chosen: Amana reads as Islamic finance
+to some ears, and there are Amana banks in Tanzania and Sri Lanka and an Amana
+fund in the US. In a country that is half Muslim and half Christian that is a
+reading to answer on purpose — in the mark, in the first screen, in how the
+account is described — rather than one to discover from a review. It is in the
+open list below.
 
 ---
 
@@ -198,14 +212,21 @@ These are not new rules. They are what the copy is already doing.
    the app — sent to WhatsApp after every payment — and it currently carries no
    mark at all. One component, and it is the only thing another person sees.
 2. **Draw the mark at 32px**, then the app icon.
-3. **Rename** — 13 strings, one rebuild, the Figma text.
+3. ~~**Rename**~~ — done. 13 strings in `build.py`, one rebuild, 17 screens,
+   and 37 text nodes in Figma. Not a single screen was re-sent: the four
+   component masters were edited in place and 30 of the 37 followed on their
+   own. Wiring held at 771 reactions with no dead destinations.
 4. **The wordmark**, last. It is the least-seen thing on this list.
 
 ---
 
 ## Open
 
-- The name.
+- How Amana answers the Islamic-finance reading. The word is Hausa by way of
+  Arabic and it means safekeeping, not a product structure. Half of Nigeria
+  will hear the older meaning and half will hear nothing at all; the mark and
+  the opening screen should make it a word about keeping, not a claim about
+  compliance we are not making.
 - Whether the blue shifts a few degrees or stays exactly as it is.
 - Whether a display face for the naira figures is worth it — the amount is the
   hero of every receipt and is currently set in the same font as a form label.

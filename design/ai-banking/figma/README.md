@@ -715,8 +715,8 @@ the `Icon` set and the mark, at the two sizes it is drawn at.
 
 `Bubble` is now the most used component in the file: 61 instances directly, and
 157 counting the ones that arrive through the screen components and the home
-screen. Four variants under one `who` property — `Leorio`, `Leorio · with a
-title`, `You`, `You · typed`. Leorio speaks on a tint at 16 all round and fills
+screen. Four variants under one `who` property — `Amana`, `Amana · with a
+title`, `You`, `You · typed`. Amana speaks on a tint at 16 all round and fills
 the width it is given; you speak on black at 12 and 16 and the bubble hugs the
 words, with the microphone when it came off the voice sheet rather than the
 keyboard.
@@ -733,7 +733,7 @@ set of three variants now. Inside it, `Tool row` is a field the model filled in:
 the glyph on the left says how far along it is, so it is swapped for step-done,
 step-work or step-todo rather than being a variant, and `go=yes` carries the
 chevron for a value that can be corrected. `Status pill` is the dot and the word
-beside the tool's name. `Answer head` is the line that says Leorio is the one
+beside the tool's name. `Answer head` is the line that says Amana is the one
 talking, the mark at 28 over what the card is about, and at 96 instances it is
 the second most used component in the file.
 
@@ -760,7 +760,7 @@ apart, filling the width it is given and hugging its own height. 45 masters were
 swapped onto it, which reads as 53 instances and covers 52 screens, and a second
 variant carries a glyph beside the title for the one page that wants one.
 `Top bar` is the bar above it on a screen that came from somewhere: back arrow
-left, title centred, in a plain variant and a `Leorio` variant for the screens
+left, title centred, in a plain variant and a `Amana` variant for the screens
 you are talking on.
 
 **The back arrow is why `Top bar` was worth checking twice.** Every one of the
@@ -983,3 +983,50 @@ child out of it.** Removing the top bar left the column still 700 tall holding
 632 of content, and the sheet came out nearly full height. `primaryAxisSizingMode
 = 'AUTO'` after the removal, and set the remaining children to FILL so they
 follow the new width.
+
+## The rename to Amana, and the trap under it
+
+The product was called Leorio, which was a placeholder. It is Amana now — Hausa,
+from Arabic *amānah*, a thing given to someone for safekeeping. See
+`../BRANDING.md`.
+
+The rename was 13 strings in `build.py`, and in Figma **37 text nodes across 95
+screens, without re-sending a single screen**. A rename is text, and text is the
+one thing that can be edited in place, so re-sending would have paid the whole
+cost of a swap — reactions, styles, overrides — to change a word.
+
+Only **7 of the 37 needed touching**. The other 30 arrived through four masters
+on Components: `title=Amana` in `Top bar`, and `tool=Transfers`, `tool=Requests`
+and `tool=Airtime` in `Tool panel`. Edit the master, and every instance without
+an override follows. The 7 were loose text on Flows plus one instance override
+on the Dollars card. Wiring held at 771 reactions with no dead destinations, and
+4444 of 4958 texts stayed bound to a style — the same numbers as before.
+
+Three variant values were renamed too: `who=Amana` and `who=Amana · with a
+title` on `Bubble`, `title=Amana` on `Top bar`. Renaming a variant is safe;
+instances point at the component's id, not its name, and nothing detached.
+
+### A wider word can break a layout that never moved
+
+**The extractor bakes `justify-content: center` into asymmetric padding.** The
+chat header row came across FIXED at 249 wide with `primaryAxisAlignItems: MIN`
+and padding of **84.5 left, 89.5 right** — numbers that centred a 24px mark, an
+8px gap and the word "Leorio" at 43px, and centred nothing else. "Amana" is
+*wider* than "Leorio" despite being shorter to read (one `m` beats an `i` and an
+`r`), so at 47px the content needed 253 in a box holding 249, and the title
+pushed 4px out of its own row on 14 screens.
+
+The fix is not new padding. It is to say what the browser says: set
+`primaryAxisAlignItems = 'CENTER'` and the padding to 0. Everything moved 0.5px
+and the row now re-centres whatever it is given.
+
+The same shape appeared once more, as stale fixed widths: the MyCode account
+column was FIXED at 140 holding text that had grown to 148. The browser measures
+that column at 153.14 and its row at 209.14 — it hugs. Setting both to HUG gave
+148 and 204, and the card re-centred them.
+
+**So after any text change, check for overflow, not just for the word.** Walk up
+from every changed text node and compare its right edge against each ancestor's
+inner right edge. Two containers were wrong; both were invisible, because
+`clipsContent` is false everywhere and the spill landed in empty space. It would
+have shown up the first time someone dragged the frame.

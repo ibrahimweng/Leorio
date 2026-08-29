@@ -61,3 +61,9 @@ deliberate decision as a regression.
 - `node.findAll` does not exist on TEXT or RECTANGLE; check `type` before reaching
   for it, and check it *before* the property, because the access itself throws.
 - A failed `use_figma` script is atomic. Nothing ran. Fix and retry.
+- The extractor bakes `justify-content: center` into **asymmetric padding** on a
+  FIXED row. Those numbers fit one exact string, so changing the words inside
+  breaks the fit silently — nothing clips, because `clipsContent` is false.
+  After any text change, walk up from each changed node and compare its right
+  edge with every ancestor's inner right edge. Fix it by saying what the browser
+  says (`primaryAxisAlignItems = 'CENTER'`, padding 0), not by new padding.

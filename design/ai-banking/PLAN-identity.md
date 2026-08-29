@@ -10,9 +10,9 @@ already claims about itself.
 Nobody has done a brand exercise, but the file has made three decisions anyway,
 and they are good ones.
 
-**The assistant is the company.** The chat header says `Leorio`. The tool panels
-say `Leorio Transfers`, `Leorio Requests`, `Leorio Airtime`. The paid tier is
-`Leorio Plus`. The bank account is held at `Leorio`. There is no separate brand
+**The assistant is the company.** The chat header says `Amana`. The tool panels
+say `Amana Transfers`, `Amana Requests`, `Amana Airtime`. The paid tier is
+`Amana Plus`. The bank account is held at `Amana`. There is no separate brand
 character — the thing you talk to and the thing that holds your money have the
 same name.
 
@@ -26,7 +26,7 @@ the money yours." "She has it. Rent again next month?" "Your balance is left off
 every copy that leaves the phone." This is the strongest asset in the file and
 it was not designed, it was written. It needs codifying, not inventing.
 
-So this is not a blank page. The identity is: **Leorio is a person who keeps
+So this is not a blank page. The identity is: **Amana is a person who keeps
 your money, and its mark is its face.**
 
 ---
@@ -51,7 +51,7 @@ label. One display face, used only for money and for the wordmark, would do more
 than any logo.
 
 **4. Where it leaves the app.** The share sheet sends a receipt to WhatsApp —
-and that receipt currently carries **no Leorio mark at all**. It is the one
+and that receipt currently carries **no Amana mark at all**. It is the one
 artefact of this product that another person sees, and it is anonymous. This is
 the highest-leverage brand surface in the app and it costs one component.
 
@@ -91,12 +91,13 @@ The wordmark comes last. It is the least-seen thing on the list.
 
 ## Three questions I cannot answer from the file
 
-1. **Where does the name come from?** Leorio reads as a person's name. If it has
-   a meaning or a story, the mark should probably come from that rather than
-   from an abstract shape.
+1. ~~**Where does the name come from?**~~ Answered, and the name changed. It is
+   **Amana** — Hausa, from Arabic *amānah*, a thing given to someone for
+   safekeeping. So the mark should come from keeping rather than from an
+   abstract shape. See `BRANDING.md`.
 2. **Who is this against?** Calm and quiet is a real position, but it is a
    position against something. Kuda is young and loud; Opay is utilitarian and
-   everywhere; Moniepoint is the agent network. Which of those is Leorio
+   everywhere; Moniepoint is the agent network. Which of those is Amana
    answering?
 3. **Is there any existing brand work?** A logo, a colour, a deck, anything a
    founder has already decided. Nothing in the repository suggests there is, and

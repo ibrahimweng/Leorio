@@ -1662,7 +1662,7 @@ def toolpanel(name, status, rows, cta="", go=""):
     return ('<div class="mcp" style="background: ' + SURF + '; ' + CARD_EDGE + '; border-radius: ' + R_CARD
       + '; overflow: hidden">' + head + body + foot + '</div>')
 
-def chathead(title="Leorio"):
+def chathead(title="Amana"):
     """Back goes to the top here. A conversation has no page title to centre,
     so the model's own badge names the screen instead."""
     return ('<div style="display: flex; align-items: center; gap: 12px; height: 44px">' + back()
@@ -1693,7 +1693,7 @@ def chatscreen(said, reply, panel, foot, footic="lock", voice=True):
     it, and the line the person sent sits above. `voice` is what decides
     whether that line keeps its microphone: the same chat is reached by
     speaking and by typing, and only one of those is true at a time."""
-    c = page(chathead("Leorio") + bubble(said, voice) + aline(reply, "16px") + panel
+    c = page(chathead("Amana") + bubble(said, voice) + aline(reply, "16px") + panel
       + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon(footic, 16, INK3, extra="; margin-top: 2px")
         + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
         + '; text-wrap: pretty">' + foot + '</span></div>', 16)
@@ -1702,7 +1702,7 @@ def chatscreen(said, reply, panel, foot, footic="lock", voice=True):
 def transferchat(voice=True):
     return chatscreen("Send 20k to Sarah",
       "Sarah Adeyemi at GTBank, the same account the flat deposit went to. I am putting it together now.",
-      toolpanel("Leorio Transfers", "Running",
+      toolpanel("Amana Transfers", "Running",
         toolrow("done", "Recipient", "Sarah Adeyemi", INK, True)
         + toolrow("done", "Bank", "GTBank &#183; 0123 4457 8842", INK, False, True)
         + toolrow("done", "Amount", "&#8358;20,000", INK, False, True, "Amend")
@@ -1902,7 +1902,7 @@ scan = ('<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; b
       '<div style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: #FFFFFF"></div></div></div>'
     + roundbtn("qr", "Pick", "", 52, 22) + '</div>'
   '<span style="text-align: center; font-size: 12px; font-weight: 400; color: rgba(255,255,255,0.5)">'
-    'Or send a screenshot straight to Leorio from WhatsApp.</span></div>')
+    'Or send a screenshot straight to Amana from WhatsApp.</span></div>')
 write("Scan", scan)
 
 # ---------- three accounts on one piece of paper ----------
@@ -2189,7 +2189,7 @@ def setgroup(title, rows):
 settings = page(
   '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.035em; color: ' + INK + '">Settings</div>'
   + '<div style="padding-top: 16px">'
-  + promorow("Get Leorio Plus", "No transfer fees and instant settlement", "star", "", "soon") + '</div>'
+  + promorow("Get Amana Plus", "No transfer fees and instant settlement", "star", "", "soon") + '</div>'
   # The five that matter, named for what they do rather than for what they are.
   + setgroup("What keeps the money yours",
              setrow("Lock and privacy", "faceid", "Lock", "", None, False, "Face ID")
@@ -2388,7 +2388,7 @@ write("AskSvc", voicesheet("2k data for", "mum", "Buy",
 def requestchat(voice=True):
     return chatscreen("Ask Musa for 20k",
       "Musa Danjuma, the line ending 4471. He is the only Musa who has ever paid you.",
-      toolpanel("Leorio Requests", "Running",
+      toolpanel("Amana Requests", "Running",
         toolrow("done", "Person", "Musa Danjuma", INK, True)
         + toolrow("done", "Reaches him", "WhatsApp and SMS", INK, False)
         + toolrow("done", "Amount", "&#8358;20,000", INK, False, True, "Amend")
@@ -2450,7 +2450,7 @@ mycode = page(
     + '<div style="display: flex; align-items: center; gap: 12px">' + avatar("IM", 44, IC["blue"], "#FFFFFF")
       + '<div style="display: flex; flex-direction: column; gap: 4px">'
       '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK + '">Ibrahim Musa</span>'
-      '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">Leorio &#183; 0102 4457 88</span></div></div></div>'
+      '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">Amana &#183; 0102 4457 88</span></div></div></div>'
   + '<div style="display: flex; gap: 12px">'
     + '<div' + hook("", "soon") + ' class="pbtn" style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
     + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("send", 20, "#FFFFFF")
@@ -2468,7 +2468,7 @@ write("MyCode", mycode)
 def buychat(voice=True):
     return chatscreen("2k data for mum",
       "Mum&#8217;s MTN line, the one ending 881. She ran dry eleven days early last month, so I have priced the bigger bundle too.",
-      toolpanel("Leorio Airtime", "Running",
+      toolpanel("Amana Airtime", "Running",
         toolrow("done", "Line", "MTN &#183; 0803 4457 881", INK, True, True)
         + toolrow("done", "Whose", "Mum", INK)
         + toolrow("done", "Plan", "5GB for 30 days", INK)
@@ -2806,7 +2806,7 @@ write("Wrong", wrong)
 # ---------- asking for it back, and what that really means ----------
 recall = page(
   T("Asking GTBank to send it back", "&#8358;20,000, sent at 14:22")
-  + toolpanel("Leorio Recall", "Running",
+  + toolpanel("Amana Recall", "Running",
       toolrow("done", "You reported it", "16:24", INK, True)
       + toolrow("done", "Sent to GTBank", "16:24")
       + toolrow("done", "Sarah asked to approve", "16:25")
@@ -2900,7 +2900,7 @@ ways = page(
   T("Three ways to be paid", "All of them safe to hand out")
   + aline("You cannot receive by talking. What I can do is hand you the two things money "
           "reaches you by, and write the message that asks.", "16px")
-  + waycard("Your account number", "0102 4457 88", "Leorio &#183; Ibrahim Musa", "Copy it", "bank", "blue", "", "copy")
+  + waycard("Your account number", "0102 4457 88", "Amana &#183; Ibrahim Musa", "Copy it", "bank", "blue", "", "copy")
   + waycard("Your code", "Point a camera at it", "Works with any bank app", "Show it", "qr", "green", "MyCode")
   + waycard("Ask somebody", "On WhatsApp and SMS", "I write it, you check it", "Ask for money", "request", "purple", "Request")
   + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">None of these can take anything</span>',
@@ -3240,7 +3240,7 @@ dollars = page(
       + tx("From Musa Danjuma", "down", "28 July &#183; for the generator", "$120.00", True)
       + tx("Converted from naira", "swap", "3 March &#183; at &#8358;1,410", "$112.60", True) + '</div></div>'
   + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">Nobody here holds a key</span>',
-           "Your dollars sit with a custodian licensed by the SEC to hold them. Leorio moves them "
+           "Your dollars sit with a custodian licensed by the SEC to hold them. Amana moves them "
            "when you say so and cannot move them when you do not.")
   + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
@@ -3489,7 +3489,7 @@ start = ('<div class="pg" style="position: relative; height: 852px; padding: 0 2
     + wheelword("Save") + wheelword("Send", "send", "#2A6AF5") + wheelword("Spend")
     + wheelword("Ask") + '</div>'
   + '<div style="display: flex; flex-direction: column; gap: 12px">' + mark(40)
-    + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '">Leorio</span>'
+    + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '">Amana</span>'
     + '<span style="font-size: 16px; font-weight: 400; color: ' + INK3 + '; text-wrap: pretty">'
       'A bank that answers when you ask it something. Opening one takes about a minute, '
       'and all it needs is your number and your NIN.</span></div></div>'
@@ -3834,7 +3834,7 @@ def iconsheet(part):
     # a few glyphs only exist inside a component, so the component comes too
     inside = ('<div style="padding: 0 16px; display: flex; flex-direction: column; gap: 12px">'
               + back() + slide("Slide to send") + qchip("Yes")
-              + aisay("Leorio", "One of every glyph the app draws.", "and nothing else")
+              + aisay("Amana", "One of every glyph the app draws.", "and nothing else")
               + fabsheet() + '</div>')
     return _grid(cells) + inside + dock("Ask about anything", True)
 
