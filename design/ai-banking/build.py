@@ -162,7 +162,7 @@ def mark(size=20, color=ACC, extra=""):
     glyph = ACC_HEX if color.startswith("#FFF") else "#FFFFFF"
     return ('<svg data-icon="mark" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0' + extra + '">'
       '<rect width="24" height="24" rx="7.2" fill="' + color + '"/>'
-      '<circle cx="12" cy="12" r="6.1" stroke="' + glyph + '" stroke-width="1.8" opacity="0.55"/>'
+      '<circle cx="12" cy="12" r="6.1" stroke="' + glyph + '" stroke-width="' + str(stroke_for("mark", size)) + '" opacity="0.55"/>'
       '<circle cx="12" cy="12" r="2.9" fill="' + glyph + '"/></svg>')
 
 ICONS = {
@@ -233,8 +233,42 @@ def _attr(color):
     string. So the mix is resolved here instead of being passed on."""
     return ACC_TEXT_HEX if "color-mix" in str(color) else color
 
-def icon(name, size=22, color=INK2, sw=1.7, extra=""):
+# How heavy an icon's line is, is not a per-call decision. A glyph is drawn in
+# a small box and then scaled, so what the eye sees is the drawn weight times
+# size/box. The set holds that at a fixed share of the icon's own size, and
+# there are two shares because there are two kinds of icon.
+#
+# A glyph is a drawn thing with a body — a bank, a card, a camera — and it
+# takes 0.075 of its size: 1.2px at 16, 1.5 at 20, 1.8 at 24, 2.4 at 32. That
+# is already where most of the app's icons sat.
+#
+# A mark is a bare path, two or three strokes with nothing enclosed. The
+# weight that reads right inside a drawn body reads thin on its own, so a mark
+# takes 0.10: 1.6px at 16, 2.0 at 20, 2.4 at 24. The app already drew its
+# chevron, its back arrow and its plus that way. What it did not have was the
+# rule, so the same glyph came out at nine weights at the same size.
+#
+# Under about 15px the share asks for a hairline the screen cannot hold, and
+# over about 43px for a slab, so what the eye sees is kept between 1.1 and
+# 3.2px.
+SW_GLYPH, SW_MARK, SW_MIN, SW_MAX = 0.075, 0.10, 1.1, 3.2
+
+MARKS = {"check", "close", "plus", "minus", "up", "down",
+         "chevron", "back", "check-small", "up-small", "close-small",
+         "sheet-close", "fab-plus", "fab-close", "slide-arrow"}
+
+def stroke_for(name, size, box=24):
+    """The stroke-width to draw with, in a box of `box` units, so what the eye
+    sees is this size's weight. Everything that draws a glyph goes through
+    here; nothing passes a stroke of its own."""
+    share = SW_MARK if name in MARKS else SW_GLYPH
+    seen = min(SW_MAX, max(SW_MIN, share * float(size)))
+    return round(seen * float(box) / float(size), 2)
+
+def icon(name, size=22, color=INK2, sw=None, extra=""):
     color = _attr(color)
+    if sw is None:
+        sw = stroke_for(name, size)
     s = str(size)
     return ('<svg data-icon="' + name + '" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="' + color
             + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: ' + color
@@ -310,7 +344,7 @@ FILLED = {
  "undo": '<path d="M12 4.6a9.4 9.4 0 1 1-8.9 12.5 1.9 1.9 0 0 1 3.6-1.24A5.6 5.6 0 1 0 12 8.4H9.9l1.5-1.5A1.9 1.9 0 0 0 8.7 4.2L3.9 9a1.9 1.9 0 0 0 0 2.7l4.8 4.8a1.9 1.9 0 0 0 2.7-2.7l-1.5-1.5H12z" fill="CUR"/>',
 }
 
-def fglyph(name, size=34, color=INK, hole="#FFFFFF"):
+def fglyph(name, size=32, color=INK, hole="#FFFFFF"):
     """A glyph that is a shape, not a line. Colour and the colour of anything
     knocked out of it both come in by substitution, so a white glyph on a
     coloured panel does not lose its own detail to the panel."""
@@ -324,9 +358,11 @@ def avatar(t, size=38, bg=FILL, fg=INK, act="", eid=""):
       + '; display: flex; align-items: center; justify-content: center; font-size: 15px'
       + '; font-weight: 700; color: ' + fg + '; flex-shrink: 0">' + t + '</div>')
 
-def chev(size=16, color=INK4, sw=2.1):
+def chev(size=16, color=INK4, sw=None):
     color = _attr(color)
     s = str(size)
+    if sw is None:
+        sw = stroke_for("chevron", size, 14)
     return ('<svg data-icon="chevron" width="' + s + '" height="' + s + '" viewBox="0 0 14 14" fill="none" style="flex-shrink: 0">'
             '<path d="M5 3l4 4-4 4" stroke="' + color + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round"/></svg>')
 
@@ -339,6 +375,16 @@ def chevdark(size=32):
     s = str(size)
     return ('<div style="width: ' + s + 'px; height: ' + s + 'px; border-radius: ' + PILL + '; background: ' + BTN
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + chev(12, "#FFFFFF", 2.3) + '</div>')
+
+# The sizes an icon is allowed to be. A glyph sized as a fraction of the thing
+# it sits in lands wherever the arithmetic falls — 23, 25, 26, 30, 38 — and a
+# set with a dozen sizes nobody chose is not a set. So the fraction is worked
+# out and then snapped to the nearest size on the scale.
+ICON_SIZES = (12, 16, 18, 20, 22, 24, 28, 32, 40, 48, 56)
+
+def icon_size(n):
+    """The nearest size on the scale, rounding up when it falls between two."""
+    return min(ICON_SIZES, key=lambda s: (abs(s - n), -s))
 
 def badge(ic, t=None, size=40, radius=None, isz=None, dark=False, color=None, on=BG):
     """An icon in a quiet square. The square used to carry the service's own
@@ -355,24 +401,24 @@ def badge(ic, t=None, size=40, radius=None, isz=None, dark=False, color=None, on
     r = radius or (R_TILE if size >= 46 else R_ICON)
     box = IC["black"] if dark else (SURF if on == FILL else FILL)
     glyph = "#FFFFFF" if dark else (color or INK)
-    isz = isz or int(round(size * 0.5))
+    isz = isz or icon_size(size * 0.5)
     return ('<div style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: ' + r
       + '; background: ' + box + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon(ic, isz, glyph, 1.8) + '</div>')
+      + icon(ic, isz, glyph) + '</div>')
 
 def circicon(ic, ring="#FFFFFF", glyph=BTN, size=26, isz=None):
     """The small filled circle that rides inside a pill button."""
-    isz = isz or int(round(size * 0.62))
+    isz = isz or icon_size(size * 0.62)
     return ('<div style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: ' + PILL
       + '; background: ' + ring + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon(ic, isz, glyph, 2.2) + '</div>')
+      + icon(ic, isz, glyph) + '</div>')
 
 def back():
     """The reference keeps back at the bottom left, as a bare chevron."""
     return ('<div' + hook("back") + ' class="backBtn" style="width: 44px; height: 44px; display: flex; align-items: center; '
       'justify-content: center; flex-shrink: 0">'
       '<svg data-icon="back" width="22" height="22" viewBox="0 0 22 22" fill="none">'
-      '<path d="M13.4 4.6 6.8 11l6.6 6.4" stroke="' + INK + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
+      '<path d="M13.4 4.6 6.8 11l6.6 6.4" stroke="' + INK + '" stroke-width="' + str(stroke_for("back", 22, 22)) + '" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
 
 def topbar(title="", right=""):
     t = ''
@@ -550,7 +596,7 @@ def quickrow(items, card=True):
     for it in items:
         name, ic, go = it[0], it[1], it[2]
         hue = it[3] if len(it) > 3 else None
-        glyph = ttglyph(ic, 22, hue) if hue else icon(ic, 22, INK, 1.9)
+        glyph = ttglyph(ic, 22, hue) if hue else icon(ic, 22, INK)
         cells += ('<div' + hook(go) + ' class="qcell" style="flex-grow: 1; flex-basis: 0; min-width: 0; display: flex; '
           'flex-direction: column; align-items: center; gap: 12px; padding: 4px 0">' + glyph
           + '<span style="font-size: 12px; font-weight: 400; color: ' + INK + '; white-space: nowrap; '
@@ -590,7 +636,7 @@ def featcard(title, sub, lead, rows, foot="", footic="lock"):
     if foot:
         f = ('<div style="margin-top: 20px; background: ' + LINE + '; border-radius: 0 0 ' + R_CARDLG + ' ' + R_CARDLG
           + '; height: 56px; display: flex; align-items: center; justify-content: center; gap: 8px">'
-          + icon(footic, 17, INK, 2.0)
+          + icon(footic, 17, INK)
           + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">' + foot + '</span></div>')
     return ('<div style="background: ' + FILL + '; border-radius: ' + R_CARDLG + '; overflow: hidden">'
       '<div style="padding: 20px 20px 0 20px; display: flex; flex-direction: column; gap: 16px">'
@@ -638,7 +684,7 @@ def slide(label, go="", lid=""):
         '<div class="knob" style="width: 50px; height: 50px; border-radius: ' + PILL + '; background: #FFFFFF'
         '; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 2">'
         '<svg data-icon="slide-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h11M11 6l4 4-4 4" stroke="' + BTN
-        + '" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
+        + '" stroke-width="' + str(stroke_for("slide-arrow", 20, 20)) + '" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
         '<span' + (' id="' + lid + '"' if lid else '') + ' class="num slideLabel" style="flex-grow: 1; text-align: center; font-size: 17px; font-weight: 700; color: rgba(255,255,255,0.92)'
         '; margin-right: 50px">' + label + '</span></div>')
 
@@ -750,7 +796,7 @@ def dock(placeholder, back_btn=False, height=104):
     the ask bar takes the width and the circle keeps the corner."""
     left = back() if back_btn else ('<div' + hook("Settings") + ' style="width: 44px; height: 44px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("gear", 24, INK, 1.8) + '</div>')
+      + icon("gear", 24, INK) + '</div>')
     ask = ('<div' + hook("ask") + ' class="askpill" style="flex-grow: 1; min-width: 0; height: 48px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; gap: 8px; padding: 0 16px 0 8px">'
       + mark(32) + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK2
@@ -759,12 +805,12 @@ def dock(placeholder, back_btn=False, height=104):
       # same prompt as one spoken, so the camera belongs in the bar the other
       # two live in, not in a button on one screen.
       + '<div' + hook("Scan") + ' class="camtap" style="width: 22px; height: 22px; display: flex; align-items: center; '
-        'justify-content: center; flex-shrink: 0">' + icon("camera", 20, INK2, 1.8) + '</div>'
-      + icon("mic", 20, INK2, 1.8) + '</div>')
+        'justify-content: center; flex-shrink: 0">' + icon("camera", 20, INK2) + '</div>'
+      + icon("mic", 20, INK2) + '</div>')
     fab = ('<div class="fab"' + hook("", "actions") + ' style="width: 56px; height: 56px; border-radius: ' + PILL
       + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
       '<svg data-icon="fab-plus" class="fabx" width="24" height="24" viewBox="0 0 24 24" fill="none">'
-      '<path d="M12 5.4v13.2M5.4 12h13.2" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/></svg></div>')
+      '<path d="M12 5.4v13.2M5.4 12h13.2" stroke="#FFFFFF" stroke-width="' + str(stroke_for("fab-plus", 24, 24)) + '" stroke-linecap="round"/></svg></div>')
     return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: ' + str(height)
       + 'px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, ' + BG
       + ' 62%); display: flex; align-items: flex-end; padding: 0 20px 28px 20px">'
@@ -792,7 +838,7 @@ def tickmark(eid="", size=56, color=None):
     c = color or IC["green"]
     return ('<div' + (' id="' + eid + '"' if eid else '') + ' style="width: ' + str(size) + 'px; height: ' + str(size)
       + 'px; border-radius: ' + PILL + '; background: ' + c + '; display: flex; align-items: center; justify-content: center">'
-      + icon("check", int(size * 0.46), "#FFFFFF", 2.4) + '</div>')
+      + icon("check", icon_size(size * 0.46), "#FFFFFF") + '</div>')
 
 # Five things, in the order they are reached for. Voice first, because saying
 # it is the shortest way to do anything here.
@@ -817,7 +863,7 @@ def fabsheet():
           + ' style="display: flex; align-items: center; justify-content: flex-end; gap: 20px">'
           '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.03em; color: ' + INK + '">' + name + '</span>'
           '<div style="width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-          + fglyph(ic, 38, IC[col]) + '</div></div>')
+          + fglyph(ic, 40, IC[col]) + '</div></div>')
     return ('<div class="fabwrap" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 6">'
       '<div class="fabscrim"' + hook("", "actions") + ' style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: '
       + MILK + '; ' + BLUR_HARD + '"></div>'
@@ -826,7 +872,7 @@ def fabsheet():
       '<div class="fab fabclose"' + hook("", "actions") + ' style="position: absolute; right: 18px; bottom: 26px; width: 56px; height: 56px; '
       'border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center">'
       '<svg data-icon="fab-close" width="22" height="22" viewBox="0 0 24 24" fill="none">'
-      '<path d="M6.4 6.4l11.2 11.2M17.6 6.4 6.4 17.6" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/></svg></div></div>')
+      '<path d="M6.4 6.4l11.2 11.2M17.6 6.4 6.4 17.6" stroke="#FFFFFF" stroke-width="' + str(stroke_for("fab-close", 22, 24)) + '" stroke-linecap="round"/></svg></div></div>')
 
 def sheet(inner, pad="26px 20px 28px 20px"):
     """A sheet rises over a page that is dimmed and blurred, and it floats
@@ -840,7 +886,7 @@ def sheetx():
     return ('<div' + hook("back") + ' style="position: absolute; right: 18px; top: 18px; width: 32px; height: 32px; '
       'display: flex; align-items: center; justify-content: center">'
       '<svg data-icon="sheet-close" width="20" height="20" viewBox="0 0 20 20" fill="none">'
-      '<path d="M5.4 5.4l9.2 9.2M14.6 5.4l-9.2 9.2" stroke="' + INK2 + '" stroke-width="2.2" stroke-linecap="round"/></svg></div>')
+      '<path d="M5.4 5.4l9.2 9.2M14.6 5.4l-9.2 9.2" stroke="' + INK2 + '" stroke-width="' + str(stroke_for("sheet-close", 20, 20)) + '" stroke-linecap="round"/></svg></div>')
 
 def grabber():
     """A sheet that came up from the bottom can go back down the same way, so
@@ -954,7 +1000,7 @@ def sortbtn():
     that changes the order rather than the contents."""
     return ('<div' + hook("", "soon") + ' class="sortbtn" style="width: 36px; height: 36px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
-      + icon("sort", 20, INK2, 1.9) + '</div>')
+      + icon("sort", 20, INK2) + '</div>')
 
 def seeall(go=""):
     """The call to action, on the title line where the eye already is."""
@@ -984,7 +1030,7 @@ LEAD = (aisay("Due on Thursday", "Ikeja Electric, and last month it was &#8358;7
       '<div' + hook("PowerPay") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
       + '; color: ' + BTN_INK + '; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700">Pay &#8358;8,000 now</div>'
       '<div' + hook("", "dismiss") + ' style="width: 52px; height: 52px; border-radius: ' + PILL + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
-      '<svg data-icon="close-small" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="' + INK2 + '" stroke-width="2" stroke-linecap="round"/></svg></div></div>', "mBill"))
+      '<svg data-icon="close-small" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="' + INK2 + '" stroke-width="' + str(stroke_for("close-small", 16, 16)) + '" stroke-linecap="round"/></svg></div></div>', "mBill"))
 
 # NOT THE HOME SCREEN. The home screen is the founder's, it lives in Figma at
 # 193:1566, and every Home screen on the Flows page is an instance of it. This
@@ -1108,7 +1154,7 @@ def txstate(name, sub, amount, ic, col, go):
     for the ones that still need something from you."""
     return ('<div' + hook(go) + ' style="display: flex; align-items: center; gap: 16px; height: 64px">'
       '<div style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + fglyph(ic, 26, IC[col]) + '</div>'
+      + fglyph(ic, 28, IC[col]) + '</div>'
       '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 0">'
       '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.015em; color: ' + INK + '">' + name + '</span>'
       '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">' + sub + '</span></div>'
@@ -1173,7 +1219,7 @@ def rid(k, v):
       + '">' + v + '</span></div>'
       '<div style="width: 32px; height: 32px; border-radius: 999px; background: ' + FILL
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("copy", 16, INK2, 1.9) + '</div></div>')
+      + icon("copy", 16, INK2) + '</div></div>')
 
 def rhero(amount, line, status="Successful", color=INK):
     """The figure and the tick on one row, with the word beside them. The word
@@ -1240,7 +1286,7 @@ airtime = page(
           '<span id="bWho" style="font-size: 15px; font-weight: 600">Mum</span>'
           '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">0803 214 4471 &#183; MTN</span></div>' + chev() + '</div>',
         "The number you top up most", on=FILL)
-    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("data", 20, INK2, 1.6)
+    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("data", 20, INK2)
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px">'
           '<span id="bSize" style="font-size: 15px; font-weight: 600">5GB for 30 days</span>'
           '<span style="font-size: 12.5px; color: ' + INK2 + '">It will not renew on its own</span></div>'
@@ -1255,7 +1301,7 @@ airtime = page(
     + '<div style="display: flex; gap: 16px; align-items: center">'
       + avatar("D", 46, act="who|Dad") + avatar("K", 46, act="who|Kemi") + avatar("B", 46, act="who|Bro") + avatar("T", 46, act="who|Tunde")
       + '<div style="width: 46px; height: 46px; border-radius: 23px; border: 1px dashed ' + FILL3
-      + '; display: flex; align-items: center; justify-content: center">' + icon("plus", 20, INK3, 1.7) + '</div></div></div>', 15)
+      + '; display: flex; align-items: center; justify-content: center">' + icon("plus", 20, INK3) + '</div></div></div>', 15)
 airtime += confirmbar(slide("Slide to buy &#8358;2,500", "done|Airtime", "aSlide"))
 write("Airtime", airtime)
 
@@ -1269,7 +1315,7 @@ power = page(
     + '<span style="font-size: 12px; font-weight: 500; color: ' + INK2 + '">Meter token</span>'
     + '<span class="num chrome" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
     + '<div' + hook("", "copy|Token") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: ' + PILL + '; background: ' + SURF + '">'
-      + icon("copy", 20, INK, 1.8) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
+      + icon("copy", 20, INK) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
   + receipt([
       rline(rfield("To", "Ikeja Electric", "Meter 0102 4457 8891"),
             rfield("From", "Everyday", "0102 4457 88")),
@@ -1317,7 +1363,7 @@ bills = page(
       + bill("LAWMA waste", "waste", "Paid 2 August", "&#8358;2,000", '', False, True)
       + bill("MTN 5GB", "data", "Paid 4 August", "&#8358;2,500", '', True, True) + '</div></div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK, 2)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK)
     + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Add a bill</span></div>'
   + offer("DStv and Spectranet are not covered. Shall I pay them?", "Set both up", "Rule"), 14) + dockback("Ask about your bills")
 write("Bills", bills)
@@ -1349,10 +1395,10 @@ loan = page(
     + sectionhead("How much you want")
     + '<div style="display: flex; align-items: center; gap: 16px">'
       '<div' + hook("", "loan|-") + ' style="width: 44px; height: 44px; border-radius: ' + PILL + '; background: ' + SURF
-      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("minus", 20, INK, 2.2) + '</div>'
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("minus", 20, INK) + '</div>'
       '<div id="lnAmt" style="flex-grow: 1; display: flex; justify-content: center">' + money("&#8358;150,000", "", 40) + '</div>'
       '<div' + hook("", "loan|+") + ' style="width: 44px; height: 44px; border-radius: ' + PILL + '; background: ' + SURF
-      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("plus", 20, INK, 2.2) + '</div></div>'
+      + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">' + icon("plus", 20, INK) + '</div></div>'
     + '<div style="display: flex; flex-direction: column; gap: 8px">'
       '<div style="height: 6px; border-radius: 3px; background: ' + FILL3 + '; overflow: hidden"><div id="lnBar" style="width: 60%; height: 6px; border-radius: 3px; background: ' + ACC + '"></div></div>'
       '<div style="display: flex; justify-content: space-between"><span class="num" style="font-size: 12.5px; color: ' + INK3 + '">&#8358;10,000</span>'
@@ -1365,7 +1411,7 @@ loan = page(
     + rowline("You pay back in all", "&#8358;169,500", False, True, INK, "lnTot")
     + rowline("Three payments of", "&#8358;56,500", False, False, INK, "lnPer", "lnPerK")
     + rowline("First payment", "19 September", True, False, INK, "lnDate") + '</div>'
-  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
     + '; text-wrap: pretty">Pay late and it costs &#8358;2,000 a day. Late loans are reported to the credit bureau.</span></div>', 14)
 loan += confirmbar(slide("Slide to take &#8358;150,000", "done|Loan", "lnSlide"))
@@ -1375,7 +1421,7 @@ write("Loan", loan)
 def act(name, ic, go="", action="soon", col=None):
     """An action on a detail screen. Same rule as quickrow, so no tile."""
     return ('<div' + hook(go, "" if go else action) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 4px 0">'
-      + icon(ic, 22, col or INK, 1.9)
+      + icon(ic, 22, col or INK)
       + '<span style="font-size: 12px; font-weight: 400; color: ' + INK + '">' + name + '</span></div>')
 
 vcard = page(
@@ -1406,7 +1452,7 @@ vcard = page(
     + '<div style="height: 7px; border-radius: 4px; background: ' + FILL3 + '; overflow: hidden"><div style="width: 42%; height: 7px; border-radius: 4px; background: ' + ACC + '"></div></div>'
     + '<span class="num" style="font-size: 12.5px; color: ' + INK3 + '">&#8358;29,000 left before it stops working</span></div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK, 2)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK)
     + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Make another card</span></div>', 14) + dockback("Ask about this card")
 write("Card", vcard)
 
@@ -1477,8 +1523,8 @@ def qchip(t):
     return ('<div' + hook("", "soon") + ' style="height: 42px; border-radius: ' + pill(42) + '; background: ' + SURF
       + '; display: flex; align-items: center; gap: 8px; padding: 0 16px">'
       '<span style="font-size: 13.5px; font-weight: 600; color: ' + INK + '">' + t + '</span>'
-      '<svg data-icon="check-small" width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5l3-3" stroke="' + INK3
-      + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
+      '<svg data-icon="check-small" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5l3-3" stroke="' + INK3
+      + '" stroke-width="' + str(stroke_for("check-small", 12, 12)) + '" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
 
 answer = page(
   T("Airtime and data", "You asked how much you spend on staying connected")
@@ -1486,13 +1532,13 @@ answer = page(
   + '<div style="' + cardstyle("18px 16px 8px 16px") + '; display: flex; flex-direction: column; gap: 20px">'
     + '<div style="display: flex; align-items: flex-end; justify-content: space-between">' + money("&#8358;18,900", "", 40)
       + '<div style="display: flex; align-items: center; gap: 4px; height: 28px; padding: 0 12px; border-radius: 14px; background: rgba(176,69,58,0.10); margin-bottom: 4px">'
-      '<svg data-icon="up-small" width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN_TEXT + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      '<svg data-icon="up-small" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN_TEXT + '" stroke-width="' + str(stroke_for("up-small", 12, 12)) + '" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       '<span class="num" style="font-size: 13px; font-weight: 700; color: ' + WARN_TEXT + '">&#8358;4,200</span></div></div>'
     + '<div style="display: flex; gap: 8px; height: 76px; align-items: stretch">'
       + barm(38,"Feb") + barm(50,"Mar") + barm(41,"Apr") + barm(56,"May") + barm(47,"Jun") + barm(68,"Jul", True) + '</div>'
     + '<div style="display: flex; flex-wrap: wrap; gap: 8px">' + qchip("Airtime and data") + qchip("Last month") + '</div>'
     + '<div' + hook("", "soon") + ' style="border-top: 1px solid ' + LINE + '; display: flex; align-items: center; gap: 8px; height: 48px">'
-      + icon("list", 16, INK3, 1.5)
+      + icon("list", 16, INK3)
       + '<span class="num" style="flex-grow: 1; font-size: 12.5px; color: ' + INK3 + '">Added up from 14 top ups, 1 to 31 July</span>' + chev() + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 12px">' + sectionhead("Where it went")
     + '<div style="display: flex; flex-direction: column; gap: 16px">'
@@ -1540,7 +1586,7 @@ def paypage(fx=False):
           + frm
           + plainrow("Arrives", "In a few seconds", False, INK, True)
           + plainrow("Fee", "Free", True, IN_TEXT) + '</div></div>'
-      + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+      + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
         + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
         + '; text-wrap: pretty">' + foot + '</span></div>', 15)
 
@@ -1562,7 +1608,7 @@ write("PayDollars", paydollars)
 def bubble(t, voice=True):
     """What the person said. If it came off the voice sheet it keeps the
     microphone beside it rather than pretending it was typed."""
-    lead = ('<div style="opacity: 0.6; display: flex">' + icon("mic", 16, "#FFFFFF", 1.9) + '</div>') if voice else ''
+    lead = ('<div style="opacity: 0.6; display: flex">' + icon("mic", 16, "#FFFFFF") + '</div>') if voice else ''
     return ('<div style="display: flex; justify-content: flex-end">'
       '<div style="max-width: 74%; border-radius: 20px; background: ' + BTN
       + '; padding: 12px 16px; display: flex; align-items: center; gap: 8px">' + lead
@@ -1626,11 +1672,11 @@ def chatbar(placeholder="Reply, or just keep talking", height=104):
       + '<span style="flex-grow: 1; min-width: 0; font-size: 15px; font-weight: 400; color: ' + INK2
       + '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">' + placeholder + '</span>'
       + '<div' + hook("Scan") + ' class="camtap" style="width: 22px; height: 22px; display: flex; align-items: center; '
-        'justify-content: center; flex-shrink: 0">' + icon("camera", 20, INK2, 1.8) + '</div>'
-      + icon("mic", 20, INK2, 1.8) + '</div>')
+        'justify-content: center; flex-shrink: 0">' + icon("camera", 20, INK2) + '</div>'
+      + icon("mic", 20, INK2) + '</div>')
     send = ('<div' + hook("", "soon") + ' class="fab" style="width: 56px; height: 56px; border-radius: ' + PILL
       + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("up", 24, "#FFFFFF", 2.4) + '</div>')
+      + icon("up", 24, "#FFFFFF") + '</div>')
     return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: ' + str(height)
       + 'px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, ' + BG
       + ' 62%); display: flex; align-items: flex-end; padding: 0 20px 28px 20px">'
@@ -1642,7 +1688,7 @@ def chatscreen(said, reply, panel, foot, footic="lock", voice=True):
     whether that line keeps its microphone: the same chat is reached by
     speaking and by typing, and only one of those is true at a time."""
     c = page(chathead("Leorio") + bubble(said, voice) + aline(reply, "16px") + panel
-      + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon(footic, 16, INK3, 1.6, "; margin-top: 2px")
+      + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon(footic, 16, INK3, extra="; margin-top: 2px")
         + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
         + '; text-wrap: pretty">' + foot + '</span></div>', 16)
     return c + chatbar("Reply, or just keep talking")
@@ -1691,8 +1737,8 @@ def pinpad():
     for r in (["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]):
         out += '<div style="display: flex; gap: 24px; justify-content: center">' + "".join(pinkey(k) for k in r) + '</div>'
     out += ('<div style="display: flex; gap: 24px; justify-content: center">'
-      + pinkey("", icon("faceid", 32, ACC_TEXT_HEX, 1.7), "faceid") + pinkey("0")
-      + pinkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
+      + pinkey("", icon("faceid", 32, ACC_TEXT_HEX), "faceid") + pinkey("0")
+      + pinkey("", icon("del", 28, INK2), "pin|del") + '</div>')
     return '<div style="display: flex; flex-direction: column; gap: 16px">' + out + '</div>'
 
 def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves until the fourth number lands.",
@@ -1725,7 +1771,7 @@ def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves un
            + '">Or tap the face to use Face ID.</span>') + '</div>'
       + pindots(2)
       + pinpad()
-      + '<div style="display: flex; gap: 8px; align-items: center; justify-content: center">' + icon("lock", 16, INK3, 1.6)
+      + '<div style="display: flex; gap: 8px; align-items: center; justify-content: center">' + icon("lock", 16, INK3)
         + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + foot + '</span></div>', 24)
 
 write("Confirm", confirmscreen("&#8358;20,000", "SA", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"))
@@ -1811,7 +1857,7 @@ GLASS   = "rgba(255,255,255,0.14)"
 def roundbtn(ic, go="", act="", size=44, isz=20):
     return ('<div' + hook(go, act) + ' style="width: ' + str(size) + 'px; height: ' + str(size) + 'px; border-radius: '
       + PILL + '; background: ' + GLASS + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon(ic, isz, "#FFFFFF", 1.9) + '</div>')
+      + icon(ic, isz, "#FFFFFF") + '</div>')
 
 scan = ('<div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCAN_BG
   + '; display: flex; flex-direction: column; gap: 20px; padding: 60px 20px 32px 20px">'
@@ -1881,7 +1927,7 @@ def namecheck():
     the one thing a photograph cannot settle, so it is put to the person
     rather than decided for them."""
     return ('<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
-      '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 20, WARN_TEXT, 2.0)
+      '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 20, WARN_TEXT)
       + '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
       + '">Is this the person you mean?</span></div>'
       + '<div style="' + cardstyle("8px 14px", "16px") + ' display: flex; flex-direction: column">'
@@ -1967,7 +2013,7 @@ rules = page(
     + never("Anything over &#8358;20,000")
     + never("Taking a loan on your behalf") + '</div>'
   + '<div style="height: 50px; border-radius: 25px; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK, 2)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("plus", 16, INK)
     + '<span style="font-size: 14.5px; font-weight: 600; color: ' + INK + '">Add an instruction</span></div>', 14)
 rules += dockback("Ask me to set one up")
 write("Rules", rules)
@@ -1978,7 +2024,7 @@ powerpay = page(
   + quote("pay my light bill")
   + aline("Ikeja Electric, the meter you always use.")
   + '<div style="' + cardstyle("14px") + '; display: flex; flex-direction: column; gap: 12px">'
-    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("power", 20, INK2, 1.6)
+    + tinted('<div style="display: flex; align-items: center; gap: 12px">' + icon("power", 20, INK2)
         + '<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px">'
           '<span style="font-size: 15px; font-weight: 600">Ikeja Electric</span>'
           '<span class="num" style="font-size: 12.5px; color: ' + INK2 + '">Prepaid &#183; 0102 4457 8891</span></div>' + chev() + '</div>',
@@ -1991,7 +2037,7 @@ powerpay = page(
       + plainrow("Token arrives", "In a few seconds", True) + '</div></div>'
   + '<div style="display: flex; flex-direction: column; gap: 12px">' + sectionhead("Or pick an amount")
     + '<div style="display: flex; gap: 8px">' + bundle("&#8358;3,000", "About 14 kWh", "pw|3,000") + bundle("&#8358;8,000", "About 38 kWh", "pw|8,000") + bundle("&#8358;15,000", "About 72 kWh", "pw|15,000") + '</div></div>'
-  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
     + '; text-wrap: pretty">The token appears here and in your messages.</span></div>', 15)
 powerpay += confirmbar(slide("Slide to pay &#8358;8,000", "Power", "pwSlide"))
@@ -2047,7 +2093,7 @@ goal = page(
     + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + BTN_INK + '">Add money</div>'
     '<div' + hook("SaveRule") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + FILL
     + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + INK + '">Feed it more</div></div>'
-  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("lock", 16, INK3, 1.8, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">Nothing here is locked. Take it back whenever you need it.</span></div>'
   # The question everybody actually has about a savings plan, answered on the
@@ -2082,7 +2128,7 @@ paused = page(
     + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + INK + '">Add money anyway</div>'
     '<div' + hook("Goal") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
     + '; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: ' + BTN_INK + '">Start again</div></div>'
-  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("lock", 16, INK3, 1.8, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">I will not ask you about this again until you tell me to.</span></div>', 20)
 paused += dockback("Ask about this goal")
@@ -2104,7 +2150,7 @@ SET_TONE = {"faceid": "blue", "shield": "green", "list": "purple", "laptop": "am
             "card": "purple", "chat": "green", "star": "amber", "clock": "cyan",
             "eye": "blue", "camera": "purple", "lock": "red"}
 
-def rowglyph(ic, color=None, on=BG, size=26, cell=36):
+def rowglyph(ic, color=None, on=BG, size=28, cell=36):
     """A settings row's mark. A shape, not a line drawing, and standing on
     nothing rather than inside a tile. Anything knocked out of it is knocked
     out in the colour of the ground it is on, so the same drawing works on the
@@ -2164,7 +2210,7 @@ lock = page(
       + setrow("Hide my balance", "eye", "", "", None, False, "", switch(True), FILL)
       + setrow("Hide it in screenshots", "camera", "", "", None, False, "", switch(True), FILL)
       + setrow("Amounts in notifications", "bell", "", "", None, False, "", switch(False), FILL) + '</div></div>'
-  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("eye", 16, INK3, 1.8, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("eye", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">With this on, your balance is dots until you look at the phone. '
       'Nobody standing behind you in a queue reads it over your shoulder.</span></div>'
@@ -2246,14 +2292,14 @@ def keyboard():
         cells = ''
         if i == 2:
             cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + LINE
-              + '; display: flex; align-items: center; justify-content: center">' + icon("up", 20, INK, 2.0) + '</div>')
+              + '; display: flex; align-items: center; justify-content: center">' + icon("up", 20, INK) + '</div>')
         for ch in r:
             cells += ('<div style="width: 33px; height: 42px; border-radius: 6px; background: ' + SURF + '; ' + SH_RAISE
               + '; display: flex; align-items: center; justify-content: center">'
               '<span class="chrome" style="font-size: 22px; font-weight: 400; color: ' + INK + '">' + ch + '</span></div>')
         if i == 2:
             cells += ('<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + LINE
-              + '; display: flex; align-items: center; justify-content: center">' + icon("del", 20, INK, 1.8) + '</div>')
+              + '; display: flex; align-items: center; justify-content: center">' + icon("del", 20, INK) + '</div>')
         rows += ('<div style="display: flex; gap: 8px; justify-content: center; padding: 0 ' + str(pad) + 'px">' + cells + '</div>')
     rows += ('<div style="display: flex; gap: 8px; justify-content: center">'
       '<div style="width: 42px; height: 42px; border-radius: 6px; background: ' + LINE
@@ -2278,7 +2324,7 @@ def typedbar(text, go=""):
       '<div style="width: 2px; height: 20px; background: ' + ACC + '"></div></div>'
       + '<div' + hook(go) + ' style="width: 48px; height: 48px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("up", 24, "#FFFFFF", 2.4) + '</div></div>')
+      + icon("up", 24, "#FFFFFF") + '</div></div>')
 
 def typedscreen(text, go):
     # No dimming. A phone does not grey out the page when the keyboard is up.
@@ -2394,12 +2440,12 @@ mycode = page(
       '<span class="num" style="font-size: 14px; font-weight: 400; color: ' + INK3 + '">Leorio &#183; 0102 4457 88</span></div></div></div>'
   + '<div style="display: flex; gap: 12px">'
     + '<div' + hook("", "soon") + ' class="pbtn" style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("send", 20, "#FFFFFF", 2.0)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("send", 20, "#FFFFFF")
     + '<span style="font-size: 16px; font-weight: 700; color: #FFFFFF">Share it</span></div>'
     + '<div' + hook("", "soon") + ' class="pbtn" style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("down", 20, INK, 2.0)
+    + '; display: flex; align-items: center; justify-content: center; gap: 8px">' + icon("down", 20, INK)
     + '<span style="font-size: 16px; font-weight: 700; color: ' + INK + '">Save it</span></div></div>'
-  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
     + '; text-wrap: pretty">Anyone can pay you with this. Nobody can take anything with it, and it does not carry your balance.</span></div>', 16)
 mycode += dockback("Ask about your code")
@@ -2428,7 +2474,7 @@ meter = page(
   T("What I found", "Read from your photo, 4:02 PM")
   + photo("meter")
   + '<div style="' + bordered("16px", "24px") + ' display: flex; flex-direction: column; gap: 12px">'
-    '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 20, WARN_TEXT, 2.0)
+    '<div style="display: flex; align-items: center; gap: 8px">' + icon("alert", 20, WARN_TEXT)
     + '<span style="font-size: 16px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
     + '">Is this your meter?</span></div>'
     + '<div style="' + cardstyle("8px 14px", "16px") + ' display: flex; flex-direction: column">'
@@ -2492,7 +2538,7 @@ def share_inner(line):
       + sheetrow("Somewhere else", "grid", "Messages, mail, anywhere you share")
       + '</div>'
     + '<div style="display: flex; gap: 8px; align-items: flex-start; padding: 12px 4px 0 4px">'
-      + icon("eye", 16, INK3, 1.7, "; margin-top: 2px")
+      + icon("eye", 16, INK3, extra="; margin-top: 2px")
       + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
       + '; text-wrap: pretty">Your balance is left off every copy that leaves the phone.</span></div>')
 
@@ -2638,7 +2684,7 @@ def statehead(ic, colour, amount, line):
     way, so what happened is read before it is explained."""
     return ('<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">'
       '<div style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center">'
-      + fglyph(ic, 52, colour) + '</div>'
+      + fglyph(ic, 56, colour) + '</div>'
       '<div style="display: flex; flex-direction: column; gap: 4px">' + money(amount, "", 40)
       + '<span style="font-size: 15px; color: ' + INK2 + '">' + line + '</span></div></div>')
 
@@ -2804,7 +2850,7 @@ def numpad():
     out += ('<div style="display: flex; gap: 24px; justify-content: center">'
       + numkey("000") + numkey("0")
       + '<div class="pinkey"' + hook("", "amend") + ' style="width: 74px; height: 74px; display: flex; align-items: center; justify-content: center">'
-      + icon("del", 28, INK2, 1.8) + '</div></div>')
+      + icon("del", 28, INK2) + '</div></div>')
     return ('<div style="display: flex; flex-direction: column; gap: 20px; align-items: center">' + out + '</div>')
 
 amend = page(
@@ -2915,7 +2961,7 @@ def draftbar(text):
       '<div style="width: 2px; height: 20px; background: ' + ACC + '"></div></div>'
       + '<div' + hook("Chat") + ' style="width: 48px; height: 48px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + icon("up", 24, "#FFFFFF", 2.4) + '</div></div></div>')
+      + icon("up", 24, "#FFFFFF") + '</div></div></div>')
 
 write("Draft", '<div class="behind">' + page(home_inner, 16) + '</div>' + draftbar("send sarah 20k") + keyboard())
 
@@ -2939,7 +2985,7 @@ def gatestep(n, title, done=False, body="", first=False):
     is countable at a glance."""
     dot = ('<div style="width: 28px; height: 28px; border-radius: ' + PILL + '; background: '
       + (IC["green"] if done else FILL3) + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      + (icon("check", 16, "#FFFFFF", 2.6) if done
+      + (icon("check", 16, "#FFFFFF") if done
          else '<span class="num" style="font-size: 15px; font-weight: 700; color: ' + INK2 + '">' + str(n) + '</span>')
       + '</div>')
     return ('<div style="' + ('' if first else 'border-top: 1px solid ' + LINE + '; padding-top: 16px; ')
@@ -2985,7 +3031,7 @@ limits = page(
     + '; display: flex; align-items: center; justify-content: center; gap: 8px">'
       '<span style="font-size: 14.5px; font-weight: 700; color: ' + INK + '">Show me what that looks like</span>'
       + chev(12, INK, 2.2) + '</div></div>'
-  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("clock", 16, INK3, 1.8, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("clock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">Raising a cap takes a day to come into force. Lowering one is immediate. '
       'That way nobody talks you into a bigger number in the moment.</span></div>', 18)
@@ -3043,7 +3089,7 @@ devices = page(
   + aline("The Windows one signed in from Abuja on 12 August and has not been back. If that was not you, "
           "sign it out and change your passcode. I will not do either without you.", "16px")
   + ctabtn("Sign out everywhere else", "", "soon")
-  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("lock", 16, INK3, 1.8, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 12px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">Signing a device out never touches your money. It only means that device '
       'has to ask for your passcode again.</span></div>', 18)
@@ -3073,7 +3119,7 @@ health = page(
   T("Money health", "One number for how you are handling it")
   + '<div style="' + cardstyle("20px") + '; display: flex; flex-direction: column; align-items: center; gap: 16px">'
     + ring(72, 180, 14, "", "out of 100", "")
-    + '<div style="display: flex; align-items: center; gap: 8px">' + icon("up", 16, IN_TEXT, 2.6)
+    + '<div style="display: flex; align-items: center; gap: 8px">' + icon("up", 16, IN_TEXT)
       + '<span style="font-size: 15px; font-weight: 700; color: ' + IN_TEXT + '">Up 4 since July</span></div></div>'
   + aline("Steadier than you were. The one thing holding it down is spending, which is up 18% on last month. "
           "Everything else is going the right way.", "16px")
@@ -3154,7 +3200,7 @@ def raterow(rate, moved, up=True):
     the same number every day."""
     c = IN_TEXT if up else WARN_TEXT
     return ('<div style="' + cardstyle("14px 16px") + '; display: flex; align-items: center; gap: 12px">'
-      + icon("chart", 20, INK2, 1.8)
+      + icon("chart", 20, INK2)
       + '<span style="flex-grow: 1; font-size: 15px; font-weight: 400; color: ' + INK2 + '">' + rate + '</span>'
       + '<span class="num" style="font-size: 14px; font-weight: 700; white-space: nowrap; flex-shrink: 0; color: '
       + c + '">' + moved + '</span></div>')
@@ -3183,7 +3229,7 @@ dollars = page(
   + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">Nobody here holds a key</span>',
            "Your dollars sit with a custodian licensed by the SEC to hold them. Leorio moves them "
            "when you say so and cannot move them when you do not.")
-  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
     + '; text-wrap: pretty">Turn any of it back to naira the same day. There is no notice and no lock.</span></div>', 15)
 dollars += dockback("Ask me about your dollars")
@@ -3206,7 +3252,7 @@ convert = page(
     + pocketrow("To", "Dollars", "$412.60 there", True)
     + '<div style="position: absolute; right: 16px; top: 50%; margin-top: -18px; width: 36px; height: 36px; '
       'border-radius: ' + PILL + '; background: ' + SURF + '; ' + SH_RAISE + '; display: flex; align-items: center; '
-      'justify-content: center">' + icon("swap", 20, INK, 1.9) + '</div></div>'
+      'justify-content: center">' + icon("swap", 20, INK) + '</div></div>'
   + '<div style="' + cardstyle("18px") + '; display: flex; flex-direction: column; gap: 8px">'
     + caption("You are converting", INK2, 14)
     + '<div style="display: flex; align-items: baseline; gap: 0">'
@@ -3219,7 +3265,7 @@ convert = page(
     + plainrow("Our fee", "Free under $500", False, IN_TEXT, False)
     + plainrow("You get", "$100.00", True, INK, False) + '</div>'
   + aline("The rate moved &#8358;18 your way this week. If you were waiting for a better day, this is one of them.", "16px")
-  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+  + '<div style="display: flex; gap: 8px; align-items: flex-start">' + icon("lock", 16, INK3, extra="; margin-top: 2px")
     + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
     + '; text-wrap: pretty">The rate is held for sixty seconds once you slide.</span></div>', 15)
 convert += confirmbar(slide("Slide to convert", "Converted", "cvSlide"))
@@ -3307,14 +3353,14 @@ def qrow(name, ic, done=False):
     them is what you are doing now. Nothing here is ticked."""
     return ('<div style="display: flex; align-items: center; gap: 16px; height: 40px">'
       '<div style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; '
-      'flex-shrink: 0">' + fglyph(ic, 23, INK4, BG) + '</div>'
+      'flex-shrink: 0">' + fglyph(ic, 24, INK4, BG) + '</div>'
       '<span style="font-size: 17px; font-weight: 400; color: ' + INK3 + '">' + name + '</span></div>')
 
 def qopen(name, sub, ic, color):
     """The one you are on. The glyph is the only saturated thing at reading
     size on the screen, and the name is the only large one."""
     return ('<div style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0">'
-      + fglyph(ic, 30, color, BG)
+      + fglyph(ic, 32, color, BG)
       + '<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; color: '
       + INK + '">' + name + '</span>'
       + '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
@@ -3406,7 +3452,7 @@ def numpad():
         out += '<div style="display: flex; gap: 20px; justify-content: center">' + "".join(obkey(k) for k in r) + '</div>'
     out += ('<div style="display: flex; gap: 20px; justify-content: center">'
       '<div style="width: 68px; height: 68px; flex-shrink: 0"></div>' + obkey("0")
-      + obkey("", icon("del", 28, INK2, 1.8), "pin|del") + '</div>')
+      + obkey("", icon("del", 28, INK2), "pin|del") + '</div>')
     return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: '
       + str(NUMPAD_H) + 'px; padding: 16px 20px 20px 20px; background: ' + BG
       + '; display: flex; flex-direction: column; gap: 8px">' + out + '</div>')
@@ -3417,7 +3463,7 @@ def numpad():
 def wheelword(t, ic=None, color=None):
     on = ic is not None
     return ('<div style="display: flex; align-items: center; gap: 12px; height: 42px">'
-      + (fglyph(ic, 26, color, BG) if on else '<div style="width: 26px; height: 26px"></div>')
+      + (fglyph(ic, 28, color, BG) if on else '<div style="width: 28px; height: 28px"></div>')
       + '<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.035em; color: '
       + (INK if on else FILL3) + '">' + t + '</span></div>')
 
@@ -3484,11 +3530,11 @@ face = account(2,
   # the oval stays an oval and snap() leaves it alone.
   + '<div style="width: 138px; height: 168px; border-radius: 200px; border: 3px solid ' + ACC
     + '; margin-bottom: 26px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 16px">'
-    + icon("person", 56, FILL3, 1.4) + '</div>'
+    + icon("person", 56, FILL3) + '</div>'
   + '<span style="position: absolute; left: 0; right: 0; bottom: 14px; text-align: center; font-size: 14px; '
     'font-weight: 500; color: ' + INK2 + '">Hold still and look at the camera</span></div>',
   '<div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 12px">'
-  + icon("eye", 16, INK3, 1.6, "; margin-top: 2px")
+  + icon("eye", 16, INK3, extra="; margin-top: 2px")
   + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
   + '; text-wrap: pretty">The photo is kept on this phone. It is not a profile picture and nobody else sees it.</span></div>')
 face += obfoot("Take it", "Passcode")
@@ -3498,7 +3544,7 @@ write("Face", face)
 passcode = account(3, '<div style="display: flex; justify-content: flex-start">' + pindots(3, 6) + '</div>',
   foot=NUMPAD_H, tail=
   '<div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 12px">'
-  + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
+  + icon("lock", 16, INK3, extra="; margin-top: 2px")
   + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
   + '; text-wrap: pretty">Not your year of birth, and not 123456.</span></div>') + numpad()
 write("Passcode", passcode)
@@ -3561,7 +3607,7 @@ def quietnote(ic, t):
     control at the smallest size on the screen, for the person who wants to know
     why before they answer."""
     return ('<div style="display: flex; gap: 8px; align-items: flex-start; padding-top: 12px">'
-      + icon(ic, 16, INK3, 1.6, "; margin-top: 2px")
+      + icon(ic, 16, INK3, extra="; margin-top: 2px")
       + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
       + '; text-wrap: pretty">' + t + '</span></div>')
 
@@ -3650,7 +3696,7 @@ def plaintop(title, sub, ic=None, color=None, wash="#2A6AF5"):
     return (steplight(wash)
       + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; padding-top: 24px; '
         'display: flex; flex-direction: column; gap: 8px">'
-      + (fglyph(ic, 30, color, BG) if ic else mark(32))
+      + (fglyph(ic, 32, color, BG) if ic else mark(32))
       + '<span style="font-size: 30px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.08; color: '
       + INK + '">' + title + '</span>'
       + '<span style="font-size: 15px; font-weight: 400; line-height: 1.42; color: ' + INK3
@@ -3686,7 +3732,7 @@ write("Signcode", signcode)
 nomatch = account(1,
   '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
   + '<div style="display: flex; align-items: center; gap: 12px">'
-    + rowglyph("warn", IC["amber"], SURF, 26, 34)
+    + rowglyph("warn", IC["amber"], SURF, 28, 34)
     + '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.02em; color: ' + INK
     + '">Nothing came back</span></div>'
   + '<span style="font-size: 15px; font-weight: 400; line-height: 1.45; color: ' + INK2
@@ -3762,15 +3808,15 @@ def iconsheet(part):
     Three screens rather than one, because a bundle has to stay under the size
     the Figma tool will take."""
     if part == 1:
-        return _grid([_cell(icon(n, 24, INK, 1.7)) for n in sorted(ICONS)])
+        return _grid([_cell(icon(n, 24, INK)) for n in sorted(ICONS)])
     if part == 2:
         return _grid([_cell(ttglyph(n, 24)) for n in sorted(TWOTONE)]
                    + [_cell(fglyph(n, 24, INK)) for n in sorted(FILLED)])
     cells = [_cell(chev(24)), _cell(mark(24)), _cell(sheetx()),
              _cell(stepdot("done")), _cell(stepdot("work")), _cell(stepdot("todo")),
              _cell(dial(72, 40)), _cell(qrsvg(40)), _cell(ring(72, 40, 6, "", "")),
-             _cell('<svg data-icon="up-small" width="11" height="11" viewBox="0 0 12 12" fill="none">'
-                   '<path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN_TEXT + '" stroke-width="1.6" '
+             _cell('<svg data-icon="up-small" width="12" height="12" viewBox="0 0 12 12" fill="none">'
+                   '<path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN_TEXT + '" stroke-width="' + str(stroke_for("up-small", 12, 12)) + '" '
                    'stroke-linecap="round" stroke-linejoin="round"/></svg>')]
     # a few glyphs only exist inside a component, so the component comes too
     inside = ('<div style="padding: 0 16px; display: flex; flex-direction: column; gap: 12px">'
