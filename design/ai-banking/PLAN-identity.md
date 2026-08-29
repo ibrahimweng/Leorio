@@ -36,8 +36,8 @@ your money, and its mark is its face.**
 **1. The mark.** ~~Today it is a ring inside a rounded square — the shape Figma
 draws when nobody has decided.~~ Drawn. It is a ring left open at the top
 holding a dot: something goes in and it stays, which is what *amana* means. It
-was drawn for 32px first, because that is where it lives. See `BRANDING.md` §4.
-The app icon is still to do.
+was drawn for 32px first, because that is where it lives. See `BRANDING.md` §4, which
+also has the app icon, scaled up from it.
 
 **2. The colour.** `#2A6AF5` is the iOS system blue. PalmPay and Moniepoint are
 both blue, Kuda is purple, Opay is green. Blue is the most crowded shelf in
@@ -65,7 +65,7 @@ mark and the name across the top and the balance off it.
 |---|---|---|
 | The assistant's mark | 301 across the file | the open ring, one master |
 | The shared receipt | every payment told to someone | mark at 32, name at 20 |
-| App icon | every time the phone is unlocked | does not exist |
+| App icon | every time the phone is unlocked | drawn, in `brand/` |
 | Opening screen | first run | plain |
 | The card | Card screen | plain |
 | Wordmark | rarely, in product | set in SF Pro |
@@ -79,8 +79,7 @@ Not the logo. In order:
 1. ~~**Put the mark on the shared receipt.**~~ Done. See `BRANDING.md` §6.
 2. **Choose the accent.** Everything else depends on it, and it is the decision
    that gets us off the blue shelf.
-3. ~~**Draw the mark at 32px**~~ — done. The app icon, scaled up from it, is
-   not.
+3. ~~**Draw the mark at 32px**, then scale up to the icon~~ — both done.
 4. **Choose the money face** and set the figures in it.
 5. **Write the voice down** — the ten rules already visible in the copy, so the
    next hundred strings sound like the first hundred.

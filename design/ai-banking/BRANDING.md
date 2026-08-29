@@ -192,8 +192,26 @@ Rules that held, and still hold:
 - It is **one master**. 301 copies across the file, every one an instance, so
   the next change is one edit. That is how this one was made.
 
-Still to draw: **the app icon**, scaled up from this, and a version that works
-on a home screen beside Kuda and Opay.
+### The app icon
+
+Drawn the same day. It is the same mark and only two things change.
+
+**It is full bleed.** The rounded corner on a home screen belongs to the
+operating system; baking one in gets it masked twice.
+
+**The glyph takes 58% of the tile**, not the 53% it takes in its badge. 53 is
+right for a 32px chip beside a line of text and timid on a home screen — a lot
+of empty blue. 64 crowds the arms of the mouth into the corner. Everything
+inside the glyph is held exactly, so the icon *is* the mark, larger, rather
+than a second drawing of it.
+
+It is written by `appicon()` in `build.py`, beside `mark()`, so the two cannot
+drift. `brand.py` saves it out to `design/ai-banking/brand/` — an SVG master
+and PNGs at 1024, 180, 120, 80, 60 and 40, full bleed and masked.
+
+One honest note, unchanged from section 1: on a home screen this sits beside
+other blue banks and does not separate itself by colour. The shape does the
+work. That is the cost of keeping the blue exactly, and it was a known cost.
 
 ## 5. The voice, written down
 
@@ -237,8 +255,7 @@ These are not new rules. They are what the copy is already doing.
    person's name rather than "Everyday", the nickname only Ibrahim uses, and
    the reference has no copy button, because nothing in a picture can be
    tapped.
-2. ~~**Draw the mark at 32px**~~ — done, see section 4. The app icon is next,
-   scaled up from it.
+2. ~~**Draw the mark at 32px**, then the app icon~~ — both done, section 4.
 3. ~~**Rename**~~ — done. 13 strings in `build.py`, one rebuild, 17 screens,
    and 37 text nodes in Figma. Not a single screen was re-sent: the four
    component masters were edited in place and 30 of the 37 followed on their

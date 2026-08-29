@@ -176,6 +176,29 @@ def mark(size=20, color=ACC, extra=""):
         + str(stroke_for("mark", size)) + '" stroke-linecap="round" fill="none"/>'
       '<circle cx="12" cy="12" r="2.7" fill="' + glyph + '"/></svg>')
 
+def appicon(size=1024, mask=False, bg=ACC_HEX):
+    """The app icon. The same mark, and only two things change.
+
+    It is full bleed: the rounded corner on a home screen belongs to the
+    operating system, so baking one in gets it masked twice. `mask=True` draws
+    the iOS corner anyway, which is what a favicon or a preview wants.
+
+    And the glyph takes 58% of the tile rather than the 53% it takes in its
+    badge. 53 is right for a 32px chip beside a line of text and timid on a
+    home screen next to Kuda and Opay; 64 crowds the arms of the mouth into
+    the corner. Proportions inside the glyph are held exactly -- stroke is
+    0.28 of the radius, the dot 0.42 of it -- so the icon is the mark, larger,
+    and not a second drawing of it."""
+    r = 29.0                                    # 58% of the 100 box, halved
+    ax, ay = 50 + r * 0.766044, 50 - r * 0.642788    # the mouth, 100 degrees at the top
+    return ('<svg xmlns="http://www.w3.org/2000/svg" width="' + str(size) + '" height="' + str(size)
+      + '" viewBox="0 0 100 100" fill="none">'
+      '<rect width="100" height="100"' + (' rx="22.37"' if mask else '') + ' fill="' + bg + '"/>'
+      '<path d="M ' + str(round(ax, 3)) + ' ' + str(round(ay, 3)) + ' A ' + str(r) + ' ' + str(r)
+        + ' 0 1 1 ' + str(round(100 - ax, 3)) + ' ' + str(round(ay, 3))
+        + '" stroke="#FFFFFF" stroke-width="' + str(round(0.28 * r, 2)) + '" fill="none" stroke-linecap="round"/>'
+      '<circle cx="50" cy="50" r="' + str(round(0.42 * r, 2)) + '" fill="#FFFFFF"/></svg>')
+
 ICONS = {
  "airtime": '<rect x="7" y="3.2" width="10" height="17.6" rx="2.4"/><path d="M10.4 17.8h3.2"/>',
  "data": '<path d="M4.4 9.6a10.6 10.6 0 0 1 15.2 0"/><path d="M7.6 13a6.4 6.4 0 0 1 8.8 0"/><path d="M11.2 16.6h1.6"/>',

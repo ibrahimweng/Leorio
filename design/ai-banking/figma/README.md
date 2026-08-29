@@ -1132,3 +1132,29 @@ down in this file as deliberate. It is on the icon scale so nothing flags it,
 but it is 4px of drift on the most repeated element in the product, and it is
 the assistant's own avatar. Left alone on purpose: it is a visible change in 119
 places and it belongs to whoever owns the design, not to an audit.
+
+## The app icon
+
+`appicon()` in `build.py`, next to `mark()`, so the icon and the mark are one
+drawing. `brand.py` saves it out and `brandshot.mjs` cuts the PNGs; both write
+to `design/ai-banking/brand/`.
+
+Two things differ from the badge inside the app, and nothing else does:
+
+- **Full bleed.** The rounded corner on a home screen is the operating
+  system's. Bake one in and it gets masked twice. `appicon(size, mask=True)`
+  draws the iOS corner anyway, for a favicon, a deck, or a specimen.
+- **58% of the tile, not 53%.** Four were rendered at 180, 120, 80, 60 and 40
+  and set beside plain colour tiles at 60. 52% is what the app badge does and
+  it is timid on a home screen, a lot of empty blue. 64% pushes the arms of the
+  mouth into the corner. A version nudged up 1.5 to correct for the mouth being
+  at the top just read as misaligned — the ring is geometrically symmetric, so
+  raising it only enlarges the gap underneath.
+
+In Figma it is one component, `App icon` (811:2304), in the `Icons` section
+beside the mark, drawn masked so the specimen reads as an icon. It is a
+specimen, not a source: the source is `appicon()`.
+
+Deleting `Mark · 34` left the mark specimen stranded at x 174, so it moved back
+to 80 and the section caption, which promised the badge "at the two sizes it
+appears in", now names the mark and the icon.
