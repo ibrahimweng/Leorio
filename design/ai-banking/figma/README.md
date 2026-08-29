@@ -447,6 +447,22 @@ Jakarta did, and Semibold is the weight iOS itself emphasises with. True Bold
 survives at one size, the balance at 32, and `_ramp()` puts it there without
 being asked, because 700 is the only weight that size offers.
 
+**`extract.mjs` has to know the ramp's weights or nothing binds.** Its `STYLE`
+map is keyed `size/weight` and is what decides whether a text node arrives
+carrying a style name. Moving the emphasis from Bold to Semibold made every
+`20/600`, `14/600` and `12/600` fall through it, so 113 nodes that should have
+been styled came over loose. Keyed correctly, 2,532 of 2,645 text nodes carry a
+style, and the 113 that do not are the on-screen keyboard and the payment card,
+which opt out on purpose.
+
+That is also how the share sheet was found. It had been sitting in Figma at
+22px and 16px, sizes the ramp dropped a long time ago, because those nodes were
+never bound to anything and so no later pass over the styles could reach them.
+The fix is the same shape as the icons: read the style name and path for every
+text node out of the extracted JSON, walk it into the file, bind, then re-apply
+the geometry. Twelve nodes in each of the eight `Share ...` components, and
+every instance on Flows followed.
+
 **Changing the face moves every text box.** The widths in the file are the
 browser's measurements, so a wider face makes anything with a pinned width wrap.
 The fix is not to re-send the screens, which would cost the 785 reactions and

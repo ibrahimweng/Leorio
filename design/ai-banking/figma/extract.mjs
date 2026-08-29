@@ -129,12 +129,14 @@ const EXTRACT = () => {
   // is one of the surfaces marked `chrome`, which opt out of the ramp: the
   // on-screen keyboard, the payment card and the meter token. Those stay
   // unbound, which is how you can tell them apart in the file.
+  // Keyed size/weight, and the weights are the ones the ramp actually emits:
+  // Semibold 600 carries the emphasis and Bold 700 survives only at 32.
   const STYLE = {
     '36/700': 'Display/Bold 36',
     '32/700': 'Display/Bold 32',
-    '20/700': 'Heading/Bold 20',
-    '14/700': 'Label/Bold 14',   '14/400': 'Label/Regular 14',
-    '12/700': 'Caption/Bold 12', '12/400': 'Caption/Regular 12'
+    '20/600': 'Heading/Semibold 20',
+    '14/600': 'Label/Semibold 14',   '14/400': 'Label/Regular 14',
+    '12/600': 'Caption/Semibold 12', '12/400': 'Caption/Regular 12'
   };
   const styleOf = T => STYLE[T.fs + '/' + T.fw] || null;
 
