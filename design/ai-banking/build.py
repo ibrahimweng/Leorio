@@ -1014,11 +1014,6 @@ def daygroup(title, inner):
       + '<div style="display: flex; flex-direction: column; gap: 12px">' + inner + '</div></div>')
 
 # ================= HOME =================
-def svc_tile(name, ic, go=""):
-    return ('<div' + hook(go) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 8px">'
-      + badge(ic, None, 48, R_TILE, 24)
-      + '<span style="font-size: 13px; font-weight: 700; color: ' + INK + '">' + name + '</span></div>')
-
 def aisay(head, text, tail="", eid=""):
     """Something the model prepared. It gets a white card with a hairline, so
     it never reads as one of the flat grey cards the app itself fills in."""
@@ -1112,7 +1107,7 @@ write("Actions", page(home_inner, 16) + askbar("Ask, or just say what you need")
 # ================= ALL SERVICES =================
 def grid_tile(name, ic, go="", act=""):
     return ('<div' + hook(go, act) + ' style="flex-grow: 1; flex-basis: 0; display: flex; flex-direction: column; align-items: center; gap: 12px">'
-      + badge(ic, None, 64, "16px", 32)
+      + badge(ic, None, 48, R_TILE, 24)
       + '<span style="font-size: 15px; font-weight: 700; color: ' + INK + '; text-align: center">' + name + '</span></div>')
 
 def listrow(name, ic, sub="", last=False, go="", act="soon"):
