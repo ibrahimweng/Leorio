@@ -1084,3 +1084,51 @@ DoneSend, and its own back — taking Flows from 771 to **774, none dead**. The
 row is an override on one instance of the share sheet, so the other seven share
 screens are untouched: they still show the pattern without claiming a picture
 that has not been drawn for them.
+
+## Drawing the mark, and one master for 301 copies
+
+The mark was a closed ring at 55% opacity — the shape Figma draws when nobody
+has decided. It is now a ring left open 100 degrees at the top, holding a dot:
+something goes in and it stays, which is what *amana* means. `BRANDING.md` §4
+has the four it beat and why.
+
+**The whole change in Figma was two nodes**, because every copy of the mark is
+an instance of `glyph=mark` (582:2092) in the `Icon` set. 301 copies, one edit.
+Worth checking for before any bulk change: count instances against loose
+vectors first, and if the ratio is good the job is a component edit, not a
+re-send.
+
+Two things about editing a vector in place:
+
+- **`vectorPaths` has no arc command.** Figma takes M, L, C, Q and Z only, so an
+  SVG `A` throws `Failed to convert path. Invalid command at A`. The arc has to
+  be written as cubics.
+- **Split the arc where the circle touches its own box.** Cut at -40, 0, 90, 180
+  and 220 degrees and the control hull is exactly the curve's bounding box, so
+  the node lands where you put it. Split evenly instead and the control points
+  poke outside, Figma sizes the node to the hull, and the glyph sits off centre.
+
+The dot came in from r2.9 to r2.7 and the ring went to full opacity, which is
+what fixes it at 28px — the bubble avatar, and 119 of the 301.
+
+### What it turned up
+
+Making the marks auditable made the audit see them for the first time, and it
+found two things that had been true for a long time:
+
+**`Mark · 34` was off the icon scale.** Two hand-built specimen components,
+`Mark · 34` and `Mark · 32`, drew the mark with their own loose vectors, so
+`isIcon()` was false and neither was ever checked. Both now hold an instance of
+the real master. `Mark · 34` had 52 instances at a size `build.py` never emits;
+they were swapped onto `Mark · 32` and the component deleted. Five of the 52
+were inside component masters (`Confirm`, `ConfirmBuy`, `Pay`, `Sent`), where
+resizing a nested instance child silently does nothing — the master's own node
+is the one to resize.
+
+**Figma draws 119 marks at 28 and the browser draws none.** Every call site in
+`build.py` is `mark(32)`, `mark(24)` or `mark(40)`; the extractor measures 24,
+32 and 40 and nothing else. The 28 is a Figma-side decision from before, written
+down in this file as deliberate. It is on the icon scale so nothing flags it,
+but it is 4px of drift on the most repeated element in the product, and it is
+the assistant's own avatar. Left alone on purpose: it is a visible change in 119
+places and it belongs to whoever owns the design, not to an audit.

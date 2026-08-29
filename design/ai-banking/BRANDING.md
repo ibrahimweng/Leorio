@@ -160,25 +160,40 @@ open list below.
 
 ## 4. The mark
 
-Whatever the name, one thing should survive: **the mark is a ring inside a soft
-shape.** It is drawn 181 times across 95 screens — more than the wordmark, the
-app icon and the card will ever be seen combined. That is real equity and it
-already reads as *an eye that is paying attention*, which is what the assistant
-is.
+**Drawn, 29 August 2026.** A ring left open at the top, holding a dot, in the
+rounded square the whole icon set uses. Something goes in and it stays, which
+is what *amana* means. It replaces a closed ring at 55% opacity that was the
+shape Figma draws when nobody has decided.
 
-Rules for drawing it:
+Five were drawn and looked at together at 28, 32, 48, 64 and app-icon size:
 
-- **Draw it at 32px first.** That is where it lives — in the ask bar, on every
-  screen. Scale up to the app icon. A logo designed large and shrunk will die at
-  32px, and 32px is the whole product.
-- It must work in three places: 32px in the ask bar, 28px as a bubble avatar,
-  64px on a share sheet, and as an app icon beside Kuda and Opay.
+| | Why not |
+|---|---|
+| **Now** | The 55% ring vanished small. At 28 it was a dot with a haze. |
+| **Aperture** | Legible at every size and completely generic — a record button. |
+| **Cradle** | `( • )` is the universal broadcast symbol. Wrong for a bank. |
+| **Seed** | Lovely at 64, mush at 28, and it reads as a smile. |
+| **Kept** | Chosen. |
+
+The mouth is **100 degrees**. That is the widest that still reads as a ring
+rather than a U, and the narrowest that survives 28px — at 70 degrees and below
+it closes up and becomes Aperture again at the sizes that matter. The dot came
+in from 2.9 to 2.7 to give the ring room, and the ring went to full weight on
+the same stroke rule as every other glyph, which works out at 1.8 in the 24 box
+for every size between 15 and 42.
+
+Rules that held, and still hold:
+
+- **It was drawn at 32px first**, then checked upward. 32 is the ask bar, on
+  every screen; 28 is the bubble avatar and the hardest size; 40 is the opening
+  screen. A logo designed large and shrunk would have died at 32.
 - One colour on white, and white on the blue. No gradients — nothing else in
   this design system has one.
-- Keep the current icon on the home screen until the new one is drawn, so the
-  screens stay whole.
+- It is **one master**. 301 copies across the file, every one an instance, so
+  the next change is one edit. That is how this one was made.
 
----
+Still to draw: **the app icon**, scaled up from this, and a version that works
+on a home screen beside Kuda and Opay.
 
 ## 5. The voice, written down
 
@@ -222,8 +237,8 @@ These are not new rules. They are what the copy is already doing.
    person's name rather than "Everyday", the nickname only Ibrahim uses, and
    the reference has no copy button, because nothing in a picture can be
    tapped.
-2. **Draw the mark at 32px**, then the app icon. The receipt is now the second
-   place it is drawn at that size, and the first where a stranger sees it.
+2. ~~**Draw the mark at 32px**~~ — done, see section 4. The app icon is next,
+   scaled up from it.
 3. ~~**Rename**~~ — done. 13 strings in `build.py`, one rebuild, 17 screens,
    and 37 text nodes in Figma. Not a single screen was re-sent: the four
    component masters were edited in place and 30 of the 37 followed on their
@@ -234,6 +249,12 @@ These are not new rules. They are what the copy is already doing.
 
 ## Open
 
+- **The mark is 28px in Figma and 32px in the source, in 119 places.** Every
+  call site in `build.py` is 24, 32 or 40; the browser renders nothing at 28.
+  It is the assistant's own avatar and the most repeated element in the app, so
+  4px is not nothing. Either the source should say 28 or Figma should say 32,
+  and that is a look-at-it decision rather than an audit one.
+- The app icon, scaled up from the mark.
 - How Amana answers the Islamic-finance reading. The word is Hausa by way of
   Arabic and it means safekeeping, not a product structure. Half of Nigeria
   will hear the older meaning and half will hear nothing at all; the mark and

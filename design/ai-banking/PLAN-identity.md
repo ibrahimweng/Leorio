@@ -33,10 +33,11 @@ your money, and its mark is its face.**
 
 ## The four decisions
 
-**1. The mark.** Today it is a ring inside a rounded square — the shape Figma
-draws when nobody has decided. It has to work at 32px in the ask bar, 28px as a
-bubble avatar, 64px on a share sheet, and as an app icon on a home screen next
-to Kuda and Opay. Draw it for 32px first, because that is where it lives.
+**1. The mark.** ~~Today it is a ring inside a rounded square — the shape Figma
+draws when nobody has decided.~~ Drawn. It is a ring left open at the top
+holding a dot: something goes in and it stays, which is what *amana* means. It
+was drawn for 32px first, because that is where it lives. See `BRANDING.md` §4.
+The app icon is still to do.
 
 **2. The colour.** `#2A6AF5` is the iOS system blue. PalmPay and Moniepoint are
 both blue, Kuda is purple, Opay is green. Blue is the most crowded shelf in
@@ -62,7 +63,7 @@ mark and the name across the top and the balance off it.
 
 | Surface | Times seen | State today |
 |---|---|---|
-| The assistant's mark | 181 across the app | generic ring, system blue |
+| The assistant's mark | 301 across the file | the open ring, one master |
 | The shared receipt | every payment told to someone | mark at 32, name at 20 |
 | App icon | every time the phone is unlocked | does not exist |
 | Opening screen | first run | plain |
@@ -78,9 +79,8 @@ Not the logo. In order:
 1. ~~**Put the mark on the shared receipt.**~~ Done. See `BRANDING.md` §6.
 2. **Choose the accent.** Everything else depends on it, and it is the decision
    that gets us off the blue shelf.
-3. **Draw the mark at 32px**, then scale up to the icon — not the other way
-   round, or it will be a logo that shrinks badly into the place it actually
-   lives.
+3. ~~**Draw the mark at 32px**~~ — done. The app icon, scaled up from it, is
+   not.
 4. **Choose the money face** and set the figures in it.
 5. **Write the voice down** — the ten rules already visible in the copy, so the
    next hundred strings sound like the first hundred.

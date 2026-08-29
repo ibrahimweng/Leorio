@@ -156,14 +156,25 @@ def write(name, inner, anim=""):
 # ---------- shared pieces ----------
 
 def mark(size=20, color=ACC, extra=""):
-    """The model's badge. A rounded square like every other icon here, so it
-    belongs to the set, with a ring glyph so you know which one it is."""
+    """The mark. A rounded square like every other icon here, so it belongs to
+    the set, and inside it a ring left open at the top: something goes in and
+    it stays. Amana is the Hausa word for a thing left with you to keep.
+
+    The mouth is 100 degrees, which is the widest that still reads as a ring
+    and the narrowest that survives 28px, where the bubble avatar draws it.
+    Narrower and it closes up into a record button at the sizes that matter.
+
+    The ring used to sit at 55% opacity and it was the reason the mark went
+    mushy small: at 28 it was a dot with a haze round it. It is at full weight
+    now, on the same stroke rule as every other glyph, which works out at 1.8
+    in this box for every size between 15 and 42."""
     s = str(size)
     glyph = ACC_HEX if color.startswith("#FFF") else "#FFFFFF"
     return ('<svg data-icon="mark" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0' + extra + '">'
       '<rect width="24" height="24" rx="7.2" fill="' + color + '"/>'
-      '<circle cx="12" cy="12" r="6.1" stroke="' + glyph + '" stroke-width="' + str(stroke_for("mark", size)) + '" opacity="0.55"/>'
-      '<circle cx="12" cy="12" r="2.9" fill="' + glyph + '"/></svg>')
+      '<path d="M16.9 7.89A6.4 6.4 0 1 1 7.1 7.89" stroke="' + glyph + '" stroke-width="'
+        + str(stroke_for("mark", size)) + '" stroke-linecap="round" fill="none"/>'
+      '<circle cx="12" cy="12" r="2.7" fill="' + glyph + '"/></svg>')
 
 ICONS = {
  "airtime": '<rect x="7" y="3.2" width="10" height="17.6" rx="2.4"/><path d="M10.4 17.8h3.2"/>',
