@@ -790,10 +790,17 @@ def meter(done, total):
 
 # ---------- the bottom bar, and what its black circle opens ----------
 
-def dock(placeholder, back_btn=False, height=104):
+def dock(placeholder, back_btn=False, height=104, plus=True):
     """The reference floats its bar on white with no bar behind it, and puts a
     black circle at the right. Ours holds the model instead of tab icons, so
-    the ask bar takes the width and the circle keeps the corner."""
+    the ask bar takes the width and the circle keeps the corner.
+
+    The circle means one thing: start something new. So it is only on a screen
+    where that is a real option. A receipt is a record of something that already
+    happened, and it carries its own black button saying Share receipt; a second
+    black thing a thumb-width away, meaning something else, is a screen arguing
+    with itself. On those the circle goes and the ask bar takes the room, which
+    it needs: several placeholders truncate at the width the circle leaves."""
     left = back() if back_btn else ('<div' + hook("Settings") + ' style="width: 44px; height: 44px; border-radius: ' + PILL
       + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
       + icon("gear", 24, INK) + '</div>')
@@ -814,15 +821,15 @@ def dock(placeholder, back_btn=False, height=104):
     return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: ' + str(height)
       + 'px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, ' + BG
       + ' 62%); display: flex; align-items: flex-end; padding: 0 20px 28px 20px">'
-      '<div style="display: flex; width: 100%; gap: 12px; align-items: center">' + left + ask + fab + '</div></div>')
+      '<div style="display: flex; width: 100%; gap: 12px; align-items: center">' + left + ask + (fab if plus else '') + '</div></div>')
 
 def askbar(placeholder, height=104, tabbar=False):
     """Home shows the settings icon at the left of the bar."""
     return dock(placeholder, False, height)
 
-def dockback(placeholder, height=104):
+def dockback(placeholder, height=104, plus=True):
     """Every other screen shows back in the same spot, at the bottom left."""
-    return dock(placeholder, True, height)
+    return dock(placeholder, True, height, plus)
 
 def confirmbar(inner):
     """A screen that is a task earns one action and nothing else. Back keeps
@@ -1323,7 +1330,7 @@ power = page(
   + sharebtn("SharePower")
   + offerrow("Pay this every month, without asking?", "Set it up", "Rule")
   + wrongrow("The token did not work?"), 20)
-power += dockback("Ask about this payment")
+power += dockback("Ask about this payment", plus=False)
 write("Power", power)
 
 # ================= BILLS =================
@@ -1540,7 +1547,7 @@ answer = page(
     + mrow("MTN data", "data", "5 top ups", "&#8358;12,500")
     + mrow("MTN airtime", "airtime", "7 top ups", "&#8358;4,400")
     + mrow("Glo airtime", "airtime", "2 top ups", "&#8358;2,000") + '</div></div>'
-  + '<div style="' + bordered("16px", "24px") + '">' + aline("A 10GB monthly plan is &#8358;4,000 and would save about &#8358;1,800.", "17px") + '</div>', 13) + dockback("Ask about this")
+  + '<div style="' + bordered("16px", "24px") + '">' + aline("A 10GB monthly plan is &#8358;4,000 and would save about &#8358;1,800.", "17px") + '</div>', 13) + dockback("Ask about this", plus=False)
 write("Answer", answer)
 
 # ================= SEND MONEY =================
@@ -1907,7 +1914,7 @@ pick = page(
     + acctrow("Zenith", "2087 6612 04", "ACME PROPERTIES LTD", IC["red"])
     + acctrow("Access", "0691 3345 71", "M. IBRAHIM", IC["blue"], True) + '</div>'
   + aline("The invoice is from Acme, so the middle one is most likely who you owe. Tap whichever you meant.", "16px"), 16)
-pick += dockback("Ask about this photo")
+pick += dockback("Ask about this photo", plus=False)
 write("Pick", pick)
 
 # ---------- what the model read, and the one question it must ask ----------
@@ -2055,7 +2062,7 @@ done = page(
   + sharebtn("ShareBuy")
   + '<div id="dnOffer">' + offerrow("Mum has it. Every month, without asking?", "Set it up", "Rule") + '</div>'
   + wrongrow(), 20)
-done += dockback("Ask about this")
+done += dockback("Ask about this", plus=False)
 write("Done", done)
 
 # ================= A GOAL =================
@@ -2187,7 +2194,7 @@ settings = page(
              + '<span style="flex-grow: 1; font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: ' + WARN_TEXT + '">Sign out</span></div>')
   + '<div style="padding-top: 8px; text-align: center">'
     '<span style="font-size: 15px; font-weight: 400; color: ' + INK3 + '">Version 1.0.4</span></div>', 20)
-settings += dockback("Ask me to change something")
+settings += dockback("Ask me to change something", plus=False)
 write("Settings", settings)
 
 # ---------- what it takes to open this, and what shows once it is open ----------
@@ -2211,7 +2218,7 @@ lock = page(
       'Nobody standing behind you in a queue reads it over your shoulder.</span></div>'
   + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">Your passcode is not on our servers</span>',
            "It opens this phone and nothing else. If you lose it, recovery gives you a new one. Nobody, here or anywhere, can read the old one."), 18)
-lock += dockback("Ask me to lock something down")
+lock += dockback("Ask me to lock something down", plus=False)
 write("Lock", lock)
 
 # ================= ACTIVITY =================
@@ -2395,7 +2402,7 @@ sent = page(
     + plainrow("Reference", "REQ-40112-8873", True) + '</div>'
   + aline("I will tell you the moment it lands. You do not have to watch for it.", "16px")
   + offer("Want me to remind him if nothing comes by Friday?", "Set that up", "Rule"), 16)
-sent += dockback("Ask about this request")
+sent += dockback("Ask about this request", plus=False)
 write("Sent", sent)
 
 # ---------- the code somebody points a camera at ----------
@@ -2512,7 +2519,7 @@ donesend = page(
   + sharebtn("Share")
   + offerrow("She has it. Rent again next month?", "Set it up", "Rule")
   + wrongrow(), 20)
-donesend += dockback("Ask about this transfer")
+donesend += dockback("Ask about this transfer", plus=False)
 write("DoneSend", donesend)
 
 # ---------- sending the receipt on ----------
@@ -2561,7 +2568,7 @@ donein = page(
   + sharebtn("ShareIn")
   + offerrow("Put &#8358;50,000 away before it goes?", "Set it up", "Goal")
   + wrongrow("Expecting more than this?"), 20)
-donein += dockback("Ask about this payment")
+donein += dockback("Ask about this payment", plus=False)
 write("DoneIn", donein)
 write("ShareIn", donein + sheetup(share_inner("&#8358;640,000 from Pagrin Limited, 4:40 PM")))
 
@@ -2582,7 +2589,7 @@ donecard = page(
   + sharebtn("ShareCard")
   + offerrow("Freeze this card, or see what else it pays?", "Open the card", "Card")
   + wrongrow("You did not make this payment?"), 20)
-donecard += dockback("Ask about this payment")
+donecard += dockback("Ask about this payment", plus=False)
 write("DoneCard", donecard)
 write("ShareCard", donecard + sheetup(share_inner("&#8358;5,200 to Netflix, 9:00 AM")))
 
@@ -2607,7 +2614,7 @@ doneflat = page(
   + sharebtn("ShareFlat")
   + offerrow("She has it. The same on the first of every month?", "Set it up", "Rule")
   + wrongrow(), 20)
-doneflat += dockback("Ask about this transfer")
+doneflat += dockback("Ask about this transfer", plus=False)
 write("DoneFlat", doneflat)
 write("ShareFlat", doneflat + sheetup(share_inner("&#8358;50,000 to Sarah Adeyemi, 9:14 AM")))
 
@@ -2630,7 +2637,7 @@ doneshop = page(
   + sharebtn("ShareShop")
   + offerrow("Grocery money every Friday?", "Set it up", "Rule")
   + wrongrow(), 20)
-doneshop += dockback("Ask about this transfer")
+doneshop += dockback("Ask about this transfer", plus=False)
 write("DoneShop", doneshop)
 write("ShareShop", doneshop + sheetup(share_inner("&#8358;8,000 to John Doe, 10:45 AM")))
 
@@ -2651,7 +2658,7 @@ donesub = page(
   + sharebtn("ShareSub")
   + offerrow("Netflix takes this every month. Stop it?", "Open the card", "Card")
   + wrongrow("You did not make this payment?"), 20)
-donesub += dockback("Ask about this payment")
+donesub += dockback("Ask about this payment", plus=False)
 write("DoneSub", donesub)
 write("ShareSub", donesub + sheetup(share_inner("&#8358;3,500 to Netflix, 12:00 PM")))
 
@@ -2719,7 +2726,7 @@ short = page(
       ("Ask Musa for &#8358;7,520", "He owes you from the rent", "request", "purple", "Request")])
   + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">Nothing has left your account</span>',
            "No fee and no attempt. This is a sum I did before trying."), 13)
-short += dockback("Ask me about this")
+short += dockback("Ask me about this", plus=False)
 write("Short", short)
 
 # ---------- sent, and the bank is slow ----------
@@ -2734,7 +2741,7 @@ pending = page(
   + aline("Slow, not lost. If GTBank has not confirmed by 16:22 it comes back on its own, "
           "and I will tell you either way.", "16px")
   + offer("Want a message the moment it lands?", "Yes, tell me", "Rule"), 15)
-pending += dockback("Ask about this transfer")
+pending += dockback("Ask about this transfer", plus=False)
 write("Pending", pending)
 
 # ---------- the bank turned it down ----------
@@ -2748,7 +2755,7 @@ failed = page(
       ("Try again now", "It may have cleared already", "send", "blue", "Chat"),
       ("Send it another way", "Through your Zenith account", "bank", "purple", "")])
   + offer("Keep trying until GTBank is back?", "Do that", "Rule"), 13)
-failed += dockback("Ask why this failed")
+failed += dockback("Ask why this failed", plus=False)
 write("Failed", failed)
 
 # ---------- it went, and it came back ----------
@@ -2765,7 +2772,7 @@ reversal = page(
   + waylist([
       ("Check the account number", "One digit is usually all it is", "search", "amber", "Found"),
       ("Try Sarah again", "Same amount, same account", "send", "blue", "Chat")]), 15)
-reversal += dockback("Ask about this")
+reversal += dockback("Ask about this", plus=False)
 write("Reversed", reversal)
 
 # ---------- something was wrong with a payment that worked ----------
@@ -2782,7 +2789,7 @@ wrong = page(
     + plainrow("Amount", "&#8358;20,000")
     + plainrow("To", "Sarah Adeyemi &#183; GTBank")
     + plainrow("Sent", "Today, 14:22", True) + '</div>', 15)
-wrong += dockback("Tell me what happened")
+wrong += dockback("Tell me what happened", plus=False)
 write("Wrong", wrong)
 
 # ---------- asking for it back, and what that really means ----------
@@ -2807,7 +2814,7 @@ recall = page(
   + waylist([
       ("Message Sarah", "Most of these end here, in an hour", "chat", "green", ""),
       ("Open a dispute", "If she has not answered by Friday", "list", "amber", "")]), 15)
-recall += dockback("Ask what happens next")
+recall += dockback("Ask what happens next", plus=False)
 write("Recall", recall)
 
 # ================= WHAT A STANDING INSTRUCTION IS =================
@@ -3030,7 +3037,7 @@ limits = page(
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">Raising a cap takes a day to come into force. Lowering one is immediate. '
       'That way nobody talks you into a bigger number in the moment.</span></div>', 18)
-limits += dockback("Ask me to change a limit")
+limits += dockback("Ask me to change a limit", plus=False)
 write("Limits", limits)
 
 # ---------- the gate itself, caught halfway through ----------
@@ -3088,7 +3095,7 @@ devices = page(
     + '<span style="font-size: 14px; font-weight: 500; line-height: 1.45; color: ' + INK3
     + '; text-wrap: pretty">Signing a device out never touches your money. It only means that device '
       'has to ask for your passcode again.</span></div>', 18)
-devices += dockback("Ask about a device")
+devices += dockback("Ask about a device", plus=False)
 write("Devices", devices)
 
 
@@ -3130,7 +3137,7 @@ health = page(
   + tinted('<span style="font-size: 16px; font-weight: 700; color: ' + ACC_INK + '">This is not a credit score</span>',
            "It never leaves this phone. No lender sees it, no bank is sent it, and it changes nothing about "
            "what you can borrow. It is here so you can watch your own habits, and for no other reason."), 18)
-health += dockback("Ask me how to move it")
+health += dockback("Ask me how to move it", plus=False)
 write("Health", health)
 
 # ================= FEEDING A GOAL, AS A SHEET OVER THE GOAL =================
@@ -3282,7 +3289,7 @@ converted = page(
     '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">See your dollars</span>'
     + chev(12, ACC_TEXT_HEX, 2.2) + '</div>'
   + wrongrow("Something wrong with this?"), 16)
-converted += dockback("Ask me about this")
+converted += dockback("Ask me about this", plus=False)
 write("Converted", converted)
 
 # ================= OPENING AN ACCOUNT =================
