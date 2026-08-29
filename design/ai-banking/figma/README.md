@@ -706,11 +706,34 @@ sections.
 
 **Screens** are the 23 that appear in more than one flow, from `Confirm` (x5)
 and `DoneSend` (x5) down to the eight `Share ...` and `Done ...` receipts that
-differ only in what they are a receipt for. **Parts** are the fourteen things
+differ only in what they are a receipt for. **Parts** are the seventeen things
 that appear in more than one screen: the passcode key and the keypad it fills,
-the keyboard, the three docks, the three ask bars, the three tool panels, the
-sheet row, and the `Button` set. **Icons** holds the `Icon` set and the mark, at
-the two sizes it is drawn at.
+the keyboard, the three docks, the four ask bars, the three tool panels, the
+sheet row, `Field · typing`, and the `Button` and `Bubble` sets. **Icons** holds
+the `Icon` set and the mark, at the two sizes it is drawn at.
+
+`Bubble` is now the most used component in the file: 61 instances directly, and
+157 counting the ones that arrive through the screen components and the home
+screen. Four variants under one `who` property — `Leorio`, `Leorio · with a
+title`, `You`, `You · typed`. Leorio speaks on a tint at 16 all round and fills
+the width it is given; you speak on black at 12 and 16 and the bubble hugs the
+words, with the microphone when it came off the voice sheet rather than the
+keyboard.
+
+Componentising them fixed something as a side effect. 45 of the bubbles had no
+auto layout at all: `tune()` had measured too much drift and fallen back to
+absolute placement, so when SF Pro Text made the words taller the frame did not
+follow and the tint ran short of the last line. An instance of a hugging
+component cannot do that.
+
+**The fields are mostly not fields.** The app asks for very little typing, and
+what it does ask for goes through surfaces that were already components: the
+three ask bars, the two keypads, the dock. What was left over is
+`Ask bar · typed`, the ask bar with something in it and a caret where the next
+letter lands (4 uses), and `Field · typing`, the answer set at Display/Bold 32
+with the caret after it, for a phone number or an NIN (5 uses). Two more are
+genuinely one of a kind and were left alone: the bordered confirm field on
+`LimitStop` and the inline typed line on `Finish`.
 
 `Button` is one set of twelve variants, two properties: `tone` (black, grey,
 white, blue) and `size` (44, 48, 56). Every button carries a leading and a
