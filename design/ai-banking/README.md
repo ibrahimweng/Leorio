@@ -178,12 +178,22 @@ Everything is skipped under `prefers-reduced-motion`.
 
 ## Type
 
-Plus Jakarta Sans, subset and embedded as a data URI in every built file.
+SF Pro Text, subset and embedded as a data URI in every built file, at three
+weights: Regular, Semibold and Bold. Semibold carries the emphasis rather than
+Bold, because SF sets heavier at a given weight than Plus Jakarta Sans did and
+Semibold is the weight iOS itself emphasises with; Bold is kept for the balance
+at 32. There is no italic.
 
-It is here for one reason. Google's webfont subsets deliberately leave out the
-Naira sign at U+20A6, and Figtree and Manrope have no Naira glyph at all. Plus
-Jakarta Sans has one, and subsetting the full variable font from source keeps
-it.
+Tracking is not invented here. SF ships Apple's optical tracking in the font's
+`trak` table, and `tokens.py` carries its normal-track values read straight out
+of the file, per size: 0% at 12, −1.07% at 14, −2.69% at 20, −3.32% at 32. They
+are the same across every weight, so tracking belongs to the size, not the cut.
+
+Embedding is for two reasons. The screens are single files that have to render
+the same anywhere, including in the headless browser the Figma pipeline measures
+them in. And the Naira sign at U+20A6 is missing from Google's webfont subsets,
+which is what ruled out loading a face the normal way; Figtree and Manrope have
+no Naira glyph at all.
 
 The glyph needs help. Its crossbars run to the edges of the letterform and read
 as a strikethrough against a digit, so every Naira sign is wrapped in a span

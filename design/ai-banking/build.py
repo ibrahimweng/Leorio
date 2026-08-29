@@ -13,20 +13,18 @@ def _b64(name):
         _FCACHE[name] = base64.b64encode(open(os.path.join(_FDIR, name), "rb").read()).decode("ascii")
     return _FCACHE[name]
 
-def faces(italic=False):
-    # Google's webfont subsets leave out the Naira sign, so the font rides
-    # inside each screen instead. See fonts/README.md.
-    out = ("    @font-face { font-family: '" + FONT_NAME + "'; font-style: normal; font-weight: " + FONT_WGHT + ";"
-           " src: url(data:font/woff2;base64," + _b64(FONT_FILE) + ") format('woff2'); font-display: block; }\n")
-    if italic:
-        out += ("    @font-face { font-family: '" + FONT_NAME + "'; font-style: italic; font-weight: 400;"
-                " src: url(data:font/woff2;base64," + _b64(FONT_ITAL) + ") format('woff2'); font-display: block; }\n")
-    return out
+def faces():
+    # The font rides inside each screen rather than being fetched, so a screen
+    # is one file that renders the same anywhere. See fonts/README.md.
+    return "".join(
+        "    @font-face { font-family: '" + FONT_NAME + "'; font-style: normal; font-weight: " + w + ";"
+        " src: url(data:font/woff2;base64," + _b64(f) + ") format('woff2'); font-display: block; }\n"
+        for w, f in FONT_FACES)
 
-def head(anim="", italic=False):
+def head(anim=""):
     return ('<!doctype html>\n<html>\n<head>\n  <meta charset="utf-8">\n'
       '  <script src="./support.js"></script>\n</head>\n<body>\n<x-dc>\n<helmet>\n'
-      '  <style>\n' + faces(italic) +
+      '  <style>\n' + faces() +
       '    * { box-sizing: border-box; }\n'
       '    body { margin: 0; background: ' + BG + '; font-family: ' + FONT_UI + '; -webkit-font-smoothing: antialiased; }\n'
       '    a { color: ' + ACC_HEX + '; } a:hover { color: #1B4FC4; }\n'
@@ -148,12 +146,12 @@ def hook(go="", act=""):
         out += ' data-act="' + act + '"'
     return out
 
-def write(name, inner, anim="", italic=False):
+def write(name, inner, anim=""):
     inner = snap(inner)
     inner = inner.replace(NAIRA, '<span style="margin: 0 0.09em 0 0.05em">' + NAIRA + '</span>')
     SCREENS[name] = inner
     if EMIT:
-        open(os.path.join(OUT, name + ".dc.html"), "w").write(head(anim, italic) + screen(inner) + FOOT)
+        open(os.path.join(OUT, name + ".dc.html"), "w").write(head(anim) + screen(inner) + FOOT)
 
 # ---------- shared pieces ----------
 
@@ -1216,7 +1214,7 @@ def sharebtn(go):
 
 def quote(t):
     return ('<div style="display: flex; flex-direction: column; gap: 8px">' + caption("You said")
-      + '<span style="font-size: 17px; font-style: italic; font-weight: 500; color: ' + INK2 + '">' + t + '</span></div>')
+      + '<span style="font-size: 17px; font-weight: 400; color: ' + INK2 + '">' + t + '</span></div>')
 
 def plainrow(k, v, last=False, vcolor=INK, chevron=False, vid="", go=""):
     c = chevbtn(24) if chevron else ""
@@ -1259,7 +1257,7 @@ airtime = page(
       + '<div style="width: 46px; height: 46px; border-radius: 23px; border: 1px dashed ' + FILL3
       + '; display: flex; align-items: center; justify-content: center">' + icon("plus", 20, INK3, 1.7) + '</div></div></div>', 15)
 airtime += confirmbar(slide("Slide to buy &#8358;2,500", "done|Airtime", "aSlide"))
-write("Airtime", airtime, "", True)
+write("Airtime", airtime)
 
 # ================= ELECTRICITY, PAID =================
 # The token is the thing a person came back for, so it sits above the record
@@ -1548,11 +1546,11 @@ def paypage(fx=False):
 
 pay = paypage()
 pay += confirmbar(slide("Slide to send &#8358;50,000", "done|Pay"))
-write("Pay", pay, "", True)
+write("Pay", pay)
 
 paydollars = paypage(True)
 paydollars += confirmbar(slide("Slide to send &#8358;50,000", "done|PayDollars"))
-write("PayDollars", paydollars, "", True)
+write("PayDollars", paydollars)
 
 # ================= THE SAME SEND, ASKED FOR IN CHAT =================
 # The voice sheet hands over to a conversation. What the model is doing is not
@@ -1997,7 +1995,7 @@ powerpay = page(
     + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
     + '; text-wrap: pretty">The token appears here and in your messages.</span></div>', 15)
 powerpay += confirmbar(slide("Slide to pay &#8358;8,000", "Power", "pwSlide"))
-write("PowerPay", powerpay, "", True)
+write("PowerPay", powerpay)
 
 # ================= DONE, THE RECEIPT FOR A PURCHASE =================
 done = page(
@@ -3225,7 +3223,7 @@ convert = page(
     + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
     + '; text-wrap: pretty">The rate is held for sixty seconds once you slide.</span></div>', 15)
 convert += confirmbar(slide("Slide to convert", "Converted", "cvSlide"))
-write("Convert", convert, "", True)
+write("Convert", convert)
 
 converted = page(
   T("Converted", "It is in your dollars already")
@@ -3447,7 +3445,7 @@ write("Start", start)
 
 # ---------- one ----------
 number = account(0, bigfield("0803 214 4471"), foot=NUMPAD_H) + numpad()
-write("Number", number, "", True)
+write("Number", number)
 
 # ---------- two ----------
 code = account(0, '<div style="display: flex; justify-content: flex-start">' + pindots(4, 6) + '</div>',
@@ -3455,11 +3453,11 @@ code = account(0, '<div style="display: flex; justify-content: flex-start">' + p
   '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 8px; height: 38px">'
   '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
   + chev(12, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
-write("Code", code, "", True)
+write("Code", code)
 
 # ---------- three ----------
 nin = account(1, bigfield("1234 5678 90"), foot=NUMPAD_H) + numpad()
-write("Nin", nin, "", True)
+write("Nin", nin)
 
 # ---------- four: the model reads it back ----------
 who = account(1,
@@ -3503,11 +3501,11 @@ passcode = account(3, '<div style="display: flex; justify-content: flex-start">'
   + icon("lock", 16, INK3, 1.6, "; margin-top: 2px")
   + '<span style="font-size: 14px; font-weight: 400; line-height: 1.45; color: ' + INK2
   + '; text-wrap: pretty">Not your year of birth, and not 123456.</span></div>') + numpad()
-write("Passcode", passcode, "", True)
+write("Passcode", passcode)
 
 # ---------- the few seconds it actually takes ----------
 opening = account(-1, foot=60)
-write("Opening", opening, "", True)
+write("Opening", opening)
 
 # ---------- and in ----------
 def canrow(t, on=True, last=False):
@@ -3668,7 +3666,7 @@ signin = plainpage(
   plaintop("Welcome back", "Your number, and then six digits from a text. Nothing else, because "
            "the account is already yours.")
   + '<div style="padding-top: 16px">' + bigfield("0803 214 4471") + '</div>') + numpad()
-write("Signin", signin, "", True)
+write("Signin", signin)
 
 signcode = plainpage(
   plaintop("Six digits", "Sent to 0803 214 4471 a moment ago. On a phone I already know, your "
@@ -3677,7 +3675,7 @@ signcode = plainpage(
   + '<div' + hook("", "soon") + ' style="display: flex; align-items: center; gap: 8px; height: 38px">'
     '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">I did not get it</span>'
   + chev(12, ACC_TEXT_HEX, 2.2) + '</div>') + numpad()
-write("Signcode", signcode, "", True)
+write("Signcode", signcode)
 
 # ---------- when the digits come back with nobody attached ----------
 # The one question in opening an account that can fail on its own. Eleven digits

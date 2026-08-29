@@ -73,7 +73,7 @@ CSS = """
 html,body{margin:0;padding:0}
 body{
   background:var(--sur-bg); color:var(--sur-ink);
-  font-family:'Plus Jakarta Sans',-apple-system,'Helvetica Neue',Arial,sans-serif;
+  font-family:'SF Pro Text',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
   -webkit-font-smoothing:antialiased; overflow:hidden;
   min-height:100vh; min-height:100dvh;
 }
@@ -740,7 +740,7 @@ layout();
 setTimeout(function(){ layout(); enter(screens.Main); countBalance(); popFab(); }, 60);
 """
 
-HTML = ("<title>Banking Flow Prototype</title>\n<style>\n" + build.faces(True) + CSS + "\n</style>\n"
+HTML = ("<title>Banking Flow Prototype</title>\n<style>\n" + build.faces() + CSS + "\n</style>\n"
   '<div class="wrap">\n'
   '  <div class="device" id="device">\n'
   '    <div class="stage" id="stage">\n' + screens + overlays + '    </div>\n  </div>\n'

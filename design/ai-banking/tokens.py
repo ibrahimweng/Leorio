@@ -128,14 +128,18 @@ TONES = {"neutral": (FILL, INK)}
 WASH = FILL   # nothing washes the page any more, but page() still names it
 
 # ---------------------------------------------------------------- type
-FONT_UI = "'Plus Jakarta Sans', -apple-system, 'Helvetica Neue', Arial, sans-serif"
+FONT_UI = "'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif"
 FONT_AI = FONT_UI
 SERIF   = "font-family: " + FONT_AI
 
-FONT_FILE  = "PlusJakarta-subset.woff2"
-FONT_ITAL  = "PlusJakartaItalic-subset.woff2"
-FONT_NAME  = "Plus Jakarta Sans"
-FONT_WGHT  = "400 800"
+FONT_NAME  = "SF Pro Text"
+# Three cuts, one file each. Plus Jakarta Sans was one variable file covering
+# 400 to 800; SF Pro Text ships as static weights, so the roman is three faces
+# rather than a range. There is no italic: the one place that used to lean, the
+# quote of what you said, stands upright now.
+FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
+              ("600", "SFProText-Semibold-subset.woff2"),
+              ("700", "SFProText-Bold-subset.woff2")]
 
 # Seven named styles, read straight off the home screen in Figma. That file is
 # the source of truth for type, so the ramp is not a set of sizes any more: it
@@ -150,19 +154,25 @@ FONT_WGHT  = "400 800"
 #
 #   Display/Bold 36         the ceiling, held in reserve, unused
 #   Display/Bold 32         a balance
-#   Heading/Bold 20         a page title, a heading over a group, the kobo tail
-#   Label/Bold 14           a row title, a button, a value, a chip that filters
+#   Heading/Semibold 20     a page title, a heading over a group, the kobo tail
+#   Label/Semibold 14       a row title, a button, a value, a chip that filters
 #   Label/Regular 14        a second line, and everything the model says
-#   Caption/Bold 12         a day separator, a badge, a small firm number
+#   Caption/Semibold 12     a day separator, a badge, a small firm number
 #   Caption/Regular 12      a note under a field
+# Tracking is not invented here. SF ships Apple's own optical tracking in the
+# font's `trak` table, and these are its normal-track values read straight out
+# of the file, in percent of the size. They are identical across all five
+# weights, so tracking belongs to the size and not to the cut. Note the shape:
+# SF Pro Text is drawn for small text, so the larger it is set the more it has
+# to be pulled in, which is the opposite of the way Jakarta was tuned here.
 STYLE = {
-    (36, 700): ("Display/Bold 36",     "normal", -1.83),
-    (32, 700): ("Display/Bold 32",     "normal", -1.83),
-    (20, 700): ("Heading/Bold 20",     "normal", -3.0),
-    (14, 700): ("Label/Bold 14",       "normal", -1.0),
-    (14, 400): ("Label/Regular 14",    "normal",  0.0),
-    (12, 700): ("Caption/Bold 12",     "normal",  0.0),
-    (12, 400): ("Caption/Regular 12",  "normal",  0.0),
+    (36, 700): ("Display/Bold 36",      "normal", -3.418),
+    (32, 700): ("Display/Bold 32",      "normal", -3.320),
+    (20, 600): ("Heading/Semibold 20",  "normal", -2.686),
+    (14, 600): ("Label/Semibold 14",    "normal", -1.074),
+    (14, 400): ("Label/Regular 14",     "normal", -1.074),
+    (12, 600): ("Caption/Semibold 12",  "normal",  0.0),
+    (12, 400): ("Caption/Regular 12",   "normal",  0.0),
 }
 # The sizes a stray number is allowed to land on. 36 is deliberately absent:
 # the style exists so the ceiling is named, but nothing rounds up into it.
@@ -174,12 +184,15 @@ WEIGHTS_AT = {}
 for _fs, _fw in STYLE:
     WEIGHTS_AT.setdefault(_fs, []).append(_fw)
 
-# The Naira sign loses its crossbars below about twelve and a half pixels, so
-# money never renders at the bottom of the ramp. snap() lifts any figure off it.
+# Money never renders at the bottom of the ramp: a Naira sign at 12 is too fine
+# to read at a glance on a phone. snap() lifts any figure off it.
 MONEY_MIN_PX = 14
-# Two weights. Regular for anything grey, bold for everything else. ExtraBold
-# is gone: the home screen dropped it and a balance at 32 Bold carries itself.
-WEIGHT = {400: 400, 500: 400, 600: 700, 700: 700, 800: 700}
+# Two weights in use. Regular for anything grey, and Semibold, not Bold, for
+# everything else: SF sets heavier at a given weight than Jakarta did, and
+# Semibold is the weight iOS itself emphasises with. Bold survives at one size
+# only, the balance at 32, and _ramp() puts it there without being asked,
+# because 700 is the only weight that size offers.
+WEIGHT = {400: 400, 500: 400, 600: 600, 700: 600, 800: 600}
 
 # ---------------------------------------------------------------- shape
 # A 4px rhythm, and nothing off it. 2 and 6 used to be kept for the gap between

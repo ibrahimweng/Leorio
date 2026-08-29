@@ -322,13 +322,13 @@ left on it.
 | Style | Size | Weight | Nodes | What it carries |
 |---|---|---|---|---|
 | `Display/Bold 32` | 32 | Bold | 1 | the balance |
-| `Heading/Bold 20` | 20 | Bold | 2 | the kobo tail, and Activities |
-| `Label/Bold 14` | 14 | Bold | 34 | row titles, amounts, buttons, chips |
+| `Heading/Semibold 20` | 20 | Semibold | 2 | the kobo tail, and Activities |
+| `Label/Semibold 14` | 14 | Semibold | 34 | row titles, amounts, buttons, chips |
 | `Label/Regular 14` | 14 | Regular | 14 | row subtitles and card copy |
-| `Caption/Bold 12` | 12 | Bold | 4 | Today, Yesterday, the FX chip, the health score |
+| `Caption/Semibold 12` | 12 | Semibold | 4 | Today, Yesterday, the FX chip, the health score |
 | `Caption/Regular 12` | 12 | Regular | 7 | shortcut labels and small notes |
 
-`Display/Bold 32`, `Heading/Bold 20` and `Caption/Bold 12` were made for this.
+`Display/Bold 32`, `Heading/Semibold 20` and `Caption/Semibold 12` were made for this.
 The other nine styles were left alone on purpose. `Body/Bold 16` alone is on 108
 text nodes elsewhere on the `test` page and `Label/Regular 14` is on 110, so
 editing `Display/ExtraBold 36` down to 32 would have moved several hundred nodes
@@ -344,7 +344,7 @@ Three of the changes were not just a smaller number:
   line they have to be told apart from, so they are 12 Bold. Small and firm
   reads as a separator. The same size as a row does not.
 - `Up 4 since July` was 11px SF Pro on `Caption2/Regular`, a style belonging to
-  some other file. It is 12px Plus Jakarta Sans on `Caption` now, so the screen
+  some other file. It is 12px SF Pro Text on `Caption` now, so the screen
   is down to one family.
 
 The Pay button used to hold its label as three separate text nodes, `Pay `, `₦`
@@ -424,21 +424,45 @@ weights each size may take. This one was read off the home screen and then
 applied to everything else, so `193:1566` and the 91 generated screens finally
 agree about how big a balance is.
 
-| Style | Size | Weight | Carries |
-|---|---|---|---|
-| `Display/Bold 36` | 36 | Bold | the ceiling. Named, bound to nothing, nothing rounds up into it |
-| `Display/Bold 32` | 32 | Bold | a balance |
-| `Heading/Bold 20` | 20 | Bold | a page title, a heading over a group, the kobo tail |
-| `Label/Bold 14` | 14 | Bold | a row title, a button, a value, a chip |
-| `Label/Regular 14` | 14 | Regular | a second line, and everything the model says |
-| `Caption/Bold 12` | 12 | Bold | a day separator, a badge, a small firm number |
-| `Caption/Regular 12` | 12 | Regular | a note under a field |
+The face is **SF Pro Text**. Tracking comes out of the font rather than out of
+anybody's judgement: SF ships Apple's optical tracking in its `trak` table, and
+the normal-track value for each size is what the ramp carries. It is identical
+across all five weights, so tracking belongs to the size and not to the cut.
+Note which way the curve runs. SF Pro Text is drawn for small text, so the
+larger it is set the more it has to be pulled in, which is the opposite of the
+way Plus Jakarta Sans was tuned here.
+
+| Style | Size | Weight | Tracking | Carries |
+|---|---|---|---|---|
+| `Display/Bold 36` | 36 | Bold | −3.42% | the ceiling. Named, bound to nothing, nothing rounds up into it |
+| `Display/Bold 32` | 32 | Bold | −3.32% | a balance |
+| `Heading/Semibold 20` | 20 | Semibold | −2.69% | a page title, a heading over a group, the kobo tail |
+| `Label/Semibold 14` | 14 | Semibold | −1.07% | a row title, a button, a value, a chip |
+| `Label/Regular 14` | 14 | Regular | −1.07% | a second line, and everything the model says |
+| `Caption/Semibold 12` | 12 | Semibold | 0% | a day separator, a badge, a small firm number |
+| `Caption/Regular 12` | 12 | Regular | 0% | a note under a field |
+
+Semibold, not Bold, carries the emphasis. SF sets heavier at a given weight than
+Jakarta did, and Semibold is the weight iOS itself emphasises with. True Bold
+survives at one size, the balance at 32, and `_ramp()` puts it there without
+being asked, because 700 is the only weight that size offers.
+
+**Changing the face moves every text box.** The widths in the file are the
+browser's measurements, so a wider face makes anything with a pinned width wrap.
+The fix is not to re-send the screens, which would cost the 785 reactions and
+the components again; it is to re-measure. `extract.mjs` is run over the new
+build and, for every text node, the file is told what the render now says: hug,
+or a fixed width, or a fixed box with coordinates when its parent is not auto
+layout. Only 213 of 2,645 text nodes are not hugging, so the payload is small
+and the rest correct themselves. Nodes inside a component are collected by
+`(main component, path within it)` and applied once at the component, so the
+tool panels and docks are fixed in one place rather than in every instance.
 
 This is a phone, so the ramp starts small and never climbs. 36 exists so nobody
 invents a size above 32 later, and it is deliberately left out of `TYPE`, which
 is the list a stray number is allowed to land on. Everything else went down:
-36 to 32, 22 to 20, 16 to 14, and ExtraBold to Bold. `Tag/Bold 10` folded into
-`Caption/Bold 12`, which is the one place in the app where type got bigger, and
+36 to 32, 22 to 20, 16 to 14, and ExtraBold to Semibold. `Tag/Bold 10` folded into
+`Caption/Semibold 12`, which is the one place in the app where type got bigger, and
 it was chosen knowingly for 55 badges and initials.
 
 `_sized()` enforces it on the way out. Every inline style in the markup is
@@ -492,11 +516,11 @@ carries size, weight, tracking and line height across together:
 | From | To |
 |---|---|
 | `Display/ExtraBold 36` | `Display/Bold 32` |
-| `Heading/ExtraBold 22` | `Heading/Bold 20` |
-| `Heading/Bold 22` | `Heading/Bold 20` |
-| `Body/Bold 16` | `Label/Bold 14` |
+| `Heading/ExtraBold 22` | `Heading/Semibold 20` |
+| `Heading/Bold 22` | `Heading/Semibold 20` |
+| `Body/Bold 16` | `Label/Semibold 14` |
 | `Body/Regular 16` | `Label/Regular 14` |
-| `Tag/Bold 10` | `Caption/Bold 12` |
+| `Tag/Bold 10` | `Caption/Semibold 12` |
 
 907 text nodes moved, 243 gaps, 55 paddings and 73 corner radii snapped to the
 4-point grid, and 91 icon containers resized with their glyphs. The walk stops

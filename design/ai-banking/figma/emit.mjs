@@ -17,9 +17,9 @@ const TOL = 1;
 const CAP = 40000;
 
 const RUNNER = `
-const F='Plus Jakarta Sans';
-const ST=w=>w>=800?'ExtraBold':w>=700?'Bold':'Regular';
-for(const s of ['Regular','Bold','ExtraBold','Italic']) await figma.loadFontAsync({family:F,style:s});
+const F='SF Pro Text';
+const ST=w=>w>=700?'Bold':w>=600?'Semibold':w>=500?'Medium':'Regular';
+for(const s of ['Regular','Medium','Semibold','Bold']) await figma.loadFontAsync({family:F,style:s});
 // The file's own text styles. Every line the ramp covers is bound to one of
 // them, so the type can be changed in one place afterwards instead of in
 // twelve hundred nodes. A style this file does not have is simply not bound.

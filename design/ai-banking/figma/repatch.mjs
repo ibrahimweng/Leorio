@@ -24,8 +24,8 @@ const edits = tb.map((t, i) => (t.s === ta[i].s && t.c === ta[i].c) ? null
 
 const out = `const TARGET=${JSON.stringify(target)};const NAME=${JSON.stringify(next)};
 const EDITS=${JSON.stringify(edits)};
-const F='Plus Jakarta Sans';
-for(const s of ['Regular','Bold','ExtraBold','Italic']) await figma.loadFontAsync({family:F,style:s});
+const F='SF Pro Text';
+for(const s of ['Regular','Medium','Semibold','Bold']) await figma.loadFontAsync({family:F,style:s});
 function C(h){const a=String(h).split('|'),v=a[0];
   return {c:{r:parseInt(v.slice(0,2),16)/255,g:parseInt(v.slice(2,4),16)/255,b:parseInt(v.slice(4,6),16)/255},o:a[1]!==undefined?+a[1]:1};}
 const fr = await figma.getNodeByIdAsync(TARGET);
