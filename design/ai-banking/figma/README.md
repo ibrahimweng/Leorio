@@ -709,7 +709,8 @@ and `DoneSend` (x5) down to the eight `Share ...` and `Done ...` receipts that
 differ only in what they are a receipt for. **Parts** are the seventeen things
 that appear in more than one screen: the passcode key and the keypad it fills,
 the keyboard, the three docks, the four ask bars, the three tool panels, the
-sheet row, `Field · typing`, and the `Button` and `Bubble` sets. **Icons** holds
+sheet row, `Field · typing`, and the `Button`, `Bubble`, `Page head` and
+`Top bar` sets. **Icons** holds
 the `Icon` set and the mark, at the two sizes it is drawn at.
 
 `Bubble` is now the most used component in the file: 61 instances directly, and
@@ -725,6 +726,25 @@ auto layout at all: `tune()` had measured too much drift and fallen back to
 absolute placement, so when SF Pro Text made the words taller the frame did not
 follow and the tint ran short of the last line. An instance of a hugging
 component cannot do that.
+
+**Headers are two things, not one.** `Page head` is what a page says it is: the
+title at Heading/Semibold 20 over the line under it at Label/Regular 14, eight
+apart, filling the width it is given and hugging its own height. 45 masters were
+swapped onto it, which reads as 53 instances and covers 52 screens, and a second
+variant carries a glyph beside the title for the one page that wants one.
+`Top bar` is the bar above it on a screen that came from somewhere: back arrow
+left, title centred, in a plain variant and a `Leorio` variant for the screens
+you are talking on.
+
+**The back arrow is why `Top bar` was worth checking twice.** Every one of the
+14 wired arrows turned out to carry the same thing, `{action:{type:'BACK'}}`,
+with no destination to lose, so the action sits on the master and every instance
+inherits it instead of being wired one at a time. That also closed a hole: two
+`Confirm` instances, in *When it does not go* and *Pay from your dollars*, had a
+visible back arrow with nothing behind it. Flows reads 787 now rather than 785,
+and the two extra are those. Had the arrows carried per-screen destinations this
+would have gone the other way, and the capture in the shared plugin data is
+there for exactly that case.
 
 **The fields are mostly not fields.** The app asks for very little typing, and
 what it does ask for goes through surfaces that were already components: the
