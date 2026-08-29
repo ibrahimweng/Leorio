@@ -946,3 +946,40 @@ coordinate offset, then place.
 
 **A section has no `description` property.** Only components and component sets
 do. A section's description has to be a text layer on the canvas.
+
+## The passcode gate became a sheet, and nothing was re-sent
+
+Confirm, ConfirmBuy and ConfirmMeter were full pages. They are the passcode
+gate — amount, who, four digits — which is the last thing between a person and
+their money, so it belongs over the screen that asked for it rather than in
+place of it. Each now rises as a sheet over a dimmed copy of Chat, Buy or
+Meter, with a handle at the top and the dim carrying BACK.
+
+The interesting part is how it was done. The three screens were **ten frames,
+nine of them instances of two masters**, so the surgery was on three nodes. But
+restructuring a master discards override reactions on its instances, and each
+instance's twelve keys pointed at a different receipt. So:
+
+1. Capture all 104 links inside the gates — path, name, reaction JSON — into
+   shared plugin data.
+2. Rebuild the masters: drop the top bar, clone the background in, add a scrim
+   and a sheet, move the content column across.
+3. Restore by translating each path: content moved from `0.0` to `3.1`, and
+   every child shifted down one index as the top bar left.
+
+94 of the 104 survived without restoring, because the content column was
+**moved** rather than recreated, and a moved node keeps its id and its
+reactions. The 10 that did not were the back arrows that no longer exist.
+
+Two things worth keeping:
+
+**A cloned background brings its links with it.** Chat, Buy and Meter arrived
+carrying 11 reactions, which would have made the unreachable, blurred scenery
+clickable. Clear them, or the prototype grows paths that exist only by
+accident.
+
+**A frame that is FIXED on its primary axis does not shrink when you take a
+child out of it.** Removing the top bar left the column still 700 tall holding
+632 of content, and the sheet came out nearly full height. `primaryAxisSizingMode
+= 'AUTO'` after the removal, and set the remaining children to FILL so they
+follow the new width.

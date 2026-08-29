@@ -74,42 +74,52 @@ the taps on the buttons that no longer exist — a deliberate drop, not a loss.
 
 ---
 
-## 2. Confirm becomes a sheet
+## 2. Confirm becomes a sheet — done
 
-Confirm, ConfirmBuy and ConfirmMeter are full pages today. They are the only
-screens in the app that ask a yes-or-no question, and a yes-or-no question
-should not take the screen away from what it is about.
+Confirm, ConfirmBuy and ConfirmMeter were full pages. They are the passcode
+gate: the amount, who it is going to, and four digits. That is the last thing
+between a person and their money, and it belongs over the screen that asked for
+it rather than in place of it.
 
-They become **one component with three variants**, rising as a tall sheet —
-about 80% height — over the page you came from, dimmed and blurred, exactly
-like the share sheet already does. The content does not change: the same
-summary card, the same slide to pay. Only the container.
+An earlier draft of this section said they were a summary card with a slide to
+pay. They are not — the slide lives on the screen before. The gate is a keypad.
 
-`Amend` stays a full page. It is an editing screen, not a yes-or-no.
+Each now rises as a sheet, 373 wide and about 690 tall, over a dimmed and
+blurred copy of the screen that asked: Chat behind a transfer, Buy behind a
+purchase, Meter behind a bill. The top bar is gone, because back from a
+passcode is not a place, it is the screen you were already on; there is a
+handle at the top and the dimmed part throws it down. NoFace, the same gate
+after Face ID misses, is a sheet too — it would be incoherent as a page while
+its own success state is a sheet. Amend stays a page: it is editing, not a
+yes-or-no.
 
-### The wiring
+### How it was done without re-sending anything
 
-18 links lead into a confirm, 11 lead out.
+The three gates turned out to be **ten frames, nine of them instances of two
+masters**: `Confirm` with seven instances including NoFace, `ConfirmBuy` with
+two, and `ConfirmMeter` alone as a plain frame. So the surgery was on three
+nodes, not ten.
 
-In: Chat, ChatTyped, Found, Pay, Meter, Buy, BuyTyped, Short, Reversed,
-PayDollars, LimitStop, Amend, Recall, Request, RequestTyped, Draft.
-Out: seven to a DoneSend, two to Done, one to Power, one to NoFace.
+Restructuring a master discards override reactions on its instances, which is
+in CLAUDE.md because this project has been bitten by it before. So all **104
+links inside the gates were captured first** — node path, name and reaction
+JSON — into shared plugin data, then the masters were rebuilt, then the links
+were restored by translating each path: the content column moved from `0.0` to
+`3.1`, and every child shifted down one index as the top bar left.
 
-As a sheet the "in" links stay NAVIGATE but the destination is the same page
-with the sheet up, so each source flow needs a sheet-up copy of itself, or the
-sheet is drawn as an overlay on the existing frame. **Overlay is the right
-answer** — Figma supports OPEN_OVERLAY, and it is what the design actually
-means. The "out" links are unchanged.
+In the event, 94 of the 104 survived on their own, because the nodes were
+*moved* rather than recreated and a moved node keeps its id and its reactions.
+The other 10 were the old back arrows, which no longer exist; the scrim carries
+BACK now.
 
-### What it takes
+One thing the clone brought with it: the background copies of Chat, Buy and
+Meter arrived carrying their own 11 links, which would have made the dim,
+unreachable scenery clickable. Cleared.
 
-`build.py` grows a `confirmsheet()` beside the existing `sheet()`, and the
-three confirm screens are rebuilt through it. Those three screens are re-sent,
-so their links must be restored from the 787-row capture afterwards — 29 links
-touched, all recorded.
-
-This is the only one of the three changes that puts the prototype at risk. It
-is worth doing once, carefully, with the capture open.
+Flows reads **771 reactions with no dead destinations** — the same number it
+started at — and every gate's keys still point where they did: four to their
+own DoneSend, two to Done, one to Power, one to NoFace, one to Short, one to
+the dollars DoneSend.
 
 ---
 

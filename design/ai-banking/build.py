@@ -881,10 +881,14 @@ def fabsheet():
       '<svg data-icon="fab-close" width="22" height="22" viewBox="0 0 24 24" fill="none">'
       '<path d="M6.4 6.4l11.2 11.2M17.6 6.4 6.4 17.6" stroke="#FFFFFF" stroke-width="' + str(stroke_for("fab-close", 22, 24)) + '" stroke-linecap="round"/></svg></div></div>')
 
-def sheet(inner, pad="26px 20px 28px 20px"):
+def sheet(inner, pad="26px 20px 28px 20px", dismiss=""):
     """A sheet rises over a page that is dimmed and blurred, and it floats
-    clear of all four edges rather than sitting on the bottom."""
-    return ('<div class="fauxbg" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
+    clear of all four edges rather than sitting on the bottom.
+
+    `dismiss` puts the way out on the dimmed part. A sheet you can throw down
+    by tapping beside it needs no back arrow, and a back arrow on a sheet is a
+    claim that there is a page behind it rather than the screen you were on."""
+    return ('<div class="fauxbg"' + (hook(dismiss) if dismiss else '') + ' style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
       + '; ' + BLUR + '; z-index: 5"></div>'
       '<div class="sheet" style="position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 6; background: ' + SURF
       + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; padding: ' + pad + '">' + inner + '</div>')
@@ -1750,14 +1754,20 @@ def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves un
     yours.
 
     The passcode is the gate and Face ID is the shortcut, so the keypad is what
-    the screen rests on and the face keeps the corner it has on a phone. It used
+    the sheet rests on and the face keeps the corner it has on a phone. It used
     to say Face ID had not caught you, which put an error in front of four
-    flows that were going perfectly well. `missed` is that state now, and it
-    lives on one screen of its own."""
+    flows that were going perfectly well. `missed` is that state now.
+
+    This is a sheet, not a page. It is the last thing between a person and
+    their money, and it belongs over the screen that asked for it rather than
+    in place of it: you can still see what you are paying for behind the dim.
+    A page would also need a back arrow, and back from a passcode is not a
+    place, it is the screen you were already on. So there is a handle at the
+    top and the dimmed part throws it down."""
     lead = (avatar(initials, 40) if len(initials) <= 2
             else badge(initials, None, 40, R_ICON, 20))
-    return page(
-      topbar("Confirm")
+    return sheet(grabber()
+      + '<div style="display: flex; flex-direction: column; gap: 24px">'
       + '<div style="display: flex; flex-direction: column; align-items: center; gap: 12px">'
         + money(amount, "", 36)
         + '<div style="display: flex; align-items: center; gap: 12px">' + lead
@@ -1774,10 +1784,11 @@ def confirmscreen(amount, initials, name, sub, tone=None, foot="Nothing moves un
       + pindots(2)
       + pinpad()
       + '<div style="display: flex; gap: 8px; align-items: center; justify-content: center">' + icon("lock", 16, INK3)
-        + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + foot + '</span></div>', 24)
+        + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '">' + foot + '</span></div>'
+      + '</div>', "12px 20px 24px 20px", "back")
 
-write("Confirm", confirmscreen("&#8358;20,000", "SA", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"))
-write("NoFace", confirmscreen("&#8358;20,000", "SA", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842", None,
+write("Confirm", transferchat(True) + confirmscreen("&#8358;20,000", "SA", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"))
+write("NoFace", transferchat(True) + confirmscreen("&#8358;20,000", "SA", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842", None,
   "Three wrong tries locks the passcode for an hour.", True))
 
 # ================= SENDING FROM A PICTURE =================
@@ -2469,7 +2480,7 @@ def buychat(voice=True):
 write("Buy", buychat(True))
 write("BuyTyped", buychat(False))
 
-write("ConfirmBuy", confirmscreen("&#8358;2,500", "data", "MTN &#183; 5GB", "Mum &#183; 0803 4457 881", IC["purple"]))
+write("ConfirmBuy", buychat(True) + confirmscreen("&#8358;2,500", "data", "MTN &#183; 5GB", "Mum &#183; 0803 4457 881", IC["purple"]))
 
 # ---------- a meter number, read off a bill ----------
 meter = page(
@@ -2496,7 +2507,7 @@ meter = page(
 meter += confirmbar(pillbtn("Continue", "", "fnwait", "", "grey", True, 56, "mtGo"))
 write("Meter", meter)
 
-write("ConfirmMeter", confirmscreen("&#8358;8,000", "power", "Ikeja Electric", "Meter 0102 4457 8891", IC["amber"]))
+write("ConfirmMeter", meter + confirmscreen("&#8358;8,000", "power", "Ikeja Electric", "Meter 0102 4457 8891", IC["amber"]))
 
 # ---------- the receipt for money that left ----------
 # The fee is shown even when there is none, because a row that only appears on
