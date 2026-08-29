@@ -6,7 +6,7 @@ different places without meaning to.
 
 ---
 
-## 1. The bottom bar has three states, not two
+## 1. The bottom bar has three states, not two — done
 
 Today 48 screens carry the ask bar and a round black button, 25 carry one
 action and no ask bar, and 13 carry nothing. The round button always opens the
@@ -20,17 +20,19 @@ It therefore belongs only where starting something new is a real option.
 
 | State | Left | Middle | Right | Screens |
 |---|---|---|---|---|
-| **Home** | settings | ask bar | round + | 5 |
-| **Place** | back | ask bar | round + | 12 |
+| **Home** | settings | ask bar | round + | 6 |
+| **Place** | back | ask bar | round + | 11 |
 | **Record** | back | ask bar, full width | — | 31 |
 | **Task** | back | — | one action | 25 |
 | **Bare** | — | — | — | 10 |
 
-**Home** (5) — Main, Ask, AskReq, AskSvc, Actions.
+**Home** (6) — Main, Ask, AskReq, AskSvc, Actions, Receive. The last four are
+the home screen with a sheet over it, which is why they carry the settings gear
+rather than back.
 
-**Place** (12) — somewhere you can start a payment from:
+**Place** (11) — somewhere you can start a payment from:
 Services, History, Bills, Rules, Card, Dollars, Goal, SaveRule, Paused, Ways,
-MyCode, Receive.
+MyCode.
 
 **Record** (31) — a thing that already happened, or a setting. The assistant
 stays reachable, because "why was there a fee?" is a fair question about a
@@ -47,21 +49,28 @@ the screen stays quiet.
 **Bare** (10) — Scan, ScanBill, Opening, Draft, Typed, TypedAsk, TypedBuy,
 NoFace, Rule, Amend.
 
-### A bug this turned up
+### A thing that looked like a bug and was not
 
-`Receive` draws the settings gear at the bottom left, which is the home
-treatment. It is a detail page reached from the home screen, so it should draw
-back. One line in the source: `askbar(...)` → `dockback(...)`.
+`Receive` draws the settings gear at the bottom left rather than back. That is
+correct: `Receive` is `page(home_inner) + askbar(...) + RECEIVE_SHEET`, which is
+the home screen with a sheet over it, not a detail page. `Ask`, `AskReq`,
+`AskSvc` and `Actions` are built the same way. An earlier draft of this plan
+called it a bug; it was wrong.
 
-### What it takes
+### What it took
 
-`dock()` grows one flag. `dockback(placeholder, plus=True)`, and the 31 record
-screens pass `plus=False`. Without the button the ask bar takes the full width,
-which is 68px more room for the placeholder — worth having, since several of
-them truncate today.
+`dock()` gained a `plus` flag and `dockback()` passes it through. 23 call sites
+set it false, which covers 31 screens: the eight share screens are their own
+receipt with a sheet over it, so they followed without being touched.
 
-In Figma this is three dock components instead of two, and 31 instance swaps.
-No screen is re-sent, so no prototype links are at risk.
+In Figma, nine receipt component masters lost the button from their dock and
+every instance followed; the eight share masters hold a receipt instance and so
+fixed themselves; 14 more were removed directly on Flows, 11 by deletion and 3
+by hiding, which auto layout treats the same. No screen was re-sent.
+
+Flows now reads **771 reactions, no dead destinations**. The 16 that went were
+the taps on the buttons that no longer exist — a deliberate drop, not a loss.
+771 is the new baseline.
 
 ---
 
