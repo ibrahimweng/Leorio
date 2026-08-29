@@ -907,3 +907,42 @@ widened by SF Pro runs under the chip beside it, and 25 ask-bar placeholders
 spilling out of their pill because Figma has no ellipsis. Both are fixed — the
 text boxes are pulled back to the gap the row uses, and the placeholders are one
 line tall, which is what the browser shows.
+
+## The Components page, arranged
+
+The page had grown by accretion: 23 screens in one 11,400px strip in no
+particular order, Parts spilling outside its own section, two icon sets stacked
+on top of each other, and nothing anywhere saying what any of it was for.
+
+It now reads top to bottom as four sections, each 2,818px wide, each opening
+with its name and a line or two on what belongs in it:
+
+    Screens         24 components, grouped: Home, Sending and receiving,
+                    Confirming, Receipts, Share sheets
+    Parts           21 components, grouped: Asking, Keys, Chrome, Actions,
+                    The assistant
+    Icons           the 97 glyph set, packed 12 across in alphabetical order,
+                    and the model's mark at its two sizes
+    Design system   type and space on one row, colour below
+
+Every one of the 48 components carries a one-line description, so it shows in
+the assets panel and in Dev Mode without anyone opening this page.
+
+Two things were found while tidying, and both mattered more than the tidying.
+**A live component master was sitting on the `test` page** — `Home screen`,
+with 30 instances on Flows — so deleting that page would have broken every one
+of them. And **`Action button` was stranded on Flows** with 23 instances
+depending on it. Both were moved into the library first. The retired 58-variant
+icon set and the 39 superseded drafts on `test` are gone; every instance in the
+file now resolves to a master on the Components page, and Flows still reads 787
+reactions with no dead destinations.
+
+Two gotchas worth keeping:
+
+**Moving a section carries its children.** Laying children out and *then*
+setting `section.x/y` drags everything by the same delta, so the content lands
+outside the box you just sized. Position the section first, measure the
+coordinate offset, then place.
+
+**A section has no `description` property.** Only components and component sets
+do. A section's description has to be a text layer on the canvas.
