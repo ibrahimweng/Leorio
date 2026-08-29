@@ -249,7 +249,13 @@ const EXTRACT = () => {
     if (el.tagName.toLowerCase() === 'svg') {
       if (!(b.width > 0)) return [];
       const cc = (col(cs.color) || '000000').split('|')[0];
-      const n = { t: 2, n: 'Glyph', x: rx(b.left), y: ry(b.top), w: rw(b.width), h: rw(b.height),
+      // Every svg build.py draws carries data-icon, so a glyph arrives in Figma
+      // already knowing which icon it is. Without it the only way to tell two
+      // glyphs apart is their geometry, and a three point chevron and a three
+      // point check are the same shape to anything that compares loosely.
+      const gname = el.getAttribute('data-icon');
+      const n = { t: 2, n: gname ? 'Glyph · ' + gname : 'Glyph',
+                  x: rx(b.left), y: ry(b.top), w: rw(b.width), h: rw(b.height),
                   s: el.outerHTML.replace(/currentColor/g, '#' + cc) };
       // The glow lives in a CSS filter, and the packer strips the style
       // attribute before Figma sees the drawing. So it travels as a shadow of

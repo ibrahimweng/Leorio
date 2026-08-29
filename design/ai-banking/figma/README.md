@@ -601,31 +601,43 @@ anywhere.
 ### The Icon set, and how the glyphs got their names
 
 Every glyph in the file is an instance of one component set, `Icon`, in the
-`Icons` section on the Components page. 66 variants, one property, `glyph`.
+`Icons` section on the Components page. 97 variants, one property, `glyph`.
 Colour and size stay overrides on the instance, because the same icon is drawn
 black on a row, white on a dark button and coloured on a tile.
 
-Finding them was the interesting part. A glyph arrives from `emit.mjs` as a
-frame called `Glyph` holding vectors, with nothing to say which icon it is. But
-the vectors come from one `ICONS` dict, so **stripping every number out of the
-path data leaves a fingerprint that is stable across sizes.** On the Flows page
-that collapsed 466 glyph frames into 56 clusters, against 52 icons plus 4
-two-tone in the code, which is close enough to trust.
+**Glyphs are named at source now, and that is the whole point.** Every `<svg>`
+`build.py` draws carries a `data-icon` attribute, `extract.mjs` reads it, and the
+frame arrives in Figma called `Glyph · chevron` rather than `Glyph`. Componentising
+is then a lookup, not a guess.
 
-Naming them took two passes. A contact sheet of one glyph per cluster names most
-of them by eye, except that white icons vanish on a white sheet, so the five
-that came back blank were re-shot on grey: `check` (used 136 times, the most
-used icon in the app), `up`, `plus`, `grid` and `star`. Then each cluster was
-matched to the text sitting nearest its uses, which settles the ones a thumbnail
-cannot: the lightning next to *Ikeja Electric* is `power`, the wifi next to
-*MTN 5GB* is `data`. That pass also caught a misnaming: what looked like `copy`
-beside the account rows is a cyan `clock`, and the real `copy`, two overlapping
-pages, only appears inside the screen components beside *Copy the token*.
+It is a lookup because guessing failed, expensively. The first set was built by
+stripping every number out of the path data and treating what was left as a
+fingerprint, on the theory that it is stable across sizes. It is stable across
+sizes. It is also stable across *different icons*: a three point chevron and a
+three point check normalise to the same string. 97 icons collapsed into 58
+buckets. The worst bucket held `back`, `check`, `check-small` and `chevron`
+together, so promoting one member to stand for all of them put a tick where 470
+instances wanted a back arrow or a row chevron. Seven more buckets were nearly as
+bad — eight arrows under `up`, six crosses under `plus`, four clock shapes under
+`clock`. A bucket name tells you nothing about what it draws.
 
-Icons living only inside a component never show up in a page-level walk, so the
-set grew in three rounds: 56 from Flows, then `share`, `copy`, `more`, `pot-tone`
-and `grid-tone` from the Components page, then `gear`, `sort`, `bell`, `minus`
-and `gift-outline` from the founder's drafts on `test`.
+Repairing it needed a source of truth outside the file. The extracted JSON is
+that source: it holds the real name and the exact child-index path of every glyph
+in every screen. Walking a screen with that map assigns each glyph independently,
+so a screen whose tree has drifted loses only the paths that moved instead of
+everything after the first difference. Each screen was checked before it was
+touched, by requiring the mapped paths and the icon instances actually present to
+be a bijection — same count, every path landing on an icon. 59 of 67 screens on
+Flows passed on the first pass. The eight that failed all turned out to be the
+same thing: their home surface is an instance of the founder's `Home screen`, so
+fixing that one component fixed all eight at once.
+
+The buckets then paid for themselves. Recomputing them from the new set gives,
+for any damaged instance, the exact list of icons it could possibly have been —
+46 of the 58 have only one candidate, so those are decidable with no map at all,
+and for the rest a map is only trusted when it proposes a candidate the geometry
+allows. That validator is what made the founder's drafts on `test` safe to touch:
+it accepted 47 assignments and rejected 4.
 
 **Swapping cost the prototype twice, and the capture paid for itself twice.**
 The glyph promoted into a component happened to be a control that navigated, so
@@ -637,6 +649,13 @@ screen and child-index path. Anything that restructures a component should
 expect this and check the count afterwards: Flows should read 785 with no dead
 destinations.
 
+Flows, the Components page and the `Home screen` component are wholly on the new
+set. 156 glyphs are not: they are in superseded drafts on `test` whose trees
+match neither the current home screen nor `build.py`, so there is no map for
+them and the geometry leaves more than one candidate. The old set is still in the
+file, renamed `Icon (old — superseded)`, only because those instances point at
+it. It goes when they do.
+
 The three design system sheets moved off `test` into a `Design system` section
 on the same page, so the whole system is in one place.
 
@@ -645,12 +664,20 @@ on the same page, so the whole system is in one place.
 Three pages now, not two. **Components** holds the design system, in three
 sections.
 
-**Screens** are the five that appear in more than one flow: `Confirm` (x5),
-`DoneSend` (x5), `Done` (x4), `ConfirmBuy` (x2) and `Sent` (x2). **Parts** are
-the thirteen things that appear in more than one screen: the passcode key and
-the keypad it fills, the keyboard, the three docks, the three ask bars, the
-three tool panels and the sheet row. **Icons** holds the mark, at the two sizes
-it is drawn at.
+**Screens** are the 23 that appear in more than one flow, from `Confirm` (x5)
+and `DoneSend` (x5) down to the eight `Share ...` and `Done ...` receipts that
+differ only in what they are a receipt for. **Parts** are the fourteen things
+that appear in more than one screen: the passcode key and the keypad it fills,
+the keyboard, the three docks, the three ask bars, the three tool panels, the
+sheet row, and the `Button` set. **Icons** holds the `Icon` set and the mark, at
+the two sizes it is drawn at.
+
+`Button` is one set of twelve variants, two properties: `tone` (black, grey,
+white, blue) and `size` (44, 48, 56). Every button carries a leading and a
+trailing glyph slot, both hidden by default, so the glyph in the master is a
+placeholder and the real one is an override on the instance. 58 buttons across
+the file were swapped onto it and 23 more inside the screen components, and the
+785 reactions survived it.
 
 Which parts earn a component is decided from the file, not from memory: hash
 every subtree on Flows, count what repeats, and take what still repeats once

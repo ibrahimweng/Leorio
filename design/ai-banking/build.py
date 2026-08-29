@@ -162,7 +162,7 @@ def mark(size=20, color=ACC, extra=""):
     belongs to the set, with a ring glyph so you know which one it is."""
     s = str(size)
     glyph = ACC_HEX if color.startswith("#FFF") else "#FFFFFF"
-    return ('<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0' + extra + '">'
+    return ('<svg data-icon="mark" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" style="flex-shrink: 0' + extra + '">'
       '<rect width="24" height="24" rx="7.2" fill="' + color + '"/>'
       '<circle cx="12" cy="12" r="6.1" stroke="' + glyph + '" stroke-width="1.8" opacity="0.55"/>'
       '<circle cx="12" cy="12" r="2.9" fill="' + glyph + '"/></svg>')
@@ -238,7 +238,7 @@ def _attr(color):
 def icon(name, size=22, color=INK2, sw=1.7, extra=""):
     color = _attr(color)
     s = str(size)
-    return ('<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="' + color
+    return ('<svg data-icon="' + name + '" width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="' + color
             + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: ' + color
             + extra + '">' + ICONS[name] + '</svg>')
 
@@ -316,7 +316,7 @@ def fglyph(name, size=34, color=INK, hole="#FFFFFF"):
     """A glyph that is a shape, not a line. Colour and the colour of anything
     knocked out of it both come in by substitution, so a white glyph on a
     coloured panel does not lose its own detail to the panel."""
-    return ('<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" fill="none" '
+    return ('<svg data-icon="' + name + '-filled" width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" fill="none" '
             'style="flex-shrink: 0">' + FILLED[name].replace("CUR", color).replace("#FFFFFF", hole) + '</svg>')
 
 def avatar(t, size=38, bg=FILL, fg=INK, act="", eid=""):
@@ -329,7 +329,7 @@ def avatar(t, size=38, bg=FILL, fg=INK, act="", eid=""):
 def chev(size=16, color=INK4, sw=2.1):
     color = _attr(color)
     s = str(size)
-    return ('<svg width="' + s + '" height="' + s + '" viewBox="0 0 14 14" fill="none" style="flex-shrink: 0">'
+    return ('<svg data-icon="chevron" width="' + s + '" height="' + s + '" viewBox="0 0 14 14" fill="none" style="flex-shrink: 0">'
             '<path d="M5 3l4 4-4 4" stroke="' + color + '" stroke-width="' + str(sw) + '" stroke-linecap="round" stroke-linejoin="round"/></svg>')
 
 def chevbtn(size=24):
@@ -373,7 +373,7 @@ def back():
     """The reference keeps back at the bottom left, as a bare chevron."""
     return ('<div' + hook("back") + ' class="backBtn" style="width: 44px; height: 44px; display: flex; align-items: center; '
       'justify-content: center; flex-shrink: 0">'
-      '<svg width="22" height="22" viewBox="0 0 22 22" fill="none">'
+      '<svg data-icon="back" width="22" height="22" viewBox="0 0 22 22" fill="none">'
       '<path d="M13.4 4.6 6.8 11l6.6 6.4" stroke="' + INK + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
 
 def topbar(title="", right=""):
@@ -536,7 +536,7 @@ def ttglyph(name, size=22, hue=ACC_HEX):
             '<stop offset="1" stop-color="' + fold + '"/></linearGradient></defs>')
     body = (TWOTONE[name].replace("GRD", "url(#" + gid + ")")
             .replace("CUR", face).replace("DIM", fold).replace("PAL", pale))
-    return ('<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" fill="none" '
+    return ('<svg data-icon="' + name + '-tone" width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 24 24" fill="none" '
             'style="flex-shrink: 0; filter: drop-shadow(0 3px 7px ' + _rgba(face, "0.45") + ')">'
             + grad + body + '</svg>')
 
@@ -639,7 +639,7 @@ def slide(label, go="", lid=""):
         + '; background: ' + BTN + '; ' + SH_BTN + '; display: flex; align-items: center; padding: 4px">'
         '<div class="knob" style="width: 50px; height: 50px; border-radius: ' + PILL + '; background: #FFFFFF'
         '; display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 2">'
-        '<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h11M11 6l4 4-4 4" stroke="' + BTN
+        '<svg data-icon="slide-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h11M11 6l4 4-4 4" stroke="' + BTN
         + '" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
         '<span' + (' id="' + lid + '"' if lid else '') + ' class="num slideLabel" style="flex-grow: 1; text-align: center; font-size: 17px; font-weight: 700; color: rgba(255,255,255,0.92)'
         '; margin-right: 50px">' + label + '</span></div>')
@@ -722,7 +722,7 @@ def ring(pct, size=180, stroke=14, suffix="%", foot="of the way", eid="glPct"):
     def n(v):
         return ("%g" % v)
     return ('<div style="position: relative; width: ' + str(size) + 'px; height: ' + str(size) + 'px; flex-shrink: 0">'
-      '<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size) + ' ' + str(size)
+      '<svg data-icon="ring" width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size) + ' ' + str(size)
       + '">'
       '<circle cx="' + n(half) + '" cy="' + n(half) + '" r="' + n(r) + '" fill="none" stroke="' + FILL3
       + '" stroke-width="' + str(stroke) + '"/>'
@@ -765,7 +765,7 @@ def dock(placeholder, back_btn=False, height=104):
       + icon("mic", 20, INK2, 1.8) + '</div>')
     fab = ('<div class="fab"' + hook("", "actions") + ' style="width: 56px; height: 56px; border-radius: ' + PILL
       + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-      '<svg class="fabx" width="24" height="24" viewBox="0 0 24 24" fill="none">'
+      '<svg data-icon="fab-plus" class="fabx" width="24" height="24" viewBox="0 0 24 24" fill="none">'
       '<path d="M12 5.4v13.2M5.4 12h13.2" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/></svg></div>')
     return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: ' + str(height)
       + 'px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, ' + BG
@@ -827,7 +827,7 @@ def fabsheet():
       + rows + '</div>'
       '<div class="fab fabclose"' + hook("", "actions") + ' style="position: absolute; right: 18px; bottom: 26px; width: 56px; height: 56px; '
       'border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_FAB + '; display: flex; align-items: center; justify-content: center">'
-      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none">'
+      '<svg data-icon="fab-close" width="22" height="22" viewBox="0 0 24 24" fill="none">'
       '<path d="M6.4 6.4l11.2 11.2M17.6 6.4 6.4 17.6" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/></svg></div></div>')
 
 def sheet(inner, pad="26px 20px 28px 20px"):
@@ -841,7 +841,7 @@ def sheet(inner, pad="26px 20px 28px 20px"):
 def sheetx():
     return ('<div' + hook("back") + ' style="position: absolute; right: 18px; top: 18px; width: 32px; height: 32px; '
       'display: flex; align-items: center; justify-content: center">'
-      '<svg width="20" height="20" viewBox="0 0 20 20" fill="none">'
+      '<svg data-icon="sheet-close" width="20" height="20" viewBox="0 0 20 20" fill="none">'
       '<path d="M5.4 5.4l9.2 9.2M14.6 5.4l-9.2 9.2" stroke="' + INK2 + '" stroke-width="2.2" stroke-linecap="round"/></svg></div>')
 
 def grabber():
@@ -870,7 +870,7 @@ def dial(n, size=48, stroke=5, fs=17, color=None):
     off = circ * (1 - n / 100.0)
     h = "%g" % (size / 2.0)
     return ('<div style="position: relative; width: ' + str(size) + 'px; height: ' + str(size)
-      + 'px; flex-shrink: 0"><svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size)
+      + 'px; flex-shrink: 0"><svg data-icon="dial" width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size)
       + ' ' + str(size) + '">'
       '<circle cx="' + h + '" cy="' + h + '" r="' + ("%g" % r) + '" fill="none" stroke="' + FILL3
       + '" stroke-width="' + str(stroke) + '"/>'
@@ -986,7 +986,7 @@ LEAD = (aisay("Due on Thursday", "Ikeja Electric, and last month it was &#8358;7
       '<div' + hook("PowerPay") + ' style="flex-grow: 1; height: 52px; border-radius: ' + PILL + '; background: ' + BTN + '; ' + SH_BTN
       + '; color: ' + BTN_INK + '; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 700">Pay &#8358;8,000 now</div>'
       '<div' + hook("", "dismiss") + ' style="width: 52px; height: 52px; border-radius: ' + PILL + '; background: ' + FILL + '; display: flex; align-items: center; justify-content: center">'
-      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="' + INK2 + '" stroke-width="2" stroke-linecap="round"/></svg></div></div>', "mBill"))
+      '<svg data-icon="close-small" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="' + INK2 + '" stroke-width="2" stroke-linecap="round"/></svg></div></div>', "mBill"))
 
 # NOT THE HOME SCREEN. The home screen is the founder's, it lives in Figma at
 # 193:1566, and every Home screen on the Flows page is an instance of it. This
@@ -1479,7 +1479,7 @@ def qchip(t):
     return ('<div' + hook("", "soon") + ' style="height: 42px; border-radius: ' + pill(42) + '; background: ' + SURF
       + '; display: flex; align-items: center; gap: 8px; padding: 0 16px">'
       '<span style="font-size: 13.5px; font-weight: 600; color: ' + INK + '">' + t + '</span>'
-      '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5l3-3" stroke="' + INK3
+      '<svg data-icon="check-small" width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 4.5 6 7.5l3-3" stroke="' + INK3
       + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>')
 
 answer = page(
@@ -1488,7 +1488,7 @@ answer = page(
   + '<div style="' + cardstyle("18px 16px 8px 16px") + '; display: flex; flex-direction: column; gap: 20px">'
     + '<div style="display: flex; align-items: flex-end; justify-content: space-between">' + money("&#8358;18,900", "", 40)
       + '<div style="display: flex; align-items: center; gap: 4px; height: 28px; padding: 0 12px; border-radius: 14px; background: rgba(176,69,58,0.10); margin-bottom: 4px">'
-      '<svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN_TEXT + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      '<svg data-icon="up-small" width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN_TEXT + '" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
       '<span class="num" style="font-size: 13px; font-weight: 700; color: ' + WARN_TEXT + '">&#8358;4,200</span></div></div>'
     + '<div style="display: flex; gap: 8px; height: 76px; align-items: stretch">'
       + barm(38,"Feb") + barm(50,"Mar") + barm(41,"Apr") + barm(56,"May") + barm(47,"Jun") + barm(68,"Jul", True) + '</div>'
@@ -1575,14 +1575,14 @@ def stepdot(state):
     plain hexes, because an SVG paints through an attribute and a color-mix()
     never reaches the renderer there."""
     if state == "done":
-        return ('<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
+        return ('<svg data-icon="step-done" width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
           '<circle cx="9" cy="9" r="9" fill="' + IN + '"/>'
           '<path d="M5.3 9.2 7.9 11.8l4.8-5.2" stroke="#FFFFFF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>')
     if state == "work":
-        return ('<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
+        return ('<svg data-icon="step-work" width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
           '<circle cx="9" cy="9" r="7.4" stroke="' + FILL3 + '" stroke-width="2.2"/>'
           '<path d="M9 1.6a7.4 7.4 0 0 1 7.4 7.4" stroke="' + ACC_TEXT_HEX + '" stroke-width="2.2" stroke-linecap="round"/></svg>')
-    return ('<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
+    return ('<svg data-icon="step-todo" width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink: 0">'
       '<circle cx="9" cy="9" r="7.4" stroke="' + FILL3 + '" stroke-width="2.2"/></svg>')
 
 def toolrow(state, k, v, vcolor=INK, first=False, num=False, go=""):
@@ -2365,7 +2365,7 @@ def qrsvg(size=190):
     single node rather than four hundred little squares."""
     n = 21
     c = size / float(n)
-    out = ['<svg width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size) + ' ' + str(size) + '" fill="none">']
+    out = ['<svg data-icon="qr" width="' + str(size) + '" height="' + str(size) + '" viewBox="0 0 ' + str(size) + ' ' + str(size) + '" fill="none">']
     def rect(x, y, w, h, r, fill):
         out.append('<rect x="%.2f" y="%.2f" width="%.2f" height="%.2f" rx="%.2f" fill="%s"/>' % (x, y, w, h, r, fill))
     def finder(cx, cy):
@@ -3741,6 +3741,49 @@ payfrom_inner = (
           "next screen, and you see it before anything moves.", "16px") + '</div>')
 
 write("PayFrom", pay + sheetup(payfrom_inner))
+
+# ---------- the icon sheet ----------
+def _cell(svg):
+    return ('<div style="width: 40px; height: 40px; display: flex; align-items: center; '
+            'justify-content: center; flex-shrink: 0">' + svg + '</div>')
+
+def _grid(cells):
+    return '<div style="display: flex; flex-wrap: wrap; padding: 12px 8px">' + "".join(cells) + '</div>'
+
+def iconsheet(part):
+    """One of every glyph the app draws, so the design system has a page that
+    names them.
+
+    Every svg build.py writes carries `data-icon`, and these screens are what
+    turn those names into components in Figma. It matters because a glyph
+    arrives in Figma as anonymous geometry: with no name the only way to tell
+    two apart is to compare their paths, and a three point chevron and a three
+    point check are the same shape to anything comparing loosely. That mistake
+    was made once and it silently replaced 291 chevrons with checks.
+
+    Three screens rather than one, because a bundle has to stay under the size
+    the Figma tool will take."""
+    if part == 1:
+        return _grid([_cell(icon(n, 24, INK, 1.7)) for n in sorted(ICONS)])
+    if part == 2:
+        return _grid([_cell(ttglyph(n, 24)) for n in sorted(TWOTONE)]
+                   + [_cell(fglyph(n, 24, INK)) for n in sorted(FILLED)])
+    cells = [_cell(chev(24)), _cell(mark(24)), _cell(sheetx()),
+             _cell(stepdot("done")), _cell(stepdot("work")), _cell(stepdot("todo")),
+             _cell(dial(72, 40)), _cell(qrsvg(40)), _cell(ring(72, 40, 6, "", "")),
+             _cell('<svg data-icon="up-small" width="11" height="11" viewBox="0 0 12 12" fill="none">'
+                   '<path d="M6 9.5v-7M3 5.5 6 2.5l3 3" stroke="' + WARN_TEXT + '" stroke-width="1.6" '
+                   'stroke-linecap="round" stroke-linejoin="round"/></svg>')]
+    # a few glyphs only exist inside a component, so the component comes too
+    inside = ('<div style="padding: 0 16px; display: flex; flex-direction: column; gap: 12px">'
+              + back() + slide("Slide to send") + qchip("Yes")
+              + aisay("Leorio", "One of every glyph the app draws.", "and nothing else")
+              + fabsheet() + '</div>')
+    return _grid(cells) + inside + dock("Ask about anything", True)
+
+write("Iconsheet1", iconsheet(1))
+write("Iconsheet2", iconsheet(2))
+write("Iconsheet3", iconsheet(3))
 
 if EMIT:
     print("built:", ", ".join(sorted(f for f in os.listdir(OUT) if f.endswith(".dc.html"))))
