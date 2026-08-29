@@ -1030,3 +1030,57 @@ from every changed text node and compare its right edge against each ancestor's
 inner right edge. Two containers were wrong; both were invisible, because
 `clipsContent` is false everywhere and the spill landed in empty space. It would
 have shown up the first time someone dragged the frame.
+
+## The receipt that leaves the app
+
+The eight share screens are the in-app record with a sheet over it, and the
+sheet offers four ways out — WhatsApp, photos, PDF, anywhere else. Every one of
+them sends the same thing, described in the sheet as "the picture, ready to
+send". That picture had never been drawn. The rows led nowhere, and the only
+artefact of this product another person ever holds existed as a sentence.
+
+`sharecard()` in `build.py` is that picture, and the `Receipt` screen shows it
+before it goes. Three things make it different from the receipt inside the app,
+and all three are the point:
+
+- **It says who drew it.** A letterhead: the mark at 32 and `Amana` at 20, with
+  the status chip on the right. Inside the app nobody needs telling whose app
+  they are in. On a copy going to a landlord, it is the whole job.
+- **The balance is gone.** The share sheet has promised "your balance is left
+  off every copy that leaves the phone" since the day it was written, and the
+  in-app receipt has been printing `Balance after` the whole time. A picture
+  that keeps the promise had to be a different rendering, not a flag.
+- **Nothing can be tapped.** `rref()` is `rid()` without the copy button, and
+  From reads `Ibrahim Musa / Amana · 0102 4457 88` rather than `Everyday`,
+  which is the nickname only its owner uses.
+
+`donepill()` was lifted out of `rhero()` so the chip on the screen and the chip
+on the picture cannot drift, and `obfoot()` — back plus one action, the Task
+bottom bar — moved up beside `dock()` and `dockback()`, since it is no longer
+only onboarding's.
+
+### Sending it
+
+`node emit.mjs Receipt`, then prepend the page and the placement:
+
+    const PAGE='127:2';const PLACE={Receipt:{parent:'225:2',x:3038,y:80}};
+
+A name that is not in `emit.mjs`'s `ORDER` gets `i = -1` and lands at
+(-493, -972), so a new screen needs `PLACE` or it appears off in the corner.
+Sections hold their children in page coordinates, and `Send it by voice` starts
+at (0,0), so 3038 is both. The section was 3018 wide for six screens and had to
+be resized to 3511 for seven — a child outside a section's bounds stays a child
+but sits outside the box.
+
+It came in at 52 nodes, 25 of 25 texts bound to a style, and 17 of 18 frames on
+auto layout. The eighteenth is the hero column, and it is right to be hand
+placed: `write()` gives the naira sign a 0.05em left margin, which at 32px is
+1.6px, so the amount's box starts 1.6px in while the two lines under it start
+at 0. `tune()` measured 1.6 against `TOL = 1` and put the column back. Auto
+layout there would flatten an optical inset the browser really renders.
+
+Three reactions went with it — the WhatsApp row into it, its button on to
+DoneSend, and its own back — taking Flows from 771 to **774, none dead**. The
+row is an override on one instance of the share sheet, so the other seven share
+screens are untouched: they still show the pattern without claiming a picture
+that has not been drawn for them.

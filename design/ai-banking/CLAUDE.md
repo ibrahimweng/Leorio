@@ -41,14 +41,16 @@ It reports the invariants that have actually been broken here before:
 - padding, gaps and radii that are off the scales in `tokens.py`
 - icon sizes and apparent stroke widths that are off the icon scale
 
-Flows should read **771 reactions with no dead destinations**. If a number moves,
+Flows should read **774 reactions with no dead destinations**. If a number moves,
 find out why before doing anything else. A swap carries text and glyphs across but
 **not reactions**, and that is how 21, then 41, then 4 links were lost.
 
 The baseline was 787 until the round button came off the 31 record screens; the
-16 links that went were the taps on buttons that no longer exist. When a number
-drops on purpose, change it here in the same commit, or the next run reads a
-deliberate decision as a regression.
+16 links that went were the taps on buttons that no longer exist. It went back
+up to 774 when the Receipt screen arrived with three: into it from the share
+sheet, on from its button, and its own back. When a number moves on purpose,
+change it here in the same commit, or the next run reads a deliberate decision
+as a regression.
 
 ## Things that will bite
 

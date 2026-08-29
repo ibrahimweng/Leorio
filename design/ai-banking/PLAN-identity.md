@@ -50,10 +50,11 @@ confirm and the home screen, and it is currently set in the same font as a form
 label. One display face, used only for money and for the wordmark, would do more
 than any logo.
 
-**4. Where it leaves the app.** The share sheet sends a receipt to WhatsApp —
-and that receipt currently carries **no Amana mark at all**. It is the one
-artefact of this product that another person sees, and it is anonymous. This is
-the highest-leverage brand surface in the app and it costs one component.
+**4. Where it leaves the app.** ~~The share sheet sends a receipt to WhatsApp —
+and that receipt carries no Amana mark at all.~~ Done. It cost rather more than
+one component, because the picture had no design: the share sheet named it
+("The picture, ready to send") and then led nowhere. It exists now, with the
+mark and the name across the top and the balance off it.
 
 ---
 
@@ -62,7 +63,7 @@ the highest-leverage brand surface in the app and it costs one component.
 | Surface | Times seen | State today |
 |---|---|---|
 | The assistant's mark | 181 across the app | generic ring, system blue |
-| The shared receipt | every payment told to someone | **no mark** |
+| The shared receipt | every payment told to someone | mark at 32, name at 20 |
 | App icon | every time the phone is unlocked | does not exist |
 | Opening screen | first run | plain |
 | The card | Card screen | plain |
@@ -74,8 +75,7 @@ the highest-leverage brand surface in the app and it costs one component.
 
 Not the logo. In order:
 
-1. **Put the mark on the shared receipt.** One component, immediate, and it is
-   the only thing that travels.
+1. ~~**Put the mark on the shared receipt.**~~ Done. See `BRANDING.md` §6.
 2. **Choose the accent.** Everything else depends on it, and it is the decision
    that gets us off the blue shelf.
 3. **Draw the mark at 32px**, then scale up to the icon — not the other way

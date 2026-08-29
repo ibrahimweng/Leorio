@@ -19,7 +19,7 @@ ORDER = ["Main", "Ask", "Chat", "Scan", "Pick", "Found", "Confirm", "NoFace", "S
          # so most of these are the second step of one of them.
          "Typed", "TypedAsk", "TypedBuy", "ChatTyped", "RequestTyped", "BuyTyped",
          "AskReq", "AskSvc", "Request", "Sent", "MyCode",
-         "Buy", "ConfirmBuy", "Meter", "ConfirmMeter", "DoneSend", "Share", "ShareBuy", "Receive",
+         "Buy", "ConfirmBuy", "Meter", "ConfirmMeter", "DoneSend", "Share", "Receipt", "ShareBuy", "Receive",
          # A line you can still take apart, and the camera aimed at a bill
          # rather than at somebody's transfer message.
          "Draft", "ScanBill", "Amend", "Ways", "Rule",

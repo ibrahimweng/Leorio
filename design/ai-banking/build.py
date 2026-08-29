@@ -831,6 +831,16 @@ def dockback(placeholder, height=104, plus=True):
     """Every other screen shows back in the same spot, at the bottom left."""
     return dock(placeholder, True, height, plus)
 
+def obfoot(text, go="", act="", back_btn=True, kind="black"):
+    """The Task bottom bar: back in the corner it keeps everywhere else, and
+    one thing to press. Onboarding uses it, and so does any screen that is a
+    task rather than a place -- a task earns one action and nothing else."""
+    return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; '
+      'padding: 32px 20px 28px 20px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, '
+      + BG + ' 62%); display: flex; gap: 12px; align-items: center">'
+      + (back() if back_btn else '<div style="width: 6px; flex-shrink: 0"></div>')
+      + '<div style="flex-grow: 1; min-width: 0">' + pillbtn(text, go, act, "", kind, True, 56) + '</div></div>')
+
 def confirmbar(inner):
     """A screen that is a task earns one action and nothing else. Back keeps
     the bottom left corner it has everywhere."""
@@ -1227,14 +1237,20 @@ def rid(k, v):
       + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
       + icon("copy", 16, INK2) + '</div></div>')
 
+def donepill(status="Successful"):
+    """The word beside the tick. A green circle is what an app thinks happened;
+    Successful is what a person can read out. The receipt that leaves the phone
+    uses the same chip, so the two can never drift apart."""
+    return ('<div style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; '
+      'border-radius: 999px; background: ' + FILL + '; flex-shrink: 0">'
+      '<div style="width: 7px; height: 7px; border-radius: 999px; background: ' + IC["green"] + '"></div>'
+      '<span style="font-size: 13px; font-weight: 700; color: ' + IN_TEXT + '">' + status + '</span></div>')
+
 def rhero(amount, line, status="Successful", color=INK):
     """The figure and the tick on one row, with the word beside them. The word
     matters as much as the tick: a green circle is what an app thinks happened,
     and Successful is what a person can read out."""
-    pill = ('<div style="display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; '
-      'border-radius: 999px; background: ' + FILL + '; flex-shrink: 0">'
-      '<div style="width: 7px; height: 7px; border-radius: 999px; background: ' + IC["green"] + '"></div>'
-      '<span style="font-size: 13px; font-weight: 700; color: ' + IN_TEXT + '">' + status + '</span></div>')
+    pill = donepill(status)
     return ('<div style="display: flex; align-items: center; gap: 16px">' + tickmark("", 56)
       + '<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px">'
       + money(amount, "", 38, color)
@@ -1263,6 +1279,53 @@ def offerrow(text, action, go=""):
 
 def sharebtn(go):
     return pillbtn("Share receipt", go, "", "share", "black", True, 56)
+
+# ---------- the receipt that leaves the app ----------
+# Everything else here is seen by one person, who already knows whose app this
+# is. This is the exception: it goes to a landlord, to whoever asked for the
+# money, into a folder in an office. It is the only artefact of this product
+# another person ever holds, and it used to go out with no name on it at all.
+#
+# It is also the one place the balance must not appear, which the share sheet
+# has been promising in writing since the day it was written.
+
+def rref(k, v):
+    """The reference on a copy that leaves the phone. The same number `rid`
+    shows, without the button, because nothing in a picture can be tapped."""
+    return ('<div style="display: flex; flex-direction: column; gap: 4px">'
+      '<span style="font-size: 12px; font-weight: 500; color: ' + INK2 + '">' + k + '</span>'
+      '<span class="num" style="font-size: 14px; font-weight: 700; letter-spacing: -0.01em; color: '
+      + INK + '">' + v + '</span></div>')
+
+def letterhead(status="Successful"):
+    """The mark and the name across the top, the way a document says who drew
+    it. 32px, which is the size the mark is drawn at everywhere else."""
+    return ('<div style="display: flex; align-items: center; gap: 10px">' + mark(32)
+      + '<span style="flex-grow: 1; min-width: 0; font-size: 20px; font-weight: 700; '
+        'letter-spacing: -0.025em; color: ' + INK + '">Amana</span>'
+      + donepill(status) + '</div>')
+
+def sharecard(amount, line, when, blocks, ref, status="Successful", refname="Session ID"):
+    """The picture that goes to WhatsApp: a letterhead, the figure, the fields
+    and the reference, on white. No balance, no buttons, no bottom bar. A
+    picture has nothing to tap and nowhere to go back to, so it carries none
+    of the furniture a screen does."""
+    return ('<div style="' + bordered("20px", "20px")
+      + ' display: flex; flex-direction: column; gap: 20px">'
+      + letterhead(status)
+      + '<div style="display: flex; flex-direction: column; gap: 4px">'
+        + money(amount, "", 34)
+        + '<span style="font-size: 15px; font-weight: 500; color: ' + INK2 + '">' + line + '</span>'
+        + '<span style="font-size: 12px; font-weight: 400; color: ' + INK3 + '">' + when + '</span></div>'
+      + rcut()
+      + '<div style="display: flex; flex-direction: column; gap: 20px">' + "".join(blocks) + '</div>'
+      + rcut()
+      + rref(refname, ref)
+      + '<div style="display: flex; gap: 8px; align-items: flex-start">'
+        + icon("lock", 14, INK3, extra="; margin-top: 1px")
+        + '<span style="font-size: 12px; font-weight: 400; color: ' + INK3
+        + '; text-wrap: pretty">The balance is not on this copy.</span></div>'
+      + '</div>')
 
 def quote(t):
     return ('<div style="display: flex; flex-direction: column; gap: 8px">' + caption("You said")
@@ -2537,7 +2600,7 @@ write("DoneSend", donesend)
 # A receipt nobody can send is not a receipt here. It goes to a landlord, to
 # the person who asked for the money, or into a folder for an office, and the
 # balance is left off every copy that leaves the phone.
-def share_inner(line):
+def share_inner(line, go=""):
     return ('<div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0 20px 0">'
       + badge("share", None, 64, "20px", 32)
       + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK
@@ -2545,7 +2608,7 @@ def share_inner(line):
       + '<span style="font-size: 17px; font-weight: 400; color: ' + INK3
         + '; text-align: center; text-wrap: pretty">' + line + '</span></div>'
     + '<div style="display: flex; flex-direction: column">'
-      + sheetrow("WhatsApp", "chat", "The picture, ready to send")
+      + sheetrow("WhatsApp", "chat", "The picture, ready to send", False, go)
       + sheetrow("Save to photos", "camera", "It stays on this phone")
       + sheetrow("Save as PDF", "receipt", "The full record, for an office")
       + sheetrow("Somewhere else", "grid", "Messages, mail, anywhere you share")
@@ -2555,9 +2618,28 @@ def share_inner(line):
       + '<span style="font-size: 14.5px; font-weight: 500; line-height: 1.45; color: ' + INK2
       + '; text-wrap: pretty">Your balance is left off every copy that leaves the phone.</span></div>')
 
-write("Share", donesend + sheetup(share_inner("&#8358;20,000 to Sarah Adeyemi, 7:55 AM")))
+write("Share", donesend + sheetup(share_inner("&#8358;20,000 to Sarah Adeyemi, 7:55 AM", "Receipt")))
 write("ShareBuy", done + sheetup(share_inner("&#8358;2,500 of data for Mum, 8:02 AM")))
 write("SharePower", power + sheetup(share_inner("&#8358;8,000 to Ikeja Electric, 11:22 AM")))
+
+# The picture itself, seen once before it goes. All four rows on the share
+# sheet send the same card, so it is worth looking at the thing rather than
+# trusting the words "ready to send".
+#
+# Two fields say something different here than they do in the app. In the app
+# From reads "Everyday", which is what Ibrahim calls the account; on a copy
+# going to someone else it has to be his name and where it is held. And the
+# balance, which sits in the app receipt, is gone.
+write("Receipt", page(
+  T("Ready to send", "This is the picture. Nothing else goes with it.")
+  + sharecard("&#8358;20,000", "Sent to Sarah Adeyemi", "28 August 2026 at 7:55 AM",
+      [rline(rfield("To", "Sarah Adeyemi", "GTBank &#183; 0123 4457 8842"),
+             rfield("From", "Ibrahim Musa", "Amana &#183; 0102 4457 88")),
+       rline(rfield("Narration", "Rent part payment")),
+       rline(rfield("Amount", "&#8358;20,000.00"), rfield("Fee", "&#8358;26.88"),
+             rfield("Total charged", "&#8358;20,026.88", "", True))],
+      "000016 260828 142204 471803 926104"))
+  + obfoot("Send it to WhatsApp", "DoneSend"))
 
 # ---- money that arrived ----
 # Half of banking is money coming in, and until now none of it had a record.
@@ -3428,15 +3510,6 @@ def account(at, control="", tail="", sub=None, foot=120, steps=None, ahead=False
       + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; padding-top: 24px; '
         'display: flex; flex-direction: column">' + rows + '</div>'
       + '<div style="height: ' + str(foot) + 'px; flex-shrink: 0"></div></div>')
-
-def obfoot(text, go="", act="", back_btn=True, kind="black"):
-    """Onboarding's bottom bar. Back keeps the corner it has everywhere else,
-    and there is one thing to press."""
-    return ('<div class="dock" style="position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; '
-      'padding: 32px 20px 28px 20px; background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 34%, '
-      + BG + ' 62%); display: flex; gap: 12px; align-items: center">'
-      + (back() if back_btn else '<div style="width: 6px; flex-shrink: 0"></div>')
-      + '<div style="flex-grow: 1; min-width: 0">' + pillbtn(text, go, act, "", kind, True, 56) + '</div></div>')
 
 def bigfield(value, caret=True):
     """The answer, drawn as the biggest thing under the question, because it is

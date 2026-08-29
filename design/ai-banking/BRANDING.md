@@ -208,10 +208,22 @@ These are not new rules. They are what the copy is already doing.
 
 ## 6. Order of work, once the name is picked
 
-1. **Put the mark on the shared receipt.** It is the one artefact that leaves
-   the app — sent to WhatsApp after every payment — and it currently carries no
-   mark at all. One component, and it is the only thing another person sees.
-2. **Draw the mark at 32px**, then the app icon.
+1. ~~**Put the mark on the shared receipt.**~~ Done, and it turned out to be
+   more than a logo drop. The picture that goes to WhatsApp did not exist as a
+   design at all — the eight share screens are the in-app record with a sheet
+   over it, and the sheet's four rows led nowhere. So the artefact itself was
+   built: `sharecard()` in `build.py`, and a `Receipt` screen that shows it
+   before it goes.
+
+   It carries a letterhead — the mark at 32 and the name at 20 — and it does
+   **not** carry the balance, which the share sheet has been promising in
+   writing all along and the in-app receipt has been printing anyway. Two
+   fields also read differently on a copy going to someone else: From is the
+   person's name rather than "Everyday", the nickname only Ibrahim uses, and
+   the reference has no copy button, because nothing in a picture can be
+   tapped.
+2. **Draw the mark at 32px**, then the app icon. The receipt is now the second
+   place it is drawn at that size, and the first where a stranger sees it.
 3. ~~**Rename**~~ — done. 13 strings in `build.py`, one rebuild, 17 screens,
    and 37 text nodes in Figma. Not a single screen was re-sent: the four
    component masters were edited in place and 30 of the 37 followed on their
