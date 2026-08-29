@@ -54,8 +54,14 @@ WARN_EDGE = "#F0BFBC"
 
 # The accent. It carries a contextual action, a selected state, a highlighted
 # bar, and the model's own panel. Black stays the main action on a screen.
+#
+# It was #2A6AF5, which is the iOS system blue's neighbourhood, and on a home
+# screen it did not separate from the other blue banks -- the shape was doing
+# all the work. This one is a few degrees toward indigo and darker: it reads as
+# night rather than daylight, which is the position, and white on it goes from
+# 4.69 to 8.32, so the primary button's label is no longer scraping the floor.
 ACC       = "{{accent}}"
-ACC_HEX   = "#2A6AF5"                                        # the reference blue
+ACC_HEX   = "#213ACA"                                        # Amana blue
 ACC_TEXT  = "color-mix(in srgb, " + ACC + " 88%, #000000)"   # the accent, one step down, so small text on white reads
 ACC_SOFT  = "color-mix(in srgb, " + ACC + " 7%, #FFFFFF)"    # the panel the model speaks from
 ACC_EDGE  = "color-mix(in srgb, " + ACC + " 22%, transparent)"
@@ -70,6 +76,7 @@ def _mix(top, pct, under="#000000"):
         round(int(a[i:i+2], 16) * f + int(b[i:i+2], 16) * (1 - f)) for i in (0, 2, 4))
 
 ACC_TEXT_HEX = _mix(ACC_HEX, 88)
+ACC_HOVER    = _mix(ACC_HEX, 80)   # a link under the cursor, one step down again
 
 CARD_FACE = "linear-gradient(155deg, #1E3A8A 0%, #12235C 48%, #0A0F24 100%)"
 ON_DARK   = "#FFFFFF"
@@ -86,7 +93,7 @@ ON_DARK_3 = "rgba(255,255,255,0.44)"
 # five glyphs behind the black circle on home keep their colours, because that
 # menu is the one place in the product that is meant to feel like a splash.
 IC = {
-    "blue":   "#2A6AF5",
+    "blue":   ACC_HEX,
     "orange": "#FF8A4C",
     "purple": "#8B5CF6",
     "green":  "#34C759",

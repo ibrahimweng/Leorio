@@ -16,11 +16,20 @@ deserves the answer rather than the conclusion.
 interface, one blue is saved for the thing worth looking at, seven text styles,
 one spacing scale, one icon rule. Nothing in this document changes it.
 
-**The blue stays.** `#2A6AF5`. One honest note and then it is closed: this is
-the iOS system blue, and PalmPay and Moniepoint are also blue. Two ways to keep
-it and still own it — shift it a few degrees so it is Amana's blue rather than
-Apple's, or keep it exactly and let the mark and the voice do the work. Either
-is fine. The blue is not the problem.
+**The blue moved.** `#2A6AF5` → **`#213ACA`**, on 29 August. The old one sat in
+the iOS system blue's neighbourhood, and the app icon proved what that cost: on
+a home screen beside other blue banks it did not separate itself at all, and the
+shape was doing every bit of the work. The new one is a few degrees toward
+indigo and darker — night rather than daylight, which is the position.
+
+It also fixed something nobody had measured. White on `#2A6AF5` was **4.69**,
+over the 4.5 floor by a hair: the primary button's own label was scraping the
+minimum. White on `#213ACA` is **8.32**, and the accent as small text on white
+goes from 5.78 to 9.68.
+
+Three others were drawn and rejected — the same blue merely taken down (still on
+the shelf), a much deeper ink (dusty, and it lost its life on the icon), and a
+small nudge toward cyan (changed nothing, 4.77).
 
 **The voice exists and is the best thing in the file.** It was written, not
 designed. Section 5 writes down the rules it is already following.
@@ -209,9 +218,9 @@ It is written by `appicon()` in `build.py`, beside `mark()`, so the two cannot
 drift. `brand.py` saves it out to `design/ai-banking/brand/` — an SVG master
 and PNGs at 1024, 180, 120, 80, 60 and 40, full bleed and masked.
 
-One honest note, unchanged from section 1: on a home screen this sits beside
-other blue banks and does not separate itself by colour. The shape does the
-work. That is the cost of keeping the blue exactly, and it was a known cost.
+This icon is what settled the blue. Sitting it beside plain colour tiles at
+60px made it obvious that `#2A6AF5` did not separate from the other blue banks
+at all — the shape was carrying the whole thing. Section 1 has the new one.
 
 ### The wordmark
 
@@ -324,12 +333,10 @@ These are not new rules. They are what the copy is already doing.
   It is the assistant's own avatar and the most repeated element in the app, so
   4px is not nothing. Either the source should say 28 or Figma should say 32,
   and that is a look-at-it decision rather than an audit one.
-- The app icon, scaled up from the mark.
 - How Amana answers the Islamic-finance reading. The word is Hausa by way of
   Arabic and it means safekeeping, not a product structure. Half of Nigeria
   will hear the older meaning and half will hear nothing at all; the mark and
   the opening screen should make it a word about keeping, not a claim about
   compliance we are not making.
-- Whether the blue shifts a few degrees or stays exactly as it is.
 - Whether a display face for the naira figures is worth it — the amount is the
   hero of every receipt and is currently set in the same font as a form label.

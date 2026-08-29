@@ -9,7 +9,7 @@
 set -e
 OUT="${1:?usage: sh rev.sh <work-dir>}/rev"
 SRC="$(dirname "$0")/.."
-ACCENT="#2A6AF5"
+ACCENT="#213ACA"
 mkdir -p "$OUT"
 for f in "$SRC"/*.dc.html; do
   name=$(basename "$f" .dc.html)

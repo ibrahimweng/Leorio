@@ -1200,3 +1200,43 @@ so changing the mark still changes the lockup. Positions are absolute, not auto
 layout: the mark centres on the middle of the cap height, which is half a pixel
 off what `counterAxisAlignItems: CENTER` would give, and a logo is the wrong
 place to accept half a pixel.
+
+## Changing the blue
+
+`#2A6AF5` → `#213ACA`. `BRANDING.md` §1 has why; this is how it was done to a
+file of 96 screens without re-sending one.
+
+**The accent was in six places in the source that were not the constant.**
+`steplight`, `wheelword`, `plaintop`'s wash default, the canvas theme control
+and the link hover all carried a literal. They reference `ACC_HEX` now, and
+`ACC_HOVER` was added beside `ACC_TEXT_HEX` so the darker link is derived rather
+than typed. That is CLAUDE.md's second rule: change a constant, then find
+everything keyed on it. The next accent change is one line.
+
+**`recolor.mjs` said what to look for, but the colour map is what applied it.**
+Two extractions of the same 96 screens, before and after, diff to a clean
+one-to-one map of six values:
+
+    #2a6af5 -> #213aca   x326      the accent
+    #255dd8 -> #1d33b2   x123      ACC_TEXT, the accent one step down
+    #f0f5fe -> #eff1fb   x116      ACC_SOFT, the panel the model speaks from
+    #d3ddf2 -> #9ca5d8    x23
+    #2a6af5|0.22 -> #213aca|0.22   x22   ACC_EDGE
+    #0034a6 -> #0a1b7e     x1
+
+Because the map is one-to-one, a blanket swap over every fill and stroke is
+exact, and it does what the path-walking script cannot: it reaches inside
+instances and past the overlay screens whose top child was replaced by a Home
+screen instance. The path script painted 14 of 53 on its trial bundle and
+reported the other 39 rather than guessing — which is the tool working, and the
+signal to swap by colour instead.
+
+**Gradients carry the accent too.** Six stops did. A sweep that only walks
+`fills[].color` misses them and leaves the Start screen's wash on the old blue;
+the stops need remapping with their alpha kept.
+
+**Check the hex written as text.** Two labels in the Design system section spelt
+`#2A6AF5` out. A colour sweep does not touch a string.
+
+Afterwards: 560 fills and 216 strokes on Flows, 55 and 50 on Components, nothing
+left on the old palette on any page, and 774 reactions with none dead.

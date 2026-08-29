@@ -27,13 +27,13 @@ def head(anim=""):
       '  <style>\n' + faces() +
       '    * { box-sizing: border-box; }\n'
       '    body { margin: 0; background: ' + BG + '; font-family: ' + FONT_UI + '; -webkit-font-smoothing: antialiased; }\n'
-      '    a { color: ' + ACC_HEX + '; } a:hover { color: #1B4FC4; }\n'
+      '    a { color: ' + ACC_HEX + '; } a:hover { color: ' + ACC_HOVER + '; }\n'
       '    .num { font-variant-numeric: tabular-nums; }\n'
       + anim +
       '  </style>\n</helmet>\n')
 
 FOOT = ('</x-dc>\n<script data-dc-script data-props=\'{"$preview":{"width":393,"height":852},'
-  '"accent":{"editor":"color","default":"#2A6AF5","options":["#2A6AF5","#0A84FF","#5B3A7E","#0E7C7A"],"section":"Theme"}}\'>\n'
+  '"accent":{"editor":"color","default":"' + ACC_HEX + '","options":["' + ACC_HEX + '","#0A84FF","#5B3A7E","#0E7C7A"],"section":"Theme"}}\'>\n'
   'class Component extends DCLogic {\n'
   '  renderVals() {\n'
   '    return { accent: this.props.accent ?? \'#1B3B6F\' };\n'
@@ -3589,11 +3589,11 @@ def wheelword(t, ic=None, color=None):
 
 start = ('<div class="pg" style="position: relative; height: 852px; padding: 0 20px; '
   'display: flex; flex-direction: column">'
-  + steplight("#2A6AF5")
+  + steplight(ACC_HEX)
   + '<div class="pgin" style="position: relative; z-index: 1; flex-shrink: 0; '
     'display: flex; flex-direction: column; gap: 24px">'
   + '<div style="display: flex; flex-direction: column">'
-    + wheelword("Save") + wheelword("Send", "send", "#2A6AF5") + wheelword("Spend")
+    + wheelword("Save") + wheelword("Send", "send", ACC_HEX) + wheelword("Spend")
     + wheelword("Ask") + '</div>'
   + '<div style="display: flex; flex-direction: column; gap: 12px">' + mark(40)
     + '<span style="font-size: 22px; font-weight: 700; letter-spacing: -0.025em; color: ' + INK + '">Amana</span>'
@@ -3810,7 +3810,7 @@ write("Full", full)
 # went nowhere, and there was no screen for the one question in opening an
 # account that can actually fail.
 
-def plaintop(title, sub, ic=None, color=None, wash="#2A6AF5"):
+def plaintop(title, sub, ic=None, color=None, wash=ACC_HEX):
     """The head of a screen that is not part of a run. Same shape as an open
     question, without a list above it, because there is nothing settled yet."""
     return (steplight(wash)
