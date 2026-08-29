@@ -68,7 +68,7 @@ mark and the name across the top and the balance off it.
 | App icon | every time the phone is unlocked | drawn, in `brand/` |
 | Opening screen | first run | plain |
 | The card | Card screen | plain |
-| Wordmark | rarely, in product | set in SF Pro |
+| Wordmark | rarely, in product | Fraunces SemiBold, outlined |
 
 ---
 
@@ -84,7 +84,9 @@ Not the logo. In order:
 5. **Write the voice down** — the ten rules already visible in the copy, so the
    next hundred strings sound like the first hundred.
 
-The wordmark comes last. It is the least-seen thing on the list.
+~~The wordmark comes last.~~ Done — and being last did not make it cheap. It is
+the item that surfaced the licensing problem: SF Pro sets the interface and
+cannot set the logo.
 
 ---
 

@@ -213,6 +213,57 @@ One honest note, unchanged from section 1: on a home screen this sits beside
 other blue banks and does not separate itself by colour. The shape does the
 work. That is the cost of keeping the blue exactly, and it was a known cost.
 
+### The wordmark
+
+**Amana is five letters and three of them are `a`.** Whatever the `a` does, the
+wordmark does. Six faces were set and the letter looked at on its own first,
+because that was the actual decision.
+
+**It is set in Fraunces SemiBold**, tracking −0.02em, capital A. Two reasons:
+
+- **A serif, against a category that is entirely sans.** Kuda, Opay, PalmPay,
+  Moniepoint — all sans. The position is *not fast, reliable every time*, and a
+  serif says permanence and care where a sans says speed and tech. The UI stays
+  SF Pro, so the wordmark sits above the interface like a masthead rather than
+  fighting it.
+- **Warmth over neutrality.** Newsreader is the calmer serif and the safer
+  choice; Fraunces has the friendlier `a` and more character, and comfort is
+  half the brief. Instrument Serif was the most beautiful at 64px and too thin
+  at 14. The three sans all read as "a fintech".
+
+Settings that were tested rather than assumed: 700 is blocky and 500 is light,
+so **600**. Tracking at −0.04 crowds the A into the m and 0 reads loose, so
+**−0.02**. Lowercase *amana* is softer but loses the proper-noun dignity, and
+the UI says Amana everywhere, so **capital A**.
+
+**It could not have been SF Pro.** Apple licenses that face for designing and
+developing interfaces for Apple platforms — which is exactly what the screens
+are, and exactly what a logotype is not. A wordmark goes on a card, an App
+Store listing, a deck, a sign. Fraunces is under the SIL Open Font License,
+which permits use in a logo. `fonts/README.md` carries the notice.
+
+**And the shipped wordmark is not a font at all.** `brand.py` outlines it to
+one path, so `brand/wordmark.svg` and the lockups are shapes. Nothing needs
+Fraunces installed for the logo to be right, which is the only way a logotype
+should travel.
+
+### The lockup
+
+Said as proportions of the wordmark's own size **S**, so it holds at any scale:
+
+- **Mark height 0.90S**, which puts it a little taller than the caps.
+- **Gap 0.25S.**
+- The mark is **centred on the middle of the cap height**, not on the box —
+  otherwise it floats high against a word with no descenders.
+- **Clear space:** the mark's height on all sides.
+- **Smallest sizes:** the wordmark alone holds to 13px, the lockup to S = 16.
+  Below that, the mark alone.
+
+Stacked is for a square hole — a share sheet, a sign, an avatar. On the blue,
+everything goes white.
+
+---
+
 ## 5. The voice, written down
 
 These are not new rules. They are what the copy is already doing.
@@ -260,7 +311,9 @@ These are not new rules. They are what the copy is already doing.
    and 37 text nodes in Figma. Not a single screen was re-sent: the four
    component masters were edited in place and 30 of the 37 followed on their
    own. Wiring held at 771 reactions with no dead destinations.
-4. **The wordmark**, last. It is the least-seen thing on this list.
+4. ~~**The wordmark**, last.~~ Done, section 4. It was the least-seen thing on
+   the list and it turned up the one genuinely blocking fact in the exercise:
+   the interface font cannot be the logo font.
 
 ---
 

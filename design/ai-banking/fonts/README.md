@@ -1,7 +1,7 @@
 # Fonts
 
-One typeface, cut down to only the characters these screens use, so the whole
-design can carry its own font.
+Two typefaces. SF Pro Text sets the interface; Fraunces sets the wordmark, and
+only the wordmark. Both are cut down to the characters they actually draw.
 
 - `SFProText-Regular-subset.woff2` is weight 400.
 - `SFProText-Semibold-subset.woff2` is weight 600, which is what carries the
@@ -36,6 +36,27 @@ not in the repository.
 Note that `trak`, Apple's optical tracking table, does not survive subsetting
 and browsers would not read it anyway. Its values were read out of the full
 fonts first and live in `tokens.py` as the tracking for each size.
+
+## Fraunces, and why the wordmark is not SF Pro
+
+`Fraunces-SemiBold-Amana-subset.woff2` holds five glyphs: A, m, a, n and the
+notdef. It exists to draw the wordmark once and outline it, not to set type.
+
+**The wordmark could not be SF Pro.** Apple licenses it for designing and
+developing interfaces for Apple platforms, which is exactly what the screens
+are and exactly what a logotype is not: a wordmark goes on a card, an App Store
+listing, a pitch deck, a sign. So it is set in Fraunces, which is under the SIL
+Open Font License 1.1 — free to use, modify, embed and redistribute, including
+in a logo, with the notice kept.
+
+  Fraunces © The Fraunces Project Authors, https://github.com/undercasetype/Fraunces
+  SIL Open Font License 1.1, https://openfontlicense.org
+
+**And the shipped wordmark is not a font at all.** `brand.py` outlines it to a
+single path, so `brand/wordmark.svg` and the lockups are shapes. Nothing has to
+have Fraunces installed for the logo to be right, which is the only way a
+logotype should ever travel. The subset stays here so the outline can be made
+again.
 
 ## Licence
 

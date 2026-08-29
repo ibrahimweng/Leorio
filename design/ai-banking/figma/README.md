@@ -1158,3 +1158,45 @@ specimen, not a source: the source is `appicon()`.
 Deleting `Mark · 34` left the mark specimen stranded at x 174, so it moved back
 to 80 and the section caption, which promised the badge "at the two sizes it
 appears in", now names the mark and the icon.
+
+## The wordmark
+
+`brand.py` sets `Amana` in Fraunces SemiBold at −0.02em and **outlines it to a
+single path**, then composes the lockups round it. `BRANDING.md` §4 has why
+Fraunces and why a serif; three things here are about the making.
+
+**The interface font could not be the logo.** SF Pro is licensed for designing
+and developing interfaces for Apple platforms, which the screens are and a
+logotype is not. That is a hard constraint, not a preference, and it is the one
+thing the wordmark turned up that nothing else would have.
+
+**The outline was checked against the browser, not trusted.** The path is
+composed on advance widths alone, so kerning would be silently lost if Fraunces
+had any for these five letters. Rendering the browser's text in red over the
+path at 100px showed them landing on the same pixels: no kerning, nothing
+dropped. Worth doing again for any other string.
+
+**`vectorPaths` in Figma is cubics only, and so is this.** The path is written
+with `SVGPathPen(ntos=…)` rounding to two decimals at EM 100 — 0.002px at the
+size the lockup draws — which halves the file and lets the same string go into
+the SVG asset and into Figma.
+
+### Two traps in composing an asset
+
+**Scaling the viewBox is not scaling the art.** The first `wordmark()` wrote
+the size into the viewBox and left the path at EM, so the word sat in the
+corner of a box twice its size. The group carries the scale.
+
+**A fractional box clips.** The lockup came out 267.44 wide, the browser
+snapped the element to 267, and the last `a` lost its edge in every PNG. `_box()`
+now ceils the canvas to whole pixels and centres the art in it, which is what a
+shipped asset wants anyway.
+
+### In Figma
+
+One component, `Lockup` (815:2303), in the `Icons` section beside the mark and
+the app icon. It holds an **instance** of `glyph=mark` plus the outlined word,
+so changing the mark still changes the lockup. Positions are absolute, not auto
+layout: the mark centres on the middle of the cap height, which is half a pixel
+off what `counterAxisAlignItems: CENTER` would give, and a logo is the wrong
+place to accept half a pixel.
