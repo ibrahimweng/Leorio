@@ -115,6 +115,12 @@ const EXTRACT = () => {
     return {
       fs: Math.round(parseFloat(cs.fontSize) * 100) / 100,
       fw: parseInt(cs.fontWeight) || 400,
+      // The family, but only when it is not the interface font. Money is set
+      // in Fraunces and everything else in SF Pro, so carrying the exception
+      // is cheaper than carrying the rule, and a screen that never mentions
+      // money reads exactly as it did before.
+      ff: (cs.fontFamily.split(',')[0].replace(/['"]/g, '').trim() === 'SF Pro Text')
+            ? undefined : cs.fontFamily.split(',')[0].replace(/['"]/g, '').trim(),
       it: cs.fontStyle === 'italic' ? 1 : 0,
       c: col(cs.color),
       lh: cs.lineHeight === 'normal' ? 0 : Math.round(parseFloat(cs.lineHeight) * 100) / 100,
@@ -122,7 +128,10 @@ const EXTRACT = () => {
       ta: cs.textAlign
     };
   }
-  const sameTypo = (a, b) => a.fs === b.fs && a.fw === b.fw && a.it === b.it && a.c === b.c;
+  // Two runs only merge into one text node if they agree on the family too --
+  // a node in Figma carries one font, so a merged run would have to pick.
+  const sameTypo = (a, b) => a.fs === b.fs && a.fw === b.fw && a.it === b.it
+    && a.c === b.c && a.ff === b.ff;
 
   // The seven named text styles in the Figma file, keyed by the size and weight
   // that build.py has already snapped every line onto. A pair that is not here
@@ -138,7 +147,12 @@ const EXTRACT = () => {
     '14/600': 'Label/Semibold 14',   '14/400': 'Label/Regular 14',
     '12/600': 'Caption/Semibold 12', '12/400': 'Caption/Regular 12'
   };
-  const styleOf = T => STYLE[T.fs + '/' + T.fw] || null;
+  // Money takes the same ramp in the other family, so the key carries it.
+  const MONEY_STYLE = {
+    '32/700': 'Money/Bold 32',     '20/600': 'Money/Semibold 20',
+    '14/600': 'Money/Semibold 14', '14/400': 'Money/Regular 14'
+  };
+  const styleOf = T => (T.ff === 'Fraunces' ? MONEY_STYLE : STYLE)[T.fs + '/' + T.fw] || null;
 
   function textNode(str, b, T, op, clipW) {
     const s = str.replace(/\s+/g, ' ');
@@ -151,6 +165,7 @@ const EXTRACT = () => {
       const n = { t: 1, n: s.slice(0, 28), x: rx(b.left), y: ry(b.top),
                   w: Math.ceil(clipW), h: Math.ceil(b.height), tr: 1,
                   s, fs: T.fs, fw: T.fw, c: T.c || '000000' };
+      if (T.ff) n.ff = T.ff;
       if (T.it) n.i = 1;
       if (T.lh) n.lh = T.lh;
       if (T.ls) n.ls = T.ls;
@@ -167,6 +182,7 @@ const EXTRACT = () => {
                 w: Math.ceil(b.width) + 2, h: Math.ceil(b.height),
                 s, fs: T.fs, fw: T.fw, c: T.c || '000000' };
     if (b.height > lh * 1.5) n.ml = 1;
+    if (T.ff) n.ff = T.ff;
     if (T.it) n.i = 1;
     if (T.lh) n.lh = T.lh;
     if (T.ls) n.ls = T.ls;

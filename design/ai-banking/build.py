@@ -13,6 +13,24 @@ def _b64(name):
         _FCACHE[name] = base64.b64encode(open(os.path.join(_FDIR, name), "rb").read()).decode("ascii")
     return _FCACHE[name]
 
+MONEY_FACES = [("400", "Fraunces-Regular-Money-subset.woff2"),
+               ("600", "Fraunces-SemiBold-Money-subset.woff2"),
+               ("700", "Fraunces-Bold-Money-subset.woff2")]
+
+def moneyface_css():
+    """Three weights, because the amounts ask for three: 400 for a pale
+    secondary figure, 600 for a row, 700 for the hero. One weight would have
+    let the browser pick the nearest and set a caption in bold.
+
+    Each subset holds digits, comma, period, the two signs, the naira and the
+    dollar, and not one letter. That is deliberate: a value slot this rule
+    reaches by mistake cannot be set in it, because the letters have nowhere to
+    go but back to SF Pro, glyph by glyph."""
+    return "".join(
+        "    @font-face { font-family: 'Fraunces'; font-style: normal; font-weight: " + w + ";"
+        " src: url(data:font/woff2;base64," + _b64(f) + ") format('woff2'); font-display: block; }\n"
+        for w, f in MONEY_FACES)
+
 def faces():
     # The font rides inside each screen rather than being fetched, so a screen
     # is one file that renders the same anywhere. See fonts/README.md.
@@ -24,11 +42,12 @@ def faces():
 def head(anim=""):
     return ('<!doctype html>\n<html>\n<head>\n  <meta charset="utf-8">\n'
       '  <script src="./support.js"></script>\n</head>\n<body>\n<x-dc>\n<helmet>\n'
-      '  <style>\n' + faces() +
+      '  <style>\n' + faces() + moneyface_css() +
       '    * { box-sizing: border-box; }\n'
       '    body { margin: 0; background: ' + BG + '; font-family: ' + FONT_UI + '; -webkit-font-smoothing: antialiased; }\n'
       '    a { color: ' + ACC_HEX + '; } a:hover { color: ' + ACC_HOVER + '; }\n'
       '    .num { font-variant-numeric: tabular-nums; }\n'
+      '    .amt { font-family: ' + MONEY_FONT + '; }\n'
       + anim +
       '  </style>\n</helmet>\n')
 
@@ -146,8 +165,30 @@ def hook(go="", act=""):
         out += ' data-act="' + act + '"'
     return out
 
+_AMT_SPAN = re.compile(r'(<span class="num)(")([^>]*>)([^<]*)(</span>)')
+# A leading sign belongs to the figure: the feed writes every amount with one.
+_IS_AMOUNT = re.compile(r'^(?:&#8722;|\+|-)?\s*(?:' + NAIRA + r'|\$)[\d,. ]+$|^\.\d+$')
+
+def moneyface(html):
+    """Give the money face to a value slot that holds nothing but money.
+
+    The test is a currency sign, and that is the whole test. An account number
+    and a session ID are digits too and are not amounts; a decimal tail is the
+    one exception, because money() splits the figure in two and the pale half
+    has no sign of its own to carry.
+
+    It marks the span rather than wrapping a run inside one, so no node is
+    added: a run wrapped mid-sentence would split one text node into three on
+    the way to Figma, and a text node there has one font, not three."""
+    def hit(m):
+        body = m.group(4).strip()
+        return m.group(0) if not _IS_AMOUNT.match(body) else (
+            m.group(1) + ' amt' + m.group(2) + m.group(3) + m.group(4) + m.group(5))
+    return _AMT_SPAN.sub(hit, html)
+
 def write(name, inner, anim=""):
     inner = snap(inner)
+    inner = moneyface(inner)
     inner = inner.replace(NAIRA, '<span style="margin: 0 0.09em 0 0.05em">' + NAIRA + '</span>')
     SCREENS[name] = inner
     if EMIT:

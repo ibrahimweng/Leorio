@@ -1271,3 +1271,39 @@ Afterwards the mark reads 24, 32 and 40 on Flows and nothing else, and the
 something nearby paying for it. A wrong number that has been compensated for
 is invisible until you compare against the source rather than against how it
 looks.
+
+## A second family, and what it cost the pipeline
+
+Money is set in Fraunces now. The pipeline had exactly one font in it —
+`emit.mjs` opened with `const F='SF Pro Text'` and put every text node in it —
+so a second family meant teaching three things.
+
+**`extract.mjs` computes the family but was throwing it away.** `typo()` read
+it; `textNode()` built its object field by field and never copied it across, so
+the JSON came out with 2746 nodes and not one family among them. Two lines.
+Worth remembering the shape: a value that is computed and then not carried
+looks exactly like a value that was never computed.
+
+**Merging runs has to agree on the family.** `sameTypo` decides whether two
+inline runs become one Figma text node, and a text node there carries one font.
+Without the family in that test, a money run beside a word would merge and one
+of the two would silently lose its face.
+
+**The weight names differ.** SF Pro calls it `Semibold`, Fraunces calls it
+`SemiBold`, and Fraunces has no `Medium` at all, so `ST(w)` takes the family
+now and answers for it.
+
+The family is carried **only when it is not SF Pro**, so a screen that never
+mentions money extracts byte for byte as it did before.
+
+### Four money styles
+
+`Money/Bold 32`, `Money/Semibold 20`, `Money/Semibold 14`, `Money/Regular 14` —
+each mirroring the style the amount used to take and changing only the family,
+so the size and the tracking stay on the ramp. 574 nodes on Flows and 104 on
+Components were rebound, which is why the audit's bound count did not move:
+rebinding is not detaching.
+
+Identify a money node in Figma the same way `build.py` does — by content, a
+currency sign and no letters. Not by size, and not by which style it is
+wearing.

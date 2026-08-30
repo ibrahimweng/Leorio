@@ -194,6 +194,14 @@ for _fs, _fw in STYLE:
 # Money never renders at the bottom of the ramp: a Naira sign at 12 is too fine
 # to read at a glance on a phone. snap() lifts any figure off it.
 MONEY_MIN_PX = 14
+
+# The money face. SF Pro sets the interface; Fraunces sets the name and the
+# amount, and nothing else. Two faces, each with a job.
+#
+# The subset holds digits, comma, period, the naira and the dollar and not one
+# letter, which is deliberate: a value slot that happens to hold "Sarah Adeyemi"
+# falls back to SF Pro glyph by glyph, so the face can only ever reach money.
+MONEY_FONT = "'Fraunces', " + FONT_UI
 # Two weights in use. Regular for anything grey, and Semibold, not Bold, for
 # everything else: SF sets heavier at a given weight than Jakarta did, and
 # Semibold is the weight iOS itself emphasises with. Bold survives at one size

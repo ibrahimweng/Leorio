@@ -273,6 +273,32 @@ everything goes white.
 
 ---
 
+### The money
+
+**The amount is set in Fraunces too**, at the weight the design already asked
+for. So the system is two faces and a rule you can say in one line: **SF Pro
+sets the interface, Fraunces sets the name and the amount.** On the shared
+receipt the wordmark and the figure under it are now the same face, which is
+why that card suddenly reads as one document rather than a logo above a table.
+
+**The face reaches money and nothing else.** `build.py` gives a value slot the
+money face only when the slot holds nothing but an amount — a currency sign,
+optionally a leading minus, digits, and no letters. That is why `Sarah Adeyemi`,
+`GTBank · 0123 4457 8842`, the account number and the session ID all stay in SF
+Pro, and why an amount inside a sentence does too: *money as a figure* gets the
+face, money mentioned in prose does not.
+
+The subsets carry no letters at all, which is the second lock on the same rule.
+
+**The naira decided which faces were even possible.** Google serves the digits
+in one subset and the naira in another, and never both in one file. Manrope,
+Instrument Serif, Sora, Outfit and Figtree have no naira anywhere. Of the ones
+that do, IBM Plex Mono puts monospace gaps round the comma (`₦595 , 320`), and
+Archivo and Newsreader are competent but look so much like SF Pro that they
+would have been a third face doing no work. `fonts/README.md` has the details.
+
+---
+
 ## 5. The voice, written down
 
 These are not new rules. They are what the copy is already doing.
@@ -333,5 +359,3 @@ These are not new rules. They are what the copy is already doing.
   will hear the older meaning and half will hear nothing at all; the mark and
   the opening screen should make it a word about keeping, not a claim about
   compliance we are not making.
-- Whether a display face for the naira figures is worth it — the amount is the
-  hero of every receipt and is currently set in the same font as a form label.
