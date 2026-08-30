@@ -115,10 +115,10 @@ const EXTRACT = () => {
     return {
       fs: Math.round(parseFloat(cs.fontSize) * 100) / 100,
       fw: parseInt(cs.fontWeight) || 400,
-      // The family, but only when it is not the interface font. Money is set
-      // in Fraunces and everything else in SF Pro, so carrying the exception
-      // is cheaper than carrying the rule, and a screen that never mentions
-      // money reads exactly as it did before.
+      // The family, but only when it is not the interface font. There is one
+      // family now, so this should always come back undefined; it stays as the
+      // tripwire. Anything it does catch reaches Figma unbound and named, which
+      // is how a second face would announce itself rather than creep in.
       ff: (cs.fontFamily.split(',')[0].replace(/['"]/g, '').trim() === 'SF Pro Text')
             ? undefined : cs.fontFamily.split(',')[0].replace(/['"]/g, '').trim(),
       it: cs.fontStyle === 'italic' ? 1 : 0,
@@ -146,12 +146,9 @@ const EXTRACT = () => {
     '14/600': 'Label/Semibold 14',   '14/400': 'Label/Regular 14',
     '12/600': 'Caption/Semibold 12', '12/400': 'Caption/Regular 12'
   };
-  // Money takes the same ramp in the other family, so the key carries it.
-  const MONEY_STYLE = {
-    '32/700': 'Money/Bold 32',     '20/600': 'Money/Semibold 20',
-    '14/600': 'Money/Semibold 14', '14/400': 'Money/Regular 14'
-  };
-  const styleOf = T => (T.ff === 'Fraunces' ? MONEY_STYLE : STYLE)[T.fs + '/' + T.fw] || null;
+  // One family now. `ff` is still captured for anything that is not SF Pro, so a
+  // stray face shows up as an unbound node rather than being coerced quietly.
+  const styleOf = T => (T.ff ? null : STYLE[T.fs + '/' + T.fw]) || null;
 
   function textNode(str, b, T, op, clipW) {
     const s = str.replace(/\s+/g, ' ');

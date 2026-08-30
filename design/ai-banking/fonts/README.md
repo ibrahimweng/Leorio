@@ -1,7 +1,8 @@
 # Fonts
 
-Two typefaces. SF Pro Text sets the interface; Fraunces sets the wordmark and
-the money, and nothing else. Both are cut down to the characters they draw.
+One typeface in the interface. SF Pro Text sets everything. Fraunces is here for
+the wordmark alone, and even there it ships as outlined paths rather than as a
+font. Both are cut down to the characters they draw.
 
 - `SFProText-Regular-subset.woff2` is weight 400.
 - `SFProText-Semibold-subset.woff2` is weight 600, which is what carries the
@@ -39,27 +40,27 @@ fonts first and live in `tokens.py` as the tracking for each size.
 
 ## The money subsets, and the naira
 
-`Fraunces-Regular-Money-subset.woff2`, `-SemiBold-` and `-Bold-` hold eighteen
-characters each: the ten digits, comma, period, plus, hyphen, minus, space, the
-naira and the dollar. **Not one letter, on purpose.** `build.py` gives a value
-slot the money face only when it holds nothing but money, and the empty
-alphabet is the second lock on that: a slot the rule reaches by mistake has
-nowhere to put its letters but back into SF Pro, glyph by glyph.
+**These files are gone.** `Fraunces-{Regular,SemiBold,Bold}-Money-subset.woff2`
+held eighteen characters each — the ten digits, comma, period, plus, hyphen,
+minus, space, the naira and the dollar, and not one letter, so a slot the rule
+reached by mistake had nowhere to put its letters but back into SF Pro. Money is
+set in SF Pro now and the subsets came out with the face.
 
-Three weights because the amounts ask for three — 400 for a pale secondary
-figure, 600 for a row, 700 for the hero. One weight would have let the browser
-pick the nearest and set a caption in bold.
+Two findings from building them are worth keeping, because they will decide the
+next typeface too.
 
 **Getting the naira out of Google was the whole problem.** The digits live in
-the `latin` subset and the naira lives in `latin-ext`, and no single served
-file has both — which is the same wall this project hit with Plus Jakarta Sans,
-recorded below. The fix is to take both subsets, merge them with fontTools, and
-cut the result down to the eighteen characters. That is what makes these files
-2.5KB each instead of two files and a `unicode-range` apiece.
+the `latin` subset and the naira lives in `latin-ext`, and no single served file
+has both — the same wall this project hit with Plus Jakarta Sans, recorded
+below. The fix is to take both subsets, merge them with fontTools, and cut the
+result down. That is what made those files 2.5KB each instead of two files and a
+`unicode-range` apiece.
 
-Worth knowing for the next face: **Manrope, Instrument Serif, Sora, Outfit and
-Figtree have no naira at all.** Fraunces, Newsreader, Archivo, Space Grotesk,
-Inter, IBM Plex Mono and Bricolage Grotesque do. Check before falling in love.
+**Manrope, Instrument Serif, Sora, Outfit and Figtree have no naira at all.**
+Fraunces, Newsreader, Archivo, Space Grotesk, Inter, IBM Plex Mono and Bricolage
+Grotesque do. Check before falling in love. For a Nigerian product this is the
+first question to ask of a face, not the last — it eliminated five candidates
+here before any of them was judged on how it looked.
 
 ## Fraunces, and why the wordmark is not SF Pro
 

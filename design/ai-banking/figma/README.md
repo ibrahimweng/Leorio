@@ -440,23 +440,19 @@ way Plus Jakarta Sans was tuned here.
 | `Label/Regular 14` | 14 | Regular | 20 | −1.07% | a second line, and everything the model says |
 | `Caption/Semibold 12` | 12 | Semibold | 16 | 0% | a day separator, a badge, a small firm number |
 | `Caption/Regular 12` | 12 | Regular | 16 | 0% | a note under a field |
-| `Money/Bold 32` | 32 | Bold | 40 | −3.32% | a balance |
-| `Money/Semibold 20` | 20 | SemiBold | 24 | −2.69% | the kobo tail |
-| `Money/Semibold 14` | 14 | SemiBold | 20 | −1.07% | an amount in a row |
-| `Money/Regular 14` | 14 | Regular | 20 | −1.07% | an amount offered as a choice, not a total |
 
-The top six are SF Pro Text and the `Money/*` four are Fraunces, on the same
-sizes, leading and tracking.
+Six styles, one family. There were briefly ten and two, while money was set in
+Fraunces; that is gone and the four `Money/*` styles with it. An amount is now
+`Label/Semibold 14` or `Display/Bold 32` like any other text. What sets a figure
+apart is **tabular numerals**, so a column of amounts lines up, and a floor of
+14px so a naira sign is never set at 12. Both outlived the face.
 
-**The `Carries` column was wrong until it was counted.** `Display/Bold 32` said
-"a balance" and `Heading/Semibold 20` said "the kobo tail" — both true before the
-money face split those jobs off to Fraunces, and both still sitting in the
-source, the README and the specimen sheet months later. Reading the actual
-characters bound to each style settled it: `Display/Bold 32` carries "Who you
-are", "Your number", "A passcode" and four non-money figures, and
-`Heading/Semibold 20` carries "Activities" ×30 and the ten keypad digits ×18
-each. A description of what a style carries goes stale the moment the product
-moves, and nothing checks it.
+**The `Carries` column goes stale and nothing checks it.** It has now been wrong
+twice in one day, in opposite directions. When money moved to Fraunces,
+`Display/Bold 32` still said "a balance" and `Heading/Semibold 20` still said
+"the kobo tail" — jobs they had just lost. Counting the characters actually
+bound to each style fixed it. Then money moved back and both were wrong again,
+the same way in reverse. Count it, do not remember it.
 
 **Leading is the one place the 4px grid legitimately reaches type.** The grid
 governs quantities that stack, and leading stacks while a glyph does not. Every
@@ -1308,38 +1304,39 @@ something nearby paying for it. A wrong number that has been compensated for
 is invisible until you compare against the source rather than against how it
 looks.
 
-## A second family, and what it cost the pipeline
+## A second family, and what it cost to add and to remove
 
-Money is set in Fraunces now. The pipeline had exactly one font in it —
-`emit.mjs` opened with `const F='SF Pro Text'` and put every text node in it —
-so a second family meant teaching three things.
+Money was set in Fraunces for about a day. Adding it taught the pipeline three
+things, and removing it again is why they are written down: the tripwires
+stayed, the second face did not.
 
-**`extract.mjs` computes the family but was throwing it away.** `typo()` read
-it; `textNode()` built its object field by field and never copied it across, so
-the JSON came out with 2746 nodes and not one family among them. Two lines.
-Worth remembering the shape: a value that is computed and then not carried
-looks exactly like a value that was never computed.
+**`extract.mjs` computed the family and threw it away.** `typo()` read it;
+`textNode()` built its object field by field and never copied it across, so the
+JSON came out with 2746 nodes and not one family among them. Two lines. Worth
+remembering the shape: a value that is computed and then not carried looks
+exactly like a value that was never computed.
 
 **Merging runs has to agree on the family.** `sameTypo` decides whether two
 inline runs become one Figma text node, and a text node there carries one font.
-Without the family in that test, a money run beside a word would merge and one
+Without the family in that test a money run beside a word would merge, and one
 of the two would silently lose its face.
 
-**The weight names differ.** SF Pro calls it `Semibold`, Fraunces calls it
-`SemiBold`, and Fraunces has no `Medium` at all, so `ST(w)` takes the family
-now and answers for it.
+**What stayed behind on purpose.** `extract.mjs` still records the family
+whenever it is not SF Pro, and `styleOf` now binds **nothing** when it sees one.
+A second face therefore cannot arrive quietly: it reaches Figma unbound and
+named, and the audit's `fonts` line reports it. `emit.mjs` keeps
+`family: n.ff || F` for the same reason — a stray family fails to load loudly
+rather than being coerced into SF Pro.
 
-The family is carried **only when it is not SF Pro**, so a screen that never
-mentions money extracts byte for byte as it did before.
+**Removing it was the cheap direction, because the styles were twins.** Each
+`Money/*` matched its SF Pro counterpart in size, weight, leading and tracking
+and differed only in family, so 570 nodes on Flows and 68 on Components rebound
+with nothing moving, and the audit read 774 reactions and 4,469 bound before and
+after. Order matters: deleting a style something still points at is what strips
+nodes back to loose type, so rebind first, confirm zero consumers, then delete.
 
-### Four money styles
-
-`Money/Bold 32`, `Money/Semibold 20`, `Money/Semibold 14`, `Money/Regular 14` —
-each mirroring the style the amount used to take and changing only the family,
-so the size and the tracking stay on the ramp. 574 nodes on Flows and 104 on
-Components were rebound, which is why the audit's bound count did not move:
-rebinding is not detaching.
-
-Identify a money node in Figma the same way `build.py` does — by content, a
-currency sign and no letters. Not by size, and not by which style it is
-wearing.
+One thing does not survive a face change and has to be looked at rather than
+counted: `build.py` had been wrapping every naira sign in a span with side
+margins, tuning for Fraunces' metrics. That came out with the face, which merged
+20 text nodes back together — 2746 to 2726 — and is the whole reason the node
+count moved.

@@ -275,27 +275,22 @@ everything goes white.
 
 ### The money
 
-**The amount is set in Fraunces too**, at the weight the design already asked
-for. So the system is two faces and a rule you can say in one line: **SF Pro
-sets the interface, Fraunces sets the name and the amount.** On the shared
-receipt the wordmark and the figure under it are now the same face, which is
-why that card suddenly reads as one document rather than a logo above a table.
+**The amount is set in SF Pro, like everything else.** Money had its own face
+for about a day — Fraunces, on the argument that a figure is a different kind of
+object from a label. It went back. One face is the system now, and the founder's
+call was the right one: a serif figure beside a sans row read as a different
+document, not a different rank.
 
-**The face reaches money and nothing else.** `build.py` gives a value slot the
-money face only when the slot holds nothing but an amount — a currency sign,
-optionally a leading minus, digits, and no letters. That is why `Sarah Adeyemi`,
-`GTBank · 0123 4457 8842`, the account number and the session ID all stay in SF
-Pro, and why an amount inside a sentence does too: *money as a figure* gets the
-face, money mentioned in prose does not.
+What money keeps is not a face but two rules, and both are stronger for standing
+alone. **Tabular numerals**, so a column of amounts on History or a receipt lines
+up digit under digit rather than jittering as the widths change — SF Pro ships
+them, and every numeric slot carries them. And a **floor of 14px**, so a naira
+sign is never set at 12, where it is too fine to read at a glance on a phone.
+Neither was ever about the typeface.
 
-The subsets carry no letters at all, which is the second lock on the same rule.
-
-**The naira decided which faces were even possible.** Google serves the digits
-in one subset and the naira in another, and never both in one file. Manrope,
-Instrument Serif, Sora, Outfit and Figtree have no naira anywhere. Of the ones
-that do, IBM Plex Mono puts monospace gaps round the comma (`₦595 , 320`), and
-Archivo and Newsreader are competent but look so much like SF Pro that they
-would have been a third face doing no work. `fonts/README.md` has the details.
+Fraunces survives in exactly one place: the wordmark, where it is outlined to
+paths and ships as vector rather than as a font. The logo is drawn letters; the
+interface is one typeface. That is a cleaner line than two faces was.
 
 ---
 

@@ -169,13 +169,11 @@ FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
 #   Caption/Semibold 12     a day separator, a badge, a small firm number
 #   Caption/Regular 12      a note under a field
 #
-# The four money styles take the same sizes, leading and tracking in Fraunces,
-# and they are what these six used to carry before the face split:
-#
-#   Money/Bold 32           a balance
-#   Money/Semibold 20       the kobo tail
-#   Money/Semibold 14       an amount in a row
-#   Money/Regular 14        an amount offered as a choice, not a total
+# Six styles and one face. There were ten and two: Fraunces set the money for a
+# while, and it is gone from the interface. It survives in exactly one place,
+# the wordmark, where it is outlined to paths and ships as vector rather than as
+# a font. An amount is now Label/Semibold 14 or Display/Bold 32 like any other
+# text, and what tells it apart is figures of one width, not a second family.
 # Tracking is not invented here. SF ships Apple's own optical tracking in the
 # font's `trak` table, and these are its normal-track values read straight out
 # of the file, in percent of the size. They are identical across all five
@@ -220,17 +218,11 @@ for _fs, _fw in STYLE:
     WEIGHTS_AT.setdefault(_fs, []).append(_fw)
 
 # Money never renders at the bottom of the ramp: a Naira sign at 12 is too fine
-# to read at a glance on a phone. snap() lifts any figure off it.
+# to read at a glance on a phone. snap() lifts any figure off it. This outlived
+# the money face on purpose; the floor was never about the typeface.
 MONEY_MIN_PX = 14
 
-# The money face. SF Pro sets the interface; Fraunces sets the name and the
-# amount, and nothing else. Two faces, each with a job.
-#
-# The subset holds digits, comma, period, the naira and the dollar and not one
-# letter, which is deliberate: a value slot that happens to hold "Sarah Adeyemi"
-# falls back to SF Pro glyph by glyph, so the face can only ever reach money.
-MONEY_FONT = "'Fraunces', " + FONT_UI
-# Two weights in use. Regular for anything grey, and Semibold, not Bold, for
+# Weights. Regular for anything grey, and Semibold, not Bold, for
 # everything else: SF sets heavier at a given weight than Jakarta did, and
 # Semibold is the weight iOS itself emphasises with. Bold survives at one size
 # only, the balance at 32, and _ramp() puts it there without being asked,

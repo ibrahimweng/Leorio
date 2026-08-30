@@ -18,12 +18,10 @@ const CAP = 40000;
 
 const RUNNER = `
 const F='SF Pro Text';
-// SF Pro calls it Semibold and Fraunces calls it SemiBold, and Fraunces has no
-// Medium, so the weight name depends on the family it is being asked of.
-const ST=(w,ff)=>ff?(w>=700?'Bold':w>=600?'SemiBold':'Regular')
-                   :(w>=700?'Bold':w>=600?'Semibold':w>=500?'Medium':'Regular');
+// One family, so one naming. A node that arrives carrying any other family
+// keeps it and fails to load loudly, rather than being coerced into SF Pro.
+const ST=w=>w>=700?'Bold':w>=600?'Semibold':w>=500?'Medium':'Regular';
 for(const s of ['Regular','Medium','Semibold','Bold']) await figma.loadFontAsync({family:F,style:s});
-for(const s of ['Regular','SemiBold','Bold']) { try{ await figma.loadFontAsync({family:'Fraunces',style:s}); }catch(_){} }
 // The file's own text styles. Every line the ramp covers is bound to one of
 // them, so the type can be changed in one place afterwards instead of in
 // twelve hundred nodes. A style this file does not have is simply not bound.
@@ -82,7 +80,7 @@ function build(n,parent){
       fx(nd,n);
     } else if(n.t===1){
       nd=figma.createText();
-      nd.fontName={family:n.ff||F,style:n.i?'Italic':ST(n.fw,n.ff)};
+      nd.fontName={family:n.ff||F,style:n.i?'Italic':ST(n.fw)};
       nd.characters=n.s;
       nd.fontSize=n.fs;
       const cc=C(n.c);
