@@ -173,13 +173,33 @@ FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
 # weights, so tracking belongs to the size and not to the cut. Note the shape:
 # SF Pro Text is drawn for small text, so the larger it is set the more it has
 # to be pulled in, which is the opposite of the way Jakarta was tuned here.
+#
+# Line height belongs to the size too, for the same reason, and every value is a
+# multiple of 4. That is the one place the 4px rhythm legitimately reaches type:
+# the grid governs quantities that stack, and leading stacks while a glyph does
+# not. Every size below is the value the platforms publish for it, and each
+# already lands on the grid without being forced:
+#
+#   12 / 16   Apple Caption 1 is 12/16. Material bodySmall is 12/16.
+#   14 / 20   Material bodyMedium, labelLarge and titleSmall are all 14/20, and
+#             so is Atlassian's font.body and Fluent's body1. This replaced the
+#             1.14 the browser was giving us, which was too tight to read over
+#             more than one line and is tighter than anything either platform
+#             ships.
+#   20 / 24   Apple Title 3 is 20/25; 24 is that on the grid, and a heading can
+#             be led tighter than a paragraph.
+#   32 / 40   Material headlineLarge is 32/40 exactly.
+#
+# Nothing was left on `normal`. A browser default is not a decision, and it was
+# reaching Figma as AUTO, which is how 2,746 nodes came to have no leading anyone
+# had chosen.
 STYLE = {
-    (32, 700): ("Display/Bold 32",      "normal", -3.320),
-    (20, 600): ("Heading/Semibold 20",  "normal", -2.686),
-    (14, 600): ("Label/Semibold 14",    "normal", -1.074),
-    (14, 400): ("Label/Regular 14",     "normal", -1.074),
-    (12, 600): ("Caption/Semibold 12",  "normal",  0.0),
-    (12, 400): ("Caption/Regular 12",   "normal",  0.0),
+    (32, 700): ("Display/Bold 32",      "40px", -3.320),
+    (20, 600): ("Heading/Semibold 20",  "24px", -2.686),
+    (14, 600): ("Label/Semibold 14",    "20px", -1.074),
+    (14, 400): ("Label/Regular 14",     "20px", -1.074),
+    (12, 600): ("Caption/Semibold 12",  "16px",  0.0),
+    (12, 400): ("Caption/Regular 12",   "16px",  0.0),
 }
 # The sizes a stray number is allowed to land on.
 TYPE = [12, 14, 20, 32]

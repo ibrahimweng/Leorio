@@ -54,7 +54,9 @@ as a regression.
 
 The type numbers on Flows are **4,581 text nodes, 4,469 bound, 112 unbound, and
 SF Pro Text is the only unbound family**. Those 112 are the keyboard, the payment
-card and the meter token, which opt out of the ramp on purpose. Any other family
+card and the meter token, which opt out of the ramp on purpose. Line heights read
+**16 x815, 20 x3118, 24 x418, 40 x118 and AUTO x112** — every set value a multiple
+of 4, and the AUTO ones exactly those same 112 opt-outs. Any other family
 appearing there, or the bound count falling, is a regression. It read 4,983 until
 the six r&eacute;sum&eacute; documents moved to their own page. **Ten text styles** are
 defined and all ten are bound to something.
@@ -87,6 +89,14 @@ defined and all ten are bound to something.
   screen has not been re-sent, and the disagreement is silent. A count taken from
   `*.dc.html` describes what the next send would produce; a count taken through
   `use_figma` describes what a reviewer is looking at now. Name which one you did.
+- **A text node the extractor sized `NONE` is fixed in both directions**, so it
+  cannot grow and it cannot rewrap. 38 nodes are like that. If the string inside
+  ever needs more width than the box it was measured into, it wraps inside a box
+  that will not get taller and the second line lands on whatever is underneath.
+  That is how `Limits` came to print a balance across the progress bar: 139px of
+  box for 141px of Fraunces. Leading cannot cause it and leading cannot fix it —
+  check the width. Sweep for it by re-measuring each string with a probe TEXT
+  node set to `WIDTH_AND_HEIGHT` and comparing against the real node's width.
 - The extractor bakes `justify-content: center` into **asymmetric padding** on a
   FIXED row. Those numbers fit one exact string, so changing the words inside
   breaks the fit silently — nothing clips, because `clipsContent` is false.

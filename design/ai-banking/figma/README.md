@@ -432,14 +432,33 @@ Note which way the curve runs. SF Pro Text is drawn for small text, so the
 larger it is set the more it has to be pulled in, which is the opposite of the
 way Plus Jakarta Sans was tuned here.
 
-| Style | Size | Weight | Tracking | Carries |
-|---|---|---|---|---|
-| `Display/Bold 32` | 32 | Bold | −3.32% | a balance |
-| `Heading/Semibold 20` | 20 | Semibold | −2.69% | a page title, a heading over a group, the kobo tail |
-| `Label/Semibold 14` | 14 | Semibold | −1.07% | a row title, a button, a value, a chip |
-| `Label/Regular 14` | 14 | Regular | −1.07% | a second line, and everything the model says |
-| `Caption/Semibold 12` | 12 | Semibold | 0% | a day separator, a badge, a small firm number |
-| `Caption/Regular 12` | 12 | Regular | 0% | a note under a field |
+| Style | Size | Weight | Leading | Tracking | Carries |
+|---|---|---|---|---|---|
+| `Display/Bold 32` | 32 | Bold | 40 | −3.32% | a balance |
+| `Heading/Semibold 20` | 20 | Semibold | 24 | −2.69% | a page title, a heading over a group, the kobo tail |
+| `Label/Semibold 14` | 14 | Semibold | 20 | −1.07% | a row title, a button, a value, a chip |
+| `Label/Regular 14` | 14 | Regular | 20 | −1.07% | a second line, and everything the model says |
+| `Caption/Semibold 12` | 12 | Semibold | 16 | 0% | a day separator, a badge, a small firm number |
+| `Caption/Regular 12` | 12 | Regular | 16 | 0% | a note under a field |
+
+The four `Money/*` styles take the same size, leading and tracking in Fraunces.
+
+**Leading is the one place the 4px grid legitimately reaches type.** The grid
+governs quantities that stack, and leading stacks while a glyph does not. Every
+value above is a multiple of 4 and every one of them is the number the platforms
+publish: Apple's Caption 1 is 12/16, Material's `bodyMedium`, `labelLarge` and
+`titleSmall` are all 14/20 — so is Atlassian's `font.body` and Fluent's `body1` —
+Apple's Title 3 is 20/25 which is 24 on the grid, and Material's `headlineLarge`
+is 32/40 exactly. Font *sizes* are a different matter: no design system read for
+this restricts them to multiples of 4, and Apple's own ramp has seven of eleven
+off it, Body included at 17pt.
+
+Before this, every one of the 2,746 text nodes carried `line-height: normal`,
+which reached Figma as `AUTO`. The browser was giving 14px a leading of 16, a
+ratio of 1.14 — tighter than anything either platform ships, and the assistant
+writes in multi-line sentences. Setting it grew 71 of 96 screens by a median of
+34px and pushed one more screen past the viewport, on an app whose screens
+already scroll.
 
 Semibold, not Bold, carries the emphasis. SF sets heavier at a given weight than
 Jakarta did, and Semibold is the weight iOS itself emphasises with. True Bold
