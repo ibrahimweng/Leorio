@@ -328,11 +328,6 @@ These are not new rules. They are what the copy is already doing.
 
 ## Open
 
-- **The mark is 28px in Figma and 32px in the source, in 119 places.** Every
-  call site in `build.py` is 24, 32 or 40; the browser renders nothing at 28.
-  It is the assistant's own avatar and the most repeated element in the app, so
-  4px is not nothing. Either the source should say 28 or Figma should say 32,
-  and that is a look-at-it decision rather than an audit one.
 - How Amana answers the Islamic-finance reading. The word is Hausa by way of
   Arabic and it means safekeeping, not a product structure. Half of Nigeria
   will hear the older meaning and half will hear nothing at all; the mark and

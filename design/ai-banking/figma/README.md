@@ -1240,3 +1240,34 @@ the stops need remapping with their alpha kept.
 
 Afterwards: 560 fills and 216 strokes on Flows, 55 and 50 on Components, nothing
 left on the old palette on any page, and 774 reactions with none dead.
+
+## The mark was 28px in 119 places
+
+`build.py` draws the mark at 24, 32 and 40 and nothing else. Figma drew 119 of
+them at **28**, and nothing ever flagged it, for two reasons worth remembering.
+
+**28 is a real size on the icon scale**, so the audit's off-scale check had no
+opinion about it. A number can be wrong and on the scale at the same time.
+
+**And the layout paid for it.** `Answer head` set the mark to 28 and added
+padding of `[4, 4, 0, 4]` around it. Four plus twenty-eight plus the eight-gap
+is forty, which is exactly where the browser puts the text with a 32 mark and
+no padding; and the row hugged to 32 either way. So it measured right, looked
+right, and the mark was 12.5% small. The record screens' offer row did the same
+thing more simply: the mark at 28 in a card fixed at 72, centred, so only the
+text's start moved — 56 where the browser says 60.
+
+The fix was **ten nodes**: the mark inside `Answer head` (which carries 90 of
+the 119) with its padding zeroed, and the offer row's mark on eight record
+masters plus the parked `Done` copy. Everything else followed by instance. The
+source needed no change and no screen was rebuilt — this was Figma catching up
+with what `build.py` already said.
+
+Afterwards the mark reads 24, 32 and 40 on Flows and nothing else, and the
+`Answer head` row on Main measures 32 tall with the mark at 32 and the text at
+40, which is the browser node for node.
+
+**The general shape of this one:** when a measurement is off, look for
+something nearby paying for it. A wrong number that has been compensated for
+is invisible until you compare against the source rather than against how it
+looks.

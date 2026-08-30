@@ -63,6 +63,12 @@ as a regression.
 - `node.findAll` does not exist on TEXT or RECTANGLE; check `type` before reaching
   for it, and check it *before* the property, because the access itself throws.
 - A failed `use_figma` script is atomic. Nothing ran. Fix and retry.
+- A component can **compensate for a wrong size with padding**, and then it
+  looks right and measures wrong. `Answer head` held the mark at 28 with 4px of
+  padding round it, so the text still landed at 40 and the row was still 32
+  tall — pixel for pixel correct, and the mark 12.5% too small in 90 places.
+  When a number is off, check whether something nearby is paying for it before
+  deciding the number is fine.
 - The extractor bakes `justify-content: center` into **asymmetric padding** on a
   FIXED row. Those numbers fit one exact string, so changing the words inside
   breaks the fit silently — nothing clips, because `clipsContent` is false.
