@@ -434,14 +434,29 @@ way Plus Jakarta Sans was tuned here.
 
 | Style | Size | Weight | Leading | Tracking | Carries |
 |---|---|---|---|---|---|
-| `Display/Bold 32` | 32 | Bold | 40 | −3.32% | a balance |
-| `Heading/Semibold 20` | 20 | Semibold | 24 | −2.69% | a page title, a heading over a group, the kobo tail |
-| `Label/Semibold 14` | 14 | Semibold | 20 | −1.07% | a row title, a button, a value, a chip |
+| `Display/Bold 32` | 32 | Bold | 40 | −3.32% | the one thing a setup screen asks, and a big figure that is not money |
+| `Heading/Semibold 20` | 20 | Semibold | 24 | −2.69% | a section heading, a sheet title, the digits on the keypad |
+| `Label/Semibold 14` | 14 | Semibold | 20 | −1.07% | a row title, a button, a name, a chip that filters |
 | `Label/Regular 14` | 14 | Regular | 20 | −1.07% | a second line, and everything the model says |
 | `Caption/Semibold 12` | 12 | Semibold | 16 | 0% | a day separator, a badge, a small firm number |
 | `Caption/Regular 12` | 12 | Regular | 16 | 0% | a note under a field |
+| `Money/Bold 32` | 32 | Bold | 40 | −3.32% | a balance |
+| `Money/Semibold 20` | 20 | SemiBold | 24 | −2.69% | the kobo tail |
+| `Money/Semibold 14` | 14 | SemiBold | 20 | −1.07% | an amount in a row |
+| `Money/Regular 14` | 14 | Regular | 20 | −1.07% | an amount offered as a choice, not a total |
 
-The four `Money/*` styles take the same size, leading and tracking in Fraunces.
+The top six are SF Pro Text and the `Money/*` four are Fraunces, on the same
+sizes, leading and tracking.
+
+**The `Carries` column was wrong until it was counted.** `Display/Bold 32` said
+"a balance" and `Heading/Semibold 20` said "the kobo tail" — both true before the
+money face split those jobs off to Fraunces, and both still sitting in the
+source, the README and the specimen sheet months later. Reading the actual
+characters bound to each style settled it: `Display/Bold 32` carries "Who you
+are", "Your number", "A passcode" and four non-money figures, and
+`Heading/Semibold 20` carries "Activities" ×30 and the ten keypad digits ×18
+each. A description of what a style carries goes stale the moment the product
+moves, and nothing checks it.
 
 **Leading is the one place the 4px grid legitimately reaches type.** The grid
 governs quantities that stack, and leading stacks while a glyph does not. Every

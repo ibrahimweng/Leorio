@@ -161,12 +161,21 @@ FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
 # printing its own name. A style nothing can reach is a style that is not in
 # the system, so it is gone from here and from the Figma file.
 #
-#   Display/Bold 32         a balance
-#   Heading/Semibold 20     a page title, a heading over a group, the kobo tail
-#   Label/Semibold 14       a row title, a button, a value, a chip that filters
+#   Display/Bold 32         the one thing a setup screen asks, and a big figure
+#                           that is not money
+#   Heading/Semibold 20     a section heading, a sheet title, the digits on the keypad
+#   Label/Semibold 14       a row title, a button, a name, a chip that filters
 #   Label/Regular 14        a second line, and everything the model says
 #   Caption/Semibold 12     a day separator, a badge, a small firm number
 #   Caption/Regular 12      a note under a field
+#
+# The four money styles take the same sizes, leading and tracking in Fraunces,
+# and they are what these six used to carry before the face split:
+#
+#   Money/Bold 32           a balance
+#   Money/Semibold 20       the kobo tail
+#   Money/Semibold 14       an amount in a row
+#   Money/Regular 14        an amount offered as a choice, not a total
 # Tracking is not invented here. SF ships Apple's own optical tracking in the
 # font's `trak` table, and these are its normal-track values read straight out
 # of the file, in percent of the size. They are identical across all five
