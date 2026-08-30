@@ -148,18 +148,19 @@ FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
               ("600", "SFProText-Semibold-subset.woff2"),
               ("700", "SFProText-Bold-subset.woff2")]
 
-# Seven named styles, read straight off the home screen in Figma. That file is
+# Six named styles, read straight off the home screen in Figma. That file is
 # the source of truth for type, so the ramp is not a set of sizes any more: it
 # is a set of styles, and a size only exists at the weights a style gives it.
 # Tracking is a percentage of the size, which is how Figma stores it and what
 # keeps it honest as the size changes.
 #
-# Four sizes are in use and two weights. This is a phone, so the ramp starts
-# small and never climbs: 36 is defined as the ceiling nothing may pass, and
-# nothing snaps to it, so it is there for one hero moment later rather than for
-# anybody to invent a size around.
+# Four sizes are in use and three weights, and Bold reaches only one size. This
+# is a phone, so the ramp starts small and never climbs. There was a seventh
+# style, Display/Bold 36, named as a ceiling and held in reserve; nothing ever
+# snapped to it, so its only appearance in two years was on the specimen sheet
+# printing its own name. A style nothing can reach is a style that is not in
+# the system, so it is gone from here and from the Figma file.
 #
-#   Display/Bold 36         the ceiling, held in reserve, unused
 #   Display/Bold 32         a balance
 #   Heading/Semibold 20     a page title, a heading over a group, the kobo tail
 #   Label/Semibold 14       a row title, a button, a value, a chip that filters
@@ -173,7 +174,6 @@ FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
 # SF Pro Text is drawn for small text, so the larger it is set the more it has
 # to be pulled in, which is the opposite of the way Jakarta was tuned here.
 STYLE = {
-    (36, 700): ("Display/Bold 36",      "normal", -3.418),
     (32, 700): ("Display/Bold 32",      "normal", -3.320),
     (20, 600): ("Heading/Semibold 20",  "normal", -2.686),
     (14, 600): ("Label/Semibold 14",    "normal", -1.074),
@@ -181,8 +181,7 @@ STYLE = {
     (12, 600): ("Caption/Semibold 12",  "normal",  0.0),
     (12, 400): ("Caption/Regular 12",   "normal",  0.0),
 }
-# The sizes a stray number is allowed to land on. 36 is deliberately absent:
-# the style exists so the ceiling is named, but nothing rounds up into it.
+# The sizes a stray number is allowed to land on.
 TYPE = [12, 14, 20, 32]
 # Which weights a size is allowed to take. Asking for one that does not exist
 # is not an error, it is a question about which style was meant, and snap()

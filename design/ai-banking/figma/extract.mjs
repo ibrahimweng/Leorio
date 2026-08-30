@@ -133,7 +133,7 @@ const EXTRACT = () => {
   const sameTypo = (a, b) => a.fs === b.fs && a.fw === b.fw && a.it === b.it
     && a.c === b.c && a.ff === b.ff;
 
-  // The seven named text styles in the Figma file, keyed by the size and weight
+  // The six named text styles in the Figma file, keyed by the size and weight
   // that build.py has already snapped every line onto. A pair that is not here
   // is one of the surfaces marked `chrome`, which opt out of the ramp: the
   // on-screen keyboard, the payment card and the meter token. Those stay
@@ -141,7 +141,6 @@ const EXTRACT = () => {
   // Keyed size/weight, and the weights are the ones the ramp actually emits:
   // Semibold 600 carries the emphasis and Bold 700 survives only at 32.
   const STYLE = {
-    '36/700': 'Display/Bold 36',
     '32/700': 'Display/Bold 32',
     '20/600': 'Heading/Semibold 20',
     '14/600': 'Label/Semibold 14',   '14/400': 'Label/Regular 14',

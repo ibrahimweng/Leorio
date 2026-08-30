@@ -434,7 +434,6 @@ way Plus Jakarta Sans was tuned here.
 
 | Style | Size | Weight | Tracking | Carries |
 |---|---|---|---|---|
-| `Display/Bold 36` | 36 | Bold | −3.42% | the ceiling. Named, bound to nothing, nothing rounds up into it |
 | `Display/Bold 32` | 32 | Bold | −3.32% | a balance |
 | `Heading/Semibold 20` | 20 | Semibold | −2.69% | a page title, a heading over a group, the kobo tail |
 | `Label/Semibold 14` | 14 | Semibold | −1.07% | a row title, a button, a value, a chip |
@@ -500,10 +499,13 @@ Retyping shrank almost everything, which was the point: 86 screens got shorter,
 overflow. Across the app 52 elements used to be cut by the dock edge and 33 are
 now.
 
-Six styles the new ramp no longer reaches are still in the Figma file, renamed
-`Retired/…` rather than deleted, because they are still bound to text on screens
-that have not been re-sent. Deleting a style strips those nodes back to loose
-type. They go when the last screen is retyped.
+Six styles the new ramp no longer reached sat in the Figma file for a long time
+renamed `Retired/…` rather than deleted, because deleting a style strips the
+nodes bound to it back to loose type and screens were still waiting to be
+re-sent. Every screen has since been re-sent, so a count of consumers put all
+six at zero and they are gone, along with `Display/Bold 36`, which the ramp
+could not reach either. **Ten styles remain**, and every one of them is bound
+to something.
 
 Counting the raw literals in `build.py` and calling that the shipped type is a
 mistake, and one this README made until it was measured against the built

@@ -52,6 +52,13 @@ sheet, on from its button, and its own back. When a number moves on purpose,
 change it here in the same commit, or the next run reads a deliberate decision
 as a regression.
 
+The type numbers on Flows are **4,581 text nodes, 4,469 bound, 112 unbound, and
+SF Pro Text is the only unbound family**. Those 112 are the keyboard, the payment
+card and the meter token, which opt out of the ramp on purpose. Any other family
+appearing there, or the bound count falling, is a regression. It read 4,983 until
+the six r&eacute;sum&eacute; documents moved to their own page. **Ten text styles** are
+defined and all ten are bound to something.
+
 ## Things that will bite
 
 - Replacing a frame drops any reaction pointing at it.
@@ -69,6 +76,17 @@ as a regression.
   tall — pixel for pixel correct, and the mark 12.5% too small in 90 places.
   When a number is off, check whether something nearby is paying for it before
   deciding the number is fine.
+- **The file holds more than the product, and a whole-canvas count is not a
+  reading of the design.** Six r&eacute;sum&eacute; documents sat loose on Flows for months.
+  Every automated read of the file — Figma's own assistant included — correctly
+  reported five font families, twelve styles and twenty-three sizes, and every
+  one of those numbers was about a CV. They now live on a page called
+  `R&eacute;sum&eacute;`. Before quoting a count, say which nodes it covers, and prefer
+  counting the screens inside the sections to counting the page.
+- **Measuring the build is not measuring the file.** The two disagree whenever a
+  screen has not been re-sent, and the disagreement is silent. A count taken from
+  `*.dc.html` describes what the next send would produce; a count taken through
+  `use_figma` describes what a reviewer is looking at now. Name which one you did.
 - The extractor bakes `justify-content: center` into **asymmetric padding** on a
   FIXED row. Those numbers fit one exact string, so changing the words inside
   breaks the fit silently — nothing clips, because `clipsContent` is false.
