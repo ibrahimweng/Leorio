@@ -3194,7 +3194,7 @@ limits = page(
     + sectionhead("What happens at the line")
     + '<div style="display: flex; flex-direction: column; gap: 12px">'
       + limitrow("key", "purple", "Your passcode. Not your face, because a face can be held up to a phone.")
-      + limitrow("list", "amber", "Then you type <b>Confirm this transaction</b> in full. Three words, spelled out.") + '</div>'
+      + limitrow("list", "amber", "Then you type <span style='font-weight: 600'>Confirm this transaction</span> in full. Three words, spelled out.") + '</div>'
     + '<span style="font-size: 14px; font-weight: 400; color: ' + INK2 + '; text-wrap: pretty">'
       'Two deliberate things, so a bad minute cannot carry you past a line you drew on a good one.</span>'
     + '<div' + hook("LimitStop") + ' style="height: 46px; border-radius: ' + PILL + '; background: ' + FILL
