@@ -436,12 +436,14 @@ way Plus Jakarta Sans was tuned here.
 |---|---|---|---|---|---|
 | `Display/Bold 32` | 32 | Bold | 40 | −3.32% | the one thing a setup screen asks, and a big figure that is not money |
 | `Heading/Semibold 20` | 20 | Semibold | 24 | −2.69% | a section heading, a sheet title, the digits on the keypad |
-| `Label/Semibold 14` | 14 | Semibold | 20 | −1.07% | a row title, a button, a name, a chip that filters |
-| `Label/Regular 14` | 14 | Regular | 20 | −1.07% | a second line, and everything the model says |
+| `Body/Semibold 16` | 16 | Semibold | 24 | −1.61% | an amount in a row, a button, a value you act on |
+| `Body/Regular 16` | 16 | Regular | 24 | −1.61% | everything the model says, and a day between rows |
+| `Label/Semibold 14` | 14 | Semibold | 20 | −1.07% | a chip that filters, a small button |
+| `Label/Regular 14` | 14 | Regular | 20 | −1.07% | a row's second line |
 | `Caption/Semibold 12` | 12 | Semibold | 16 | 0% | a day separator, a badge, a small firm number |
 | `Caption/Regular 12` | 12 | Regular | 16 | 0% | a note under a field |
 
-Six styles, one family. There were briefly ten and two, while money was set in
+Eight styles, one family. There were briefly ten and two, while money was set in
 Fraunces; that is gone and the four `Money/*` styles with it. An amount is now
 `Label/Semibold 14` or `Display/Bold 32` like any other text. What sets a figure
 apart is **tabular numerals**, so a column of amounts lines up, and a floor of

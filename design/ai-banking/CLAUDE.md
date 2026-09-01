@@ -58,8 +58,8 @@ card and the meter token, which opt out of the ramp on purpose. Line heights rea
 **16 x815, 20 x3118, 24 x418, 40 x118 and AUTO x112** — every set value a multiple
 of 4, and the AUTO ones exactly those same 112 opt-outs. Any other family
 appearing there, or the bound count falling, is a regression. It read 4,983 until
-the six r&eacute;sum&eacute; documents moved to their own page. **Six text styles** are
-defined and all six are bound to something. One family: any other font family
+the six r&eacute;sum&eacute; documents moved to their own page. **Eight text styles** are
+defined and all eight are bound to something. One family: any other font family
 appearing in the audit's `fonts` line is a regression, not a feature.
 
 ## Things that will bite

@@ -10,7 +10,7 @@ const SPACE  = [0, 4, 8, 12, 16, 20, 24, 32, 40, 56, 72];
 // Under 8 a radius is a hairline or a chart bar, and snap() in build.py leaves
 // those alone on purpose, so they belong on the list rather than in the report.
 const RADII  = [0, 2, 3, 4, 5, 6, 12, 16, 20, 24, 28];
-const TYPE   = [12, 14, 20, 32];
+const TYPE   = [12, 14, 16, 20, 32];
 const ICON   = [12, 16, 18, 20, 22, 24, 28, 32, 40, 48, 56];
 
 // What the eye should see, as a share of the icon's own size. A glyph has a

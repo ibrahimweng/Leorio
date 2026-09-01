@@ -164,12 +164,29 @@ FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
 #   Display/Bold 32         the one thing a setup screen asks, and a big figure
 #                           that is not money
 #   Heading/Semibold 20     a section heading, a sheet title, the digits on the keypad
-#   Label/Semibold 14       a row title, a button, a name, a chip that filters
-#   Label/Regular 14        a second line, and everything the model says
+#   Body/Semibold 16        an amount in a row, a button, a value you act on
+#   Body/Regular 16         everything the model says, and a day between rows
+#   Label/Semibold 14       a chip that filters, a small button
+#   Label/Regular 14        a row's second line
 #   Caption/Semibold 12     a day separator, a badge, a small firm number
 #   Caption/Regular 12      a note under a field
 #
-# Six styles and one face. There were ten and two: Fraunces set the money for a
+# 16 is the prose size and it was missing. The model writes in sentences and its
+# panel is authored at 17, which is Apple's Body; with the ramp at 12/14/20/32
+# the nearest step was 14, so every sentence it wrote was squashed onto 14. It
+# was not only the model: 92 literals were, buttons written at 17 and chips and
+# answers written at 16, all landing on 14. Adding 16 does not move them, it
+# stops moving them. Nothing snaps down and nothing is authored at 18, so no
+# size gets smaller for this.
+#
+# It lifts more than the prose. 857 runs move from 14 to 16, a third of all the
+# text: the model's sentences, but also the amount at the end of a row and the
+# label on a button, because those were written at 16 and 17 too. That is the
+# whole change, and reverting it is taking 16 back out of TYPE. Tracking is interpolated on the ramp's own curve
+# between 14 and 20, because subsetting drops the trak table the others were
+# read from. Leading is 24, Material's bodyLarge exactly, and on the 4px grid.
+#
+# Eight styles and one face. There were ten and two: Fraunces set the money for a
 # while, and it is gone from the interface. It survives in exactly one place,
 # the wordmark, where it is outlined to paths and ships as vector rather than as
 # a font. An amount is now Label/Semibold 14 or Display/Bold 32 like any other
@@ -203,13 +220,15 @@ FONT_FACES = [("400", "SFProText-Regular-subset.woff2"),
 STYLE = {
     (32, 700): ("Display/Bold 32",      "40px", -3.320),
     (20, 600): ("Heading/Semibold 20",  "24px", -2.686),
+    (16, 600): ("Body/Semibold 16",     "24px", -1.611),
+    (16, 400): ("Body/Regular 16",      "24px", -1.611),
     (14, 600): ("Label/Semibold 14",    "20px", -1.074),
     (14, 400): ("Label/Regular 14",     "20px", -1.074),
     (12, 600): ("Caption/Semibold 12",  "16px",  0.0),
     (12, 400): ("Caption/Regular 12",   "16px",  0.0),
 }
 # The sizes a stray number is allowed to land on.
-TYPE = [12, 14, 20, 32]
+TYPE = [12, 14, 16, 20, 32]
 # Which weights a size is allowed to take. Asking for one that does not exist
 # is not an error, it is a question about which style was meant, and snap()
 # answers it.
@@ -256,6 +275,8 @@ APPLE = {
 DT_REF = {
     "Display/Bold 32":     "Large Title",   # one question, one screen
     "Heading/Semibold 20": "Title 3",       # 20 is Title 3 exactly
+    "Body/Semibold 16":    "Callout",       # 16 is Callout exactly
+    "Body/Regular 16":     "Callout",
     "Label/Semibold 14":   "Body",
     "Label/Regular 14":    "Body",
     "Caption/Semibold 12": "Caption 1",     # 12 is Caption 1 exactly
