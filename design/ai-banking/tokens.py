@@ -14,6 +14,14 @@ Three scales are enforced at build time, so nothing can drift off them:
 a type ramp, a spacing rhythm and a small set of corner radii. See snap()
 in build.py.
 
+Every font size that ships is a whole even number. The ramp already made that
+true of anything it touched; the rule exists for what it does not touch. A
+handful of surfaces carry `chrome` and opt out of the ramp on purpose, because
+they draw an object rather than set type -- the keyboard, the payment card, a
+meter token -- and those shipped 9, 13 and 21 for as long as they had existed,
+because opting out of the rule also opted out of anyone checking. _even_check()
+in build.py now refuses the build instead.
+
 One note on the greys. INK2, INK3 and INK4 are sampled from the reference
 screens and are lighter than the accessibility standard allows for small
 text. That was a deliberate call to match the reference exactly. INK2 at

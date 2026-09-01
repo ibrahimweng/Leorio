@@ -117,6 +117,21 @@ def _type_pass(html):
         return tag[:sm.start(1)] + css + tag[sm.end(1):]
     return _ELEM.sub(one, html)
 
+_ODD = re.compile(r'font-size: ([0-9.]+)px')
+
+def _even_check(name, html):
+    """Every size in the output is a whole even number.
+
+    The ramp already guarantees it for anything it touches, but `chrome` opts
+    out of the ramp entirely, and what opts out of the rule is what breaks it:
+    the payment card and the meter token shipped 9, 13 and 21 for as long as
+    they have existed, because nothing was looking. This looks."""
+    bad = sorted({v for v in (float(m) for m in _ODD.findall(html))
+                  if v != int(v) or int(v) % 2})
+    if bad:
+        raise SystemExit("%s: font sizes must be whole and even, found %s"
+                         % (name, ", ".join("%g" % v for v in bad)))
+
 def snap(html):
     """Pull every size, gap and radius onto its scale. Nothing drifts."""
     html = _type_pass(html)
@@ -163,6 +178,7 @@ def hook(go="", act=""):
 
 def write(name, inner, anim=""):
     inner = snap(inner)
+    _even_check(name, inner)
     SCREENS[name] = inner
     if EMIT:
         open(os.path.join(OUT, name + ".dc.html"), "w").write(head(anim) + screen(inner) + FOOT)
@@ -1438,7 +1454,7 @@ power = page(
   + rhero("&#8358;8,000", "Ikeja Electric")
   + '<div style="' + cardstyle("16px") + '; display: flex; flex-direction: column; gap: 12px">'
     + '<span style="font-size: 12px; font-weight: 500; color: ' + INK2 + '">Meter token</span>'
-    + '<span class="num chrome" style="font-size: 21px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
+    + '<span class="num chrome" style="font-size: 20px; font-weight: 600; letter-spacing: 0.02em; color: ' + INK + '">4471 8823 0195 6640 3277</span>'
     + '<div' + hook("", "copy|Token") + ' style="display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: ' + PILL + '; background: ' + SURF + '">'
       + icon("copy", 20, INK) + '<span style="font-size: 17px; font-weight: 700; color: ' + INK + '">Copy the token</span></div></div>'
   + receipt([
@@ -1562,10 +1578,10 @@ vcard = page(
       '<span id="cdNum" class="num chrome" style="font-size: 20px; font-weight: 500; letter-spacing: 0.12em; color: #FFFFFF">5399 &#8226;&#8226;&#8226;&#8226; &#8226;&#8226;&#8226;&#8226; 4471</span>'
       '<div style="display: flex; align-items: flex-end; justify-content: space-between">'
         '<div style="display: flex; flex-direction: column; gap: 4px">'
-          '<span class="chrome" style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">CARD HOLDER</span>'
-          '<span class="chrome" style="font-size: 13px; font-weight: 500; letter-spacing: 0.06em; color: #FFFFFF">IBRAHIM WENG</span></div>'
+          '<span class="chrome" style="font-size: 12px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">CARD HOLDER</span>'
+          '<span class="chrome" style="font-size: 14px; font-weight: 500; letter-spacing: 0.06em; color: #FFFFFF">IBRAHIM WENG</span></div>'
         '<div style="display: flex; flex-direction: column; gap: 4px">'
-          '<span class="chrome" style="font-size: 9px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">EXPIRES</span>'
+          '<span class="chrome" style="font-size: 12px; font-weight: 600; letter-spacing: 0.14em; color: rgba(255,255,255,0.55)">EXPIRES</span>'
           '<span class="num" style="font-size: 13px; font-weight: 500; color: #FFFFFF">09/28</span></div>'
         '</div></div></div>'
   + '<div style="' + cardstyle("14px 8px", "20px") + ' display: flex; gap: 4px">' + act("Reveal","search","","reveal") + act("Freeze","freeze","","freeze", IC["cyan"]) + act("Fund","plus","","soon", IC["green"]) + act("Rules","list","Rules", IC["purple"]) + '</div>'

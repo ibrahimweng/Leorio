@@ -98,6 +98,11 @@ appearing in the audit's `fonts` line is a regression, not a feature.
   box for 141px of Fraunces. Leading cannot cause it and leading cannot fix it —
   check the width. Sweep for it by re-measuring each string with a probe TEXT
   node set to `WIDTH_AND_HEIGHT` and comparing against the real node's width.
+- **Every font size that ships is whole and even, and the build refuses
+  otherwise.** The ramp guarantees it for what it touches; `_even_check()`
+  covers what it does not. `chrome` opts a surface out of the ramp, and what
+  opts out of a rule is what breaks it: the card and the meter token carried 9,
+  13 and 21 from the day they were written. They are 12, 14 and 20 now.
 - **The faint greys are a decision, not a defect.** Do not "fix" them. See
   BRANDING.md; the numbers are below and the call was made with them in hand.
 - **41% of text fails contrast, and 98% of that is three greys.** `INK2`
