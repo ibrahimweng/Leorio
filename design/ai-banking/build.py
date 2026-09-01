@@ -1,12 +1,16 @@
 # Generates the .dc.html artboards for the AI banking design canvas.
 # Look and feel live in tokens.py. Run: python3 build.py
 import os, re
-OUT = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.abspath(__file__))
+# Where the artboards land. Overridable so a build at another Dynamic Type
+# setting can be measured without overwriting the ones in the repo. The fonts
+# are read from HERE either way: the output moves, the inputs do not.
+OUT = os.environ.get("OUT") or HERE
 
 from tokens import *
 
 import base64
-_FDIR = os.path.join(OUT, "fonts")
+_FDIR = os.path.join(HERE, "fonts")
 _FCACHE = {}
 def _b64(name):
     if name not in _FCACHE:
@@ -64,6 +68,12 @@ def _ramp(fs, fw, num=False):
         fw = min(WEIGHTS_AT[fs], key=lambda w: (abs(w - fw), -w))
     return fs, fw
 
+# Which Dynamic Type setting this build is drawn at. Large is the default and
+# what every artboard in the repo is. `DT=AX1 python3 build.py` draws the same
+# screens at the setting a person with tired eyes is actually using, which is
+# the only way to find out what the layout does there.
+DT_AT = DT_SETTINGS.index(os.environ.get("DT", "Large")) if os.environ.get("DT") in DT_SETTINGS else DT_DEFAULT
+
 def _sized(css, num=False):
     """Rewrite one inline style so its type is a style off the ramp and not a
     set of numbers that happen to be nearby."""
@@ -72,7 +82,10 @@ def _sized(css, num=False):
         return css
     wm = re.search(r"font-weight: (\d+)", css)
     fs, fw = _ramp(float(m.group(1)), int(wm.group(1)) if wm else 400, num)
-    _, lh, tr = STYLE[(fs, fw)]
+    name, lh, tr = STYLE[(fs, fw)]
+    if DT_AT != DT_DEFAULT:
+        fs = dt_size(name, DT_AT)
+        lh = str(dt_leading(name, DT_AT)) + "px"
     css = re.sub(r"font-size: [0-9.]+px", "font-size: %dpx" % fs, css, count=1)
     css = (re.sub(r"font-weight: \d+", "font-weight: %d" % fw, css, count=1) if wm
            else css.replace("font-size: %dpx" % fs, "font-size: %dpx; font-weight: %d" % (fs, fw), 1))
@@ -932,10 +945,18 @@ def sheet(inner, pad="26px 20px 28px 20px", dismiss=""):
 
     `dismiss` puts the way out on the dimmed part. A sheet you can throw down
     by tapping beside it needs no back arrow, and a back arrow on a sheet is a
-    claim that there is a page behind it rather than the screen you were on."""
+    claim that there is a page behind it rather than the screen you were on.
+
+    It stops 10px short of the top and scrolls inside rather than growing past
+    it. That costs nothing at the default text size, where the tallest sheet in
+    the app is 707 against a ceiling of 832. It is everything at the sizes
+    people actually use: at AX3 fourteen of these eighteen used to run off the
+    top of the screen, and NoFace at AX5 put three quarters of itself, keypad
+    included, above the first pixel."""
     return ('<div class="fauxbg"' + (hook(dismiss) if dismiss else '') + ' style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
       + '; ' + BLUR + '; z-index: 5"></div>'
-      '<div class="sheet" style="position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 6; background: ' + SURF
+      '<div class="sheet" style="position: absolute; left: 10px; right: 10px; bottom: 10px; '
+      'max-height: calc(100% - 20px); overflow-y: auto; z-index: 6; background: ' + SURF
       + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; padding: ' + pad + '">' + inner + '</div>')
 
 def grabber():

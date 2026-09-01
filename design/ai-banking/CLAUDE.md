@@ -98,6 +98,14 @@ appearing in the audit's `fonts` line is a regression, not a feature.
   box for 141px of Fraunces. Leading cannot cause it and leading cannot fix it —
   check the width. Sweep for it by re-measuring each string with a probe TEXT
   node set to `WIDTH_AND_HEIGHT` and comparing against the real node's width.
+- **A sheet is pinned to the bottom, so it grows off the top.** Pages that get
+  taller just scroll; a sheet that gets taller walks its own header off the
+  screen and there is no gesture that brings it back. At AX3 fourteen of
+  eighteen sheets did this before `sheet()` was capped at
+  `max-height: calc(100% - 20px)` with `overflow-y: auto`. Anything pinned to
+  one edge has this problem; check it at AX5, not at Large.
+- **`DT=AX3 OUT=/tmp/x python3 build.py`** draws every screen at any of the
+  twelve Dynamic Type settings. Use it before claiming a layout holds.
 - **Measure a screen before deciding what kind of screen it is.** Five screens
   were flagged as actions wearing page chrome and queued to become sheets. All
   five hold 675-750px of content, which is 750-825 once a sheet's padding and

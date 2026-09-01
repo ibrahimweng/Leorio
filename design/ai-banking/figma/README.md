@@ -1380,3 +1380,75 @@ a dismiss word — and it is 31px over. The only trimmable block is the
 reassurance that the rule can be stopped, which is copy about an automatic
 payment and not a structural decision. It stays until someone decides that
 sentence is worth the housing.
+
+## Dynamic Type
+
+Four sizes is what the ramp looks like at one setting out of twelve. A person
+who has turned the text up is not an edge case: presbyopia arrives for almost
+everyone past their forties, and this is a bank whose customers will get there.
+Apple's own Body runs 17 to 53.
+
+**The ramp cannot ride Dynamic Type for free, because it is not Apple's ramp.**
+20 is Title 3 and 12 is Caption 1 exactly, but Apple has no 14 and no 32 at the
+default setting. The supported way to keep a size that is not theirs is
+`UIFontMetrics(forTextStyle:).scaledFont(for:)`, which scales a custom size in
+the proportion its reference style scales. Every style names the Apple style it
+rides, and `dt_size()` in `tokens.py` is that proportion worked out:
+
+| style | rides | xSmall | Small | Medium | Large | xLarge | xxLarge | xxxLarge | AX1 | AX2 | AX3 | AX4 | AX5 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| `Display/Bold 32` | Large Title | 29 | 30 | 31 | 32 | 34 | 36 | 38 | 41 | 45 | 49 | 53 | 56 |
+| `Heading/Semibold 20` | Title 3 | 17 | 18 | 19 | 20 | 22 | 24 | 26 | 31 | 37 | 43 | 49 | 55 |
+| `Label/Semibold 14` | Body | 12 | 12 | 13 | 14 | 16 | 17 | 19 | 23 | 27 | 33 | 39 | 44 |
+| `Label/Regular 14` | Body | 12 | 12 | 13 | 14 | 16 | 17 | 19 | 23 | 27 | 33 | 39 | 44 |
+| `Caption/Semibold 12` | Caption 1 | 11 | 11 | 11 | 12 | 14 | 16 | 18 | 22 | 26 | 32 | 37 | 43 |
+| `Caption/Regular 12` | Caption 1 | 11 | 11 | 11 | 12 | 14 | 16 | 18 | 22 | 26 | 32 | 37 | 43 |
+
+The two 14s ride the same reference on purpose. They are the same size and they
+sit in the same row on most screens, so a reference each would pull them apart
+at the top of the scale — Body reaches 53 where Subhead reaches 49.
+
+### What it found
+
+`DT=AX3 OUT=/tmp/x python3 build.py` draws the same 96 screens at any setting.
+Doing that and measuring is how the real problem surfaced, and it was not the
+type at all:
+
+| setting | screens over 852 | median | tallest |
+|---|---|---|---|
+| Large | 39 / 94 | 852 | 2416 |
+| xxxLarge | 58 / 94 | 944 | 2716 |
+| AX1 | 68 / 94 | 1068 | 2952 |
+| AX3 | 75 / 94 | 1497 | 4172 |
+| AX5 | 75 / 94 | 2004 | 5704 |
+
+A page growing past the viewport is fine; pages scroll. **A sheet growing past
+it is not, because a sheet is pinned to the bottom and grows upward off the
+screen.** At AX3, fourteen of the eighteen sheets had their top edge above the
+first pixel. `NoFace` at AX5 was 1575px tall with its top at −733: three
+quarters of it, keypad included, unreachable. There is no gesture that recovers
+it.
+
+Three sheets survived — the three voice sheets, because `voicesheet()` had
+always capped itself at `max-height: 76%` and scrolled inside. The fix was to
+give `sheet()` the same thing:
+
+    max-height: calc(100% - 20px); overflow-y: auto;
+
+**This costs nothing at the default setting.** The tallest sheet in the app is
+707 against a ceiling of 832, so no sheet touches the cap at Large and the
+artboards in the repo are unchanged in appearance. At every larger setting the
+sheet now stops 10px short of the top and scrolls. Sheets running off the top:
+14 at AX3 before, **0 at every setting after**.
+
+### Still open
+
+The chrome that opts out of the ramp — the keyboard, the payment card, the
+meter token — does not scale, and should not: it imitates objects the phone and
+the bank draw. Whether the 22px keyboard should follow the system keyboard's
+own scaling is an iOS question, not a design-system one.
+
+Nothing here makes the app support Dynamic Type. It makes the design system say
+what every style becomes at every setting, and it removes the one structural
+failure that would have made the answer unusable.
+

@@ -217,6 +217,72 @@ WEIGHTS_AT = {}
 for _fs, _fw in STYLE:
     WEIGHTS_AT.setdefault(_fs, []).append(_fw)
 
+# ---------------------------------------------------------------- dynamic type
+# Four sizes is what the ramp looks like at one setting. iOS has twelve, and a
+# person who has turned the text up is not a rare case: presbyopia arrives for
+# almost everyone in their forties, and this is a bank for a country whose
+# median customer will get there. Apple's own Body runs 17 to 53.
+#
+# The ramp cannot ride Dynamic Type for free, because it is not Apple's ramp:
+# 20 is Title 3 and 12 is Caption 1 exactly, but Apple has no 14 and no 32 at
+# the default setting. The supported way to keep a size that is not theirs is
+# UIFontMetrics(forTextStyle:).scaledFont(for:), which scales a custom size in
+# the proportion its reference style scales. So every style here names the
+# Apple style it rides, and the table is that proportion worked out.
+#
+# APPLE is Apple's published table, read off the Human Interface Guidelines,
+# one row per text style and one column per setting.
+DT_SETTINGS = ["xSmall", "Small", "Medium", "Large", "xLarge", "xxLarge",
+               "xxxLarge", "AX1", "AX2", "AX3", "AX4", "AX5"]
+DT_DEFAULT = 3          # Large is the setting every artboard is drawn at
+
+APPLE = {
+    "Large Title": [31, 32, 33, 34, 36, 38, 40, 44, 48, 52, 56, 60],
+    "Title 1":     [25, 26, 27, 28, 30, 32, 34, 38, 43, 48, 53, 58],
+    "Title 2":     [19, 20, 21, 22, 24, 26, 28, 34, 39, 44, 50, 56],
+    "Title 3":     [17, 18, 19, 20, 22, 24, 26, 31, 37, 43, 49, 55],
+    "Headline":    [14, 15, 16, 17, 19, 21, 23, 28, 33, 40, 47, 53],
+    "Body":        [14, 15, 16, 17, 19, 21, 23, 28, 33, 40, 47, 53],
+    "Callout":     [13, 14, 15, 16, 18, 20, 22, 26, 32, 38, 44, 51],
+    "Subhead":     [12, 13, 14, 15, 17, 19, 21, 25, 30, 36, 42, 49],
+    "Footnote":    [12, 12, 12, 13, 15, 17, 19, 23, 27, 33, 38, 44],
+    "Caption 1":   [11, 11, 11, 12, 14, 16, 18, 22, 26, 32, 37, 43],
+    "Caption 2":   [11, 11, 11, 11, 13, 15, 17, 20, 24, 29, 34, 40],
+}
+
+# Which Apple style each of ours rides. Two are exact matches and ride
+# themselves. The two 14s must ride the same one or they would come apart at
+# the top of the scale, and they sit in the same row on every screen.
+DT_REF = {
+    "Display/Bold 32":     "Large Title",   # one question, one screen
+    "Heading/Semibold 20": "Title 3",       # 20 is Title 3 exactly
+    "Label/Semibold 14":   "Body",
+    "Label/Regular 14":    "Body",
+    "Caption/Semibold 12": "Caption 1",     # 12 is Caption 1 exactly
+    "Caption/Regular 12":  "Caption 1",
+}
+
+def _snap4(v):
+    return int(round(v / 4.0)) * 4
+
+def dt_size(style, i):
+    """The size this style takes at setting `i`, in the proportion its Apple
+    reference moves. Rounded to a whole pixel, because a half pixel of type is
+    a blurred edge on a screen that is already asking for help."""
+    ref = APPLE[DT_REF[style]]
+    return int(round(_DT_BASE[style] * ref[i] / float(ref[DT_DEFAULT])))
+
+def dt_leading(style, i):
+    """Leading keeps its ratio and stays on the 4px grid at every setting, for
+    the same reason it does at this one: leading stacks."""
+    return _snap4(dt_size(style, i) * _DT_LEAD_RATIO[style])
+
+_DT_BASE = {}
+_DT_LEAD_RATIO = {}
+for (_fs, _fw), (_nm, _lh, _tr) in STYLE.items():
+    _DT_BASE[_nm] = _fs
+    _DT_LEAD_RATIO[_nm] = int(_lh[:-2]) / float(_fs)
+
 # Money never renders at the bottom of the ramp: a Naira sign at 12 is too fine
 # to read at a glance on a phone. snap() lifts any figure off it. This outlived
 # the money face on purpose; the floor was never about the typeface.
