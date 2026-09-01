@@ -52,11 +52,11 @@ sheet, on from its button, and its own back. When a number moves on purpose,
 change it here in the same commit, or the next run reads a deliberate decision
 as a regression.
 
-The type numbers on Flows are **4,581 text nodes, 4,469 bound, 112 unbound, and
-SF Pro Text is the only unbound family**. Those 112 are the keyboard, the payment
+The type numbers on Flows are **4,843 text nodes, 4,736 bound, 107 unbound, and
+SF Pro Text is the only family**. Those 107 are the keyboard, the payment
 card and the meter token, which opt out of the ramp on purpose. Line heights read
-**16 x815, 20 x3118, 24 x418, 40 x118 and AUTO x112** — every set value a multiple
-of 4, and the AUTO ones exactly those same 112 opt-outs. Any other family
+**16 x688, 20 x1913, 24 x2011, 40 x125 and AUTO x106** — every set value a multiple
+of 4, and the AUTO ones the opt-outs. Any other family
 appearing there, or the bound count falling, is a regression. It read 4,983 until
 the six r&eacute;sum&eacute; documents moved to their own page. **Eight text styles** are
 defined and all eight are bound to something. One family: any other font family
@@ -86,6 +86,26 @@ appearing in the audit's `fonts` line is a regression, not a feature.
   one of those numbers was about a CV. They now live on a page called
   `R&eacute;sum&eacute;`. Before quoting a count, say which nodes it covers, and prefer
   counting the screens inside the sections to counting the page.
+- **A tolerance wider than the thing it measures hides the change.** The retype
+  compared fills with a tolerance of 0.004 per channel. One step of eight bit
+  colour is 1/255, or 0.0039. So the contrast fix — `#12833C` to `#11823B`, one
+  step — compared equal on every node that already held the old green, and 29
+  lines of it survived a pass that was meant to retire it. Round both sides to
+  the byte and compare bytes.
+- **Writing a component does not always change its instances.** An instance that
+  already carries an override on a property keeps it, whatever the component
+  says. Eighty-five lines still read `Label/Semibold 14` after the component had
+  been set to `Body/Semibold 16`. When correcting typography through a
+  component, write the line as well as the part, or check afterwards.
+- **Do not compare a box that auto layout decides.** A text node that fills its
+  row reports `textAutoResize: 'HEIGHT'` however it was authored, and a
+  truncating one reports `TRUNCATE` at a size Figma measured. Comparing those
+  against what the browser measured produces false alarms and no true ones. Check
+  the words, the typography and the colour; let the layout own the box.
+- **A page's children are not loaded until the page is current.** `findAll` on a
+  node reached by id from another page quietly returns a fraction of its subtree,
+  and `page.loadAsync()` is not enough. Set the current page, once per script,
+  and batch the work by page.
 - **Measuring the build is not measuring the file.** The two disagree whenever a
   screen has not been re-sent, and the disagreement is silent. A count taken from
   `*.dc.html` describes what the next send would produce; a count taken through

@@ -1454,6 +1454,89 @@ Nothing here makes the app support Dynamic Type. It makes the design system say
 what every style becomes at every setting, and it removes the one structural
 failure that would have made the answer unusable.
 
+## Re-sending the screens, and the four things it turned up
+
+Every screen in the file was brought up to the current build: the eight text
+styles, the line heights, the 16px prose, the whole and even sizes, and the
+new green. Nothing was rebuilt. The Flows page still reads **774 reactions
+with no dead destinations**, which is the whole point of doing it this way.
+
+The operation is `retype.mjs`. It works node for node: where a Figma frame
+holds exactly as many lines of text as the screen it was built from, every one
+of them can be brought up to date in place, and no frame is ever created or
+removed. What it writes is the style binding, the words, the colour and the
+box, in that order, and only where they differ.
+
+It asks Figma first. `--read` emits a script that returns a five character
+fingerprint of every line -- its words, its typography and its colour -- and
+the payload then carries only the lines that are not already right. On this
+pass that was **838 of 1,805 lines** across the 81 screens whose shape already
+matched, which cut the scripts from around 380KB to 45KB.
+
+Typography goes to whichever node owns it. A line inside a shared part -- the
+ask bar, the keyboard, a button -- has its size and weight set on the part
+itself, so the part is corrected once instead of being overridden on every
+screen that uses it. The words, the colour and the box stay on the screen,
+because that is where they legitimately differ.
+
+Twelve screens had a different shape and could not be retyped until they
+matched:
+
+- **DoneSend** was missing the fee footnote, one line, added in place. That
+  fixed **Share** too, which nests DoneSend.
+- **The home screen** had grown by eight lines in the build: the growth chip
+  moved beside *Total balance*, *More* became *Services*, and three new blocks
+  appeared -- the dollars card, the third insight card, and the follow up
+  button under *Where your money went*. Those were grafted in with
+  `pathgraft.mjs`, which reaches inside a frame the way `graft.mjs` only
+  reaches the top of an artboard. Fixing the one component fixed **Main, Ask,
+  AskReq, AskSvc, Actions and Receive**.
+- **Typed, TypedAsk, TypedBuy and Draft** carry the whole home screen
+  component, dock and all, where the build draws the page without it. That is
+  one extra line at index 67, hidden off screen behind the keyboard, and
+  undoing it would cost about 160 reactions for nothing anyone can see. The
+  tool steps over it instead (`skip.json`).
+
+### Four things this pass got wrong before it got them right
+
+**A colour tolerance wider than the colour.** The fill comparison allowed
+0.004 of drift per channel. One step of eight bit colour is 1/255, which is
+0.0039. So `#12833C` and `#11823B` compared equal and the contrast fix from
+the previous pass never landed in Figma at all -- 29 lines of green were
+still the old value. The comparison now rounds both to eight bits and asks
+whether they are the same byte. The `green/600` primitive was moved to
+`#11823B` as well, so the ramp no longer documents a colour the screens do
+not draw.
+
+**A component can be shadowed.** Writing the typography to the part is the
+tidy thing to do, but an instance may already carry an override on that same
+node from an earlier session, and the override wins. Eighty-five lines --
+mostly the money amounts in the home feed -- still read `Label/Semibold 14`
+after the component had been set to `Body/Semibold 16`. The tool now writes
+the part **and** the line.
+
+**Comparing a box auto layout decides.** The first check compared
+`textAutoResize` and the measured box. A line that fills its row reports
+`HEIGHT` however it was authored, and a truncating one reports `TRUNCATE` at
+a size Figma measured, so the check produced 30 false alarms and no true
+ones. The fingerprint is now the words, the typography and the colour, and
+nothing else. The box still travels; it is just not something the build can
+predict well enough to check.
+
+**A colour table retyped by hand.** The first batch was sent with two entries
+of its colour table transposed, which turned the slider label on Pay blue.
+Nothing in the file is now carried by index: every line names its own colour,
+so the head of a batch holds no data at all and can be reused verbatim.
+
+### Reading the check
+
+`node retype.mjs targets.json --verify` writes one script per page that
+carries what every line ought to be and returns only the ones that are not.
+`--fix` takes the list it returns and puts right exactly those lines. Both
+run off `targets.json`, which maps each screen to the node that owns it: the
+main component where the screen on Flows is an instance, the frame itself
+otherwise.
+
 ## Contrast
 
 `CHROME=... node figma/contrast.mjs .` measures every run of text against what
