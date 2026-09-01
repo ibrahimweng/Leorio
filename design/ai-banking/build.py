@@ -120,17 +120,20 @@ def _type_pass(html):
 _ODD = re.compile(r'font-size: ([0-9.]+)px')
 
 def _even_check(name, html):
-    """Every size in the output is a whole even number.
+    """Every size in the output is a whole even number, and none is under 12.
 
-    The ramp already guarantees it for anything it touches, but `chrome` opts
-    out of the ramp entirely, and what opts out of the rule is what breaks it:
-    the payment card and the meter token shipped 9, 13 and 21 for as long as
-    they have existed, because nothing was looking. This looks."""
-    bad = sorted({v for v in (float(m) for m in _ODD.findall(html))
-                  if v != int(v) or int(v) % 2})
-    if bad:
-        raise SystemExit("%s: font sizes must be whole and even, found %s"
-                         % (name, ", ".join("%g" % v for v in bad)))
+    The ramp already guarantees both for anything it touches -- TYPE starts at
+    12 and every step is even -- but `chrome` opts out of the ramp entirely,
+    and what opts out of the rule is what breaks it: the payment card and the
+    meter token shipped 9, 10, 13 and 21 for as long as they have existed,
+    because nothing was looking. This looks. 12 is also clear of Apple's stated
+    11pt floor for iOS, which they say covers custom faces too."""
+    seen = {float(m) for m in _ODD.findall(html)}
+    bad = sorted(v for v in seen if v != int(v) or int(v) % 2)
+    low = sorted(v for v in seen if v < 12)
+    if bad or low:
+        raise SystemExit("%s: font sizes must be whole, even and 12 or over -- found %s"
+                         % (name, ", ".join("%g" % v for v in sorted(set(bad) | set(low)))))
 
 def snap(html):
     """Pull every size, gap and radius onto its scale. Nothing drifts."""
@@ -1570,7 +1573,7 @@ vcard = page(
   + '<div id="cdFace" style="height: 194px; border-radius: ' + R_CARDLG + '; background: ' + CARD_FACE + '; ' + SH_RAISE + '; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; '
     + SHADOW + '">'
     '<div style="display: flex; align-items: flex-start; justify-content: space-between">'
-      + mark(24, "#FFFFFF") + '<span class="chrome" style="font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: rgba(255,255,255,0.7)">NETFLIX ONLY</span></div>'
+      + mark(24, "#FFFFFF") + '<span class="chrome" style="font-size: 12px; font-weight: 700; letter-spacing: 0.16em; color: rgba(255,255,255,0.7)">NETFLIX ONLY</span></div>'
     '<div style="width: 34px; height: 25px; border-radius: 5px; background: rgba(255,255,255,0.22); border: 1px solid rgba(255,255,255,0.28); display: flex; flex-direction: column; justify-content: center; gap: 4px; padding: 0 4px">'
       '<div style="height: 1.5px; background: rgba(255,255,255,0.45)"></div>'
       '<div style="height: 1.5px; background: rgba(255,255,255,0.45)"></div></div>'

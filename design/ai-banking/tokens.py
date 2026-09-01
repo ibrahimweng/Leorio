@@ -14,13 +14,15 @@ Three scales are enforced at build time, so nothing can drift off them:
 a type ramp, a spacing rhythm and a small set of corner radii. See snap()
 in build.py.
 
-Every font size that ships is a whole even number. The ramp already made that
-true of anything it touched; the rule exists for what it does not touch. A
-handful of surfaces carry `chrome` and opt out of the ramp on purpose, because
-they draw an object rather than set type -- the keyboard, the payment card, a
-meter token -- and those shipped 9, 13 and 21 for as long as they had existed,
-because opting out of the rule also opted out of anyone checking. _even_check()
-in build.py now refuses the build instead.
+Every font size that ships is a whole even number, and none is under 12. The
+ramp already made both true of anything it touched, since TYPE starts at 12 and
+every step is even; the rule exists for what it does not touch. A handful of
+surfaces carry `chrome` and opt out of the ramp on purpose, because they draw an
+object rather than set type -- the keyboard, the payment card, a meter token --
+and those shipped 9, 10, 13 and 21 for as long as they had existed, because
+opting out of the rule also opted out of anyone checking. _even_check() in
+build.py now refuses the build instead. 12 is also clear of Apple's stated 11pt
+floor for iOS, which they say covers custom faces too.
 
 One note on the greys. INK2, INK3 and INK4 are sampled from the reference
 screens and are lighter than the accessibility standard allows for small
