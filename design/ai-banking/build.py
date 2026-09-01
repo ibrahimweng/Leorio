@@ -1577,33 +1577,6 @@ def sugg(t, go=""):
     return ('<div' + hook(go) + ' style="height: 48px; border-radius: ' + pill(48) + '; background: ' + FILL
       + '; display: flex; align-items: center; padding: 0 20px; font-size: 14.5px; font-weight: 600; color: ' + INK + '">' + t + '</div>')
 
-ask = ('<div class="behind">' + page(home_inner, 16) + askbar("Ask, or just say what you need") + '</div>'
-  + '<div class="fauxbg"' + hook("back") + ' style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
-  + '; ' + BLUR + '; z-index: 5"></div>'
-  + '<div class="sheet" style="position: absolute; left: 10px; right: 10px; bottom: 10px; max-height: 76%; z-index: 6; background: ' + SURF
-  + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; overflow: hidden; display: flex; flex-direction: column">'
-  '<div style="height: 3px; width: 100%; overflow: hidden; flex-shrink: 0"><div class="sweep" style="height: 3px; width: 100%; background: linear-gradient(90deg, rgba(0,0,0,0) 0%, '
-  + ACC + ' 50%, rgba(0,0,0,0) 100%)"></div></div>'
-  + grabber() +
-  '<div style="padding: 20px 20px 20px 20px; display: flex; flex-direction: column; gap: 20px">'
-    '<div style="display: flex; align-items: center; gap: 8px">' + mark(24)
-    + '<span style="font-size: 17px; font-weight: 700; color: ' + ACC_TEXT + '">Listening</span></div>'
-    '<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.24; color: ' + INK + '; text-wrap: pretty">Send 20k to<span style="color: ' + INK3 + '"> Sarah</span></div>'
-    + wave()
-    + '<div style="display: flex; flex-direction: column; gap: 12px">' + sectionhead("Or try one of these")
-      + '<div style="display: flex; flex-direction: column; gap: 8px">'
-      + sugg("Pay my light bill", "PowerPay") + sugg("How much did I spend on data?", "Answer") + sugg("What can I borrow?", "Loan") + '</div></div></div>'
-  '<div style="padding: 0 20px 24px 20px; display: flex; flex-direction: column; gap: 12px">'
-    '<div' + hook("Amend") + ' style="display: flex; justify-content: center">'
-      '<span style="font-size: 14px; font-weight: 700; color: ' + ACC_TEXT + '">Not what I said</span></div>'
-    '<div style="display: flex; gap: 12px; align-items: center">'
-    '<div' + hook("Chat") + ' style="flex-grow: 1; height: 56px; border-radius: ' + PILL + '; background: ' + ACC + '; ' + SH_BTN
-    + '; display: flex; align-items: center; justify-content: center">'
-    '<span style="font-size: 17px; font-weight: 700; color: #FFFFFF">Release to send</span></div>'
-    '<div' + hook("back") + ' style="width: 56px; height: 56px; border-radius: ' + PILL + '; background: ' + FILL
-    + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
-    '<div style="width: 15px; height: 15px; border-radius: 3px; background: ' + INK2 + '"></div></div></div></div></div>')
-write("Ask", ask, ANIM)
 
 # ================= ANSWER =================
 def bar(h, accent=False):
@@ -2476,6 +2449,9 @@ def voicesheet(lead, tail, go, sugs):
         + '; display: flex; align-items: center; justify-content: center; flex-shrink: 0">'
         '<div style="width: 15px; height: 15px; border-radius: 3px; background: ' + INK2 + '"></div></div></div></div></div>')
 
+write("Ask", voicesheet("Send 20k to", "Sarah", "Chat",
+  [("Pay my light bill", "PowerPay"), ("How much did I spend on data?", "Answer"),
+   ("What can I borrow?", "Loan")]), ANIM)
 write("AskReq", voicesheet("Ask Musa for", "20k", "Request",
   [("Who owes me money?", "History"), ("Show my code", "MyCode"), ("Remind Musa again", "soon")]), ANIM)
 write("AskSvc", voicesheet("2k data for", "mum", "Buy",
