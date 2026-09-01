@@ -354,3 +354,43 @@ These are not new rules. They are what the copy is already doing.
   will hear the older meaning and half will hear nothing at all; the mark and
   the opening screen should make it a word about keeping, not a claim about
   compliance we are not making.
+
+---
+
+### The greys, and a decision taken on purpose
+
+Amana's greys are faint and stay faint. `INK2` `#8E8E93`, `INK3` `#A9A9AE` and
+`INK4` `#C4C4C9` are the product's voice at rest, and the founder's call was to
+keep them.
+
+**What that costs, measured rather than assumed.** `figma/contrast.mjs` walks
+every run of text against what is behind it. 1,066 of 2,628 runs sit under the
+4.5:1 the size asks for. `INK3` is 2.34 on white, `INK2` is 3.26, `INK4` is
+1.74. Passing would mean `#707070` or darker, which is one value for what are
+currently three, so the ramp cannot be darkened without collapsing.
+
+**The usual escape does not apply here.** A faint grey is defensible when it
+carries decoration, and WCAG exempts incidental text. These greys do not carry
+decoration. `INK3` sets the second line of every feed row — "Grocery Shopping ·
+10:45", "Meter 4457 8891 · 11:22", "₦640,355 today". `INK2` sets "Fee",
+"Amount", "Balance after", "Total charged". `INK4` sets the kobo half of a
+figure. All of it is information, and some of it is money.
+
+So this is a live decision, not an oversight, and it should be re-read whenever
+the audience changes. The strongest argument against it is not the standard: it
+is sunlight. This is a phone read outdoors in Lagos most of the day, and glare
+takes the low end of exactly this range first.
+
+Three ways out if it is ever revisited, in order of how little they cost:
+
+- **The kobo tail can stay pale.** De-emphasising the pennies is good design,
+  and it is 11 runs.
+- **`INK2` already passes at 18pt and over** — it is 3.26, and the bar above 17pt
+  is 3.0. It fails only because it is set at 12 and 14.
+- **`INK3` fails at every size and on every ground.** If one thing moves, it is
+  this one, and the feed's second line is what it would move.
+
+One thing did move. `IN_TEXT` was `#12833C` and measured 4.446 against 4.5. It
+is `#11823B` now, one value per channel, which nobody can see and which clears
+the bar.
+

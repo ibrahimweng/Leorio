@@ -44,7 +44,7 @@ IN        = "#34C759"   # money coming in, as an icon or a fill
 WARN      = "#FF3B30"   # trouble, as an icon or a fill
 # The reference never sets green or red as text, so there is nothing to copy
 # and no reason not to use a shade that reads. These two are text only.
-IN_TEXT   = "#12833C"
+IN_TEXT   = "#11823B"   # one step off #12833C, which measured 4.446 against a 4.5 bar
 WARN_TEXT = "#CC2A20"
 # What the model read out of a picture is boxed where it sits. These two are
 # the boxes it is not sure about, written as flat hexes so they survive being
