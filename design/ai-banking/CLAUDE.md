@@ -98,6 +98,11 @@ appearing in the audit's `fonts` line is a regression, not a feature.
   box for 141px of Fraunces. Leading cannot cause it and leading cannot fix it —
   check the width. Sweep for it by re-measuring each string with a probe TEXT
   node set to `WIDTH_AND_HEIGHT` and comparing against the real node's width.
+- **Measure a screen before deciding what kind of screen it is.** Five screens
+  were flagged as actions wearing page chrome and queued to become sheets. All
+  five hold 675-750px of content, which is 750-825 once a sheet's padding and
+  grabber are added, and a sheet past 720 is a page again. The flag was raised
+  on their names and their footers. Nothing was wrong with them.
 - The extractor bakes `justify-content: center` into **asymmetric padding** on a
   FIXED row. Those numbers fit one exact string, so changing the words inside
   breaks the fit silently — nothing clips, because `clipsContent` is false.

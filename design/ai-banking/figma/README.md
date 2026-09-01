@@ -1340,3 +1340,43 @@ counted: `build.py` had been wrapping every naira sign in a span with side
 margins, tuning for Fraunces' metrics. That came out with the face, which merged
 20 text nodes back together — 2746 to 2726 — and is the whole reason the node
 count moved.
+
+## Sheets and pages, and why five action screens stayed pages
+
+Audited against a set of structure rules borrowed from Phantom: one home,
+actions are never pages, nothing past four taps, the page behind a sheet stays
+dimmed, a sheet is dismissed three ways, and **past 720 a sheet is a page
+wearing a costume**.
+
+Most of it already held. 18 sheets, 57 pages, 16 onboarding screens that sit
+before home. Maximum depth from the home screen is **four taps**, over 238
+edges, with nothing deeper. The tallest sheet is `NoFace` at 707.
+
+Three things did not hold and were fixed: the dimmed part was a dismiss target
+on 4 sheets of 18, the voice sheet drew its own grabber at 38x4 against the
+system's 44x5 pill, and `sheetx()` drew a close nothing used.
+
+**Five screens look like actions wearing page chrome** — `Amend`, `Recall`,
+`Convert`, `PayDollars` and `Rule`. They were measured before being moved, and
+the measurement settled it:
+
+| screen | content | as a sheet |
+|---|---|---|
+| `Amend` | 748 | 823 |
+| `Recall` | 748 | 823 |
+| `PayDollars` | 750 | 825 |
+| `Rule` | 676 | 751 |
+| `Convert` | 675 | 750 |
+
+A sheet carries the content plus 54px of padding and a 21px grabber. Every one
+of the five lands past 720, so the rule that would move them and the rule that
+measures them disagree, and the second one wins: **they are pages, correctly.**
+The audit finding was made on their names and their chrome, before anyone
+measured what they hold.
+
+`Rule` is the near miss and the one worth revisiting. It is a confirmation in
+everything but housing — "Set this up?", five plain rows, one decisive action,
+a dismiss word — and it is 31px over. The only trimmable block is the
+reassurance that the rule can be stopped, which is copy about an automatic
+payment and not a structural decision. It stays until someone decides that
+sentence is worth the housing.
