@@ -290,7 +290,7 @@ SW_GLYPH, SW_MARK, SW_MIN, SW_MAX = 0.075, 0.10, 1.1, 3.2
 
 MARKS = {"check", "close", "plus", "minus", "up", "down",
          "chevron", "back", "check-small", "up-small", "close-small",
-         "sheet-close", "fab-plus", "fab-close", "slide-arrow"}
+         "fab-plus", "fab-close", "slide-arrow"}
 
 def stroke_for(name, size, box=24):
     """The stroke-width to draw with, in a box of `box` units, so what the eye
@@ -938,15 +938,13 @@ def sheet(inner, pad="26px 20px 28px 20px", dismiss=""):
       '<div class="sheet" style="position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 6; background: ' + SURF
       + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; padding: ' + pad + '">' + inner + '</div>')
 
-def sheetx():
-    return ('<div' + hook("back") + ' style="position: absolute; right: 18px; top: 18px; width: 32px; height: 32px; '
-      'display: flex; align-items: center; justify-content: center">'
-      '<svg data-icon="sheet-close" width="20" height="20" viewBox="0 0 20 20" fill="none">'
-      '<path d="M5.4 5.4l9.2 9.2M14.6 5.4l-9.2 9.2" stroke="' + INK2 + '" stroke-width="' + str(stroke_for("sheet-close", 20, 20)) + '" stroke-linecap="round"/></svg></div>')
-
 def grabber():
     """A sheet that came up from the bottom can go back down the same way, so
-    it carries the bar you throw it by. Nothing else on the screen has one."""
+    it carries the bar you throw it by. Nothing else on the screen has one.
+
+    Every sheet uses this one. The voice sheet drew its own for a while, at
+    38x4 with a 2px radius against this one's 44x5 pill, which is the kind of
+    difference nobody sees and everybody feels."""
     return ('<div style="display: flex; justify-content: center; padding: 4px 0 12px 0">'
       '<div style="width: 44px; height: 5px; border-radius: ' + PILL + '; background: ' + FILL3 + '"></div></div>')
 
@@ -959,7 +957,9 @@ def sheetup(inner, done="Done", go="back", pad="12px 20px 20px 20px"):
       '<div' + hook(go) + ' style="height: 50px; padding: 0 40px; border-radius: ' + PILL + '; background: ' + FILL
       + '; display: flex; align-items: center; justify-content: center">'
       '<span style="font-size: 17px; font-weight: 700; letter-spacing: -0.01em; color: ' + INK + '">' + done + '</span></div></div>')
-    return sheet(grabber() + inner + tail, pad)
+    # The dimmed part goes where the button goes. Three ways down, all to the
+    # same place: the handle, the word, and beside it.
+    return sheet(grabber() + inner + tail, pad, go)
 
 def dial(n, size=48, stroke=5, fs=17, color=None):
     """The score at the size of an icon. The same ring the savings goal uses,
@@ -1578,13 +1578,13 @@ def sugg(t, go=""):
       + '; display: flex; align-items: center; padding: 0 20px; font-size: 14.5px; font-weight: 600; color: ' + INK + '">' + t + '</div>')
 
 ask = ('<div class="behind">' + page(home_inner, 16) + askbar("Ask, or just say what you need") + '</div>'
-  + '<div class="fauxbg" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
+  + '<div class="fauxbg"' + hook("back") + ' style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
   + '; ' + BLUR + '; z-index: 5"></div>'
   + '<div class="sheet" style="position: absolute; left: 10px; right: 10px; bottom: 10px; max-height: 76%; z-index: 6; background: ' + SURF
   + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; overflow: hidden; display: flex; flex-direction: column">'
   '<div style="height: 3px; width: 100%; overflow: hidden; flex-shrink: 0"><div class="sweep" style="height: 3px; width: 100%; background: linear-gradient(90deg, rgba(0,0,0,0) 0%, '
   + ACC + ' 50%, rgba(0,0,0,0) 100%)"></div></div>'
-  '<div style="display: flex; justify-content: center; padding: 12px 0 0 0"><div style="width: 38px; height: 4px; border-radius: 2px; background: ' + FILL3 + '"></div></div>'
+  + grabber() +
   '<div style="padding: 20px 20px 20px 20px; display: flex; flex-direction: column; gap: 20px">'
     '<div style="display: flex; align-items: center; gap: 8px">' + mark(24)
     + '<span style="font-size: 17px; font-weight: 700; color: ' + ACC_TEXT + '">Listening</span></div>'
@@ -2450,13 +2450,13 @@ write("TypedBuy", typedscreen("2k data for mum", "Buy"))
 def voicesheet(lead, tail, go, sugs):
     s = ''.join(sugg(t, g) for t, g in sugs)
     return ('<div class="behind">' + page(home_inner, 16) + askbar("Ask, or just say what you need") + '</div>'
-      + '<div class="fauxbg" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
+      + '<div class="fauxbg"' + hook("back") + ' style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: ' + SCRIM
       + '; ' + BLUR + '; z-index: 5"></div>'
       + '<div class="sheet" style="position: absolute; left: 10px; right: 10px; bottom: 10px; max-height: 76%; z-index: 6; background: ' + SURF
       + '; border-radius: ' + R_SHEET + '; ' + SH_SHEET + '; overflow: hidden; display: flex; flex-direction: column">'
       '<div style="height: 3px; width: 100%; overflow: hidden; flex-shrink: 0"><div class="sweep" style="height: 3px; width: 100%; background: linear-gradient(90deg, rgba(0,0,0,0) 0%, '
       + ACC + ' 50%, rgba(0,0,0,0) 100%)"></div></div>'
-      '<div style="display: flex; justify-content: center; padding: 12px 0 0 0"><div style="width: 38px; height: 4px; border-radius: 2px; background: ' + FILL3 + '"></div></div>'
+      + grabber() +
       '<div style="padding: 20px 20px 20px 20px; display: flex; flex-direction: column; gap: 20px">'
         '<div style="display: flex; align-items: center; gap: 8px">' + mark(24)
         + '<span style="font-size: 17px; font-weight: 700; color: ' + ACC_TEXT + '">Listening</span></div>'
@@ -3933,7 +3933,7 @@ def iconsheet(part):
     if part == 2:
         return _grid([_cell(ttglyph(n, 24)) for n in sorted(TWOTONE)]
                    + [_cell(fglyph(n, 24, INK)) for n in sorted(FILLED)])
-    cells = [_cell(chev(24)), _cell(mark(24)), _cell(sheetx()),
+    cells = [_cell(chev(24)), _cell(mark(24)),
              _cell(stepdot("done")), _cell(stepdot("work")), _cell(stepdot("todo")),
              _cell(dial(72, 40)), _cell(qrsvg(40)), _cell(ring(72, 40, 6, "", "")),
              _cell('<svg data-icon="up-small" width="12" height="12" viewBox="0 0 12 12" fill="none">'

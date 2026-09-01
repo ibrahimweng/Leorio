@@ -19,7 +19,7 @@ const ICON   = [12, 16, 18, 20, 22, 24, 28, 32, 40, 48, 56];
 // the file can be checked without running the build.
 const SW_GLYPH = 0.075, SW_MARK = 0.10, SW_MIN = 1.1, SW_MAX = 3.2;
 const MARKS = ['check','close','plus','minus','up','down','chevron','back',
-  'check-small','up-small','close-small','sheet-close','fab-plus','fab-close','slide-arrow'];
+  'check-small','up-small','close-small','fab-plus','fab-close','slide-arrow'];
 // Drawn marks, not glyphs: they carry their own weight and their own size.
 const KEEP  = ['ring','dial','step-done','step-todo','step-work','wait'];
 
