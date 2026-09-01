@@ -1452,3 +1452,44 @@ Nothing here makes the app support Dynamic Type. It makes the design system say
 what every style becomes at every setting, and it removes the one structural
 failure that would have made the answer unusable.
 
+## Contrast
+
+`CHROME=... node figma/contrast.mjs .` measures every run of text against what
+is actually behind it. It walks up for the first opaque background and
+composites the translucent layers it passes, because a sheet sits on a scrim
+and a scrim sits on a page. Thresholds are Apple's: **up to 17pt needs 4.5:1,
+18pt and over needs 3:1.** Everything here is 12, 14, 20 or 32, so only the top
+two sizes get the lower bar.
+
+**2,642 runs. 1,096 of the 2,628 measurable ones fail — 42%.**
+
+Almost all of it is three greys:
+
+| ink | value | on white | on `FILL` | needs | runs failing |
+|---|---|---|---|---|---|
+| `INK3` | `#A9A9AE` | **2.34** | **2.15** | 4.5 | 533 |
+| `INK2` | `#8E8E93` | **3.26** | **2.99** | 4.5 | 498 |
+| `INK4` | `#C4C4C9` | **1.74** | 1.60 | 3.0 | 10 |
+
+Those three account for **98% of every failure**. The rest is a green at
+`#12833C` on `FILL` measuring 4.45 against 4.5, which fails by five hundredths,
+and white on the amber and green status fills.
+
+### There is no free fix, and that is the finding
+
+To pass 4.5:1 a grey has to be **`#767676` or darker on white**, and **`#707070`
+or darker on `FILL`**. `INK2` is 142 and `INK3` is 169. Both would have to land
+at 112 or below, which is the same value — so **the three-step grey hierarchy
+collapses into one step.** The ramp cannot be darkened in place; it has to be
+redesigned, or the greys have to stop carrying text that matters.
+
+The 14 runs reported as `gradient` are on the payment card and the dock, where
+the background is a gradient. They are not measured rather than guessed at. An
+earlier version of this script took the fallback white and reported fourteen
+impossible white-on-white failures at 1.00; if this number moves, check that
+first.
+
+This matters more here than the percentage suggests. Sunlight washes out exactly
+the low end of this range, and the product is for a country where a phone is
+read outdoors most of the day.
+

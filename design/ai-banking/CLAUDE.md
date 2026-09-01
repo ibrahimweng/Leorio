@@ -98,6 +98,12 @@ appearing in the audit's `fonts` line is a regression, not a feature.
   box for 141px of Fraunces. Leading cannot cause it and leading cannot fix it —
   check the width. Sweep for it by re-measuring each string with a probe TEXT
   node set to `WIDTH_AND_HEIGHT` and comparing against the real node's width.
+- **42% of text fails contrast, and 98% of that is three greys.** `INK2`
+  `#8E8E93`, `INK3` `#A9A9AE` and `INK4` `#C4C4C9` measure 3.26, 2.34 and 1.74
+  on white against a 4.5 bar. Passing needs `#707070` or darker on `FILL`, which
+  is one value for what are currently three, so the fix is a redesign of the
+  grey ramp and not a nudge. Run `node figma/contrast.mjs .` before claiming
+  otherwise.
 - **A sheet is pinned to the bottom, so it grows off the top.** Pages that get
   taller just scroll; a sheet that gets taller walks its own header off the
   screen and there is no gesture that brings it back. At AX3 fourteen of
